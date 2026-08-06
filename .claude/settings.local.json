@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__get-shop-info",
+      "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__search_products",
+      "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__search_collections"
+    ]
+  }
+}
