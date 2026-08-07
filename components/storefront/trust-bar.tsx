@@ -1,8 +1,8 @@
 import { Truck, ShieldCheck, Hammer, Lock } from "lucide-react";
 
 const items = [
-  { icon: Truck, label: "Envío 24–48h en México" },
-  { icon: Hammer, label: "Hecho a mano, cortado a láser" },
+  { icon: Truck, label: "Envíos a todo México" },
+  { icon: Hammer, label: "Maquilamos cualquier pieza personalizada" },
   { icon: ShieldCheck, label: "Garantía de calidad" },
   { icon: Lock, label: "Pago 100% seguro" },
 ];

@@ -4,7 +4,7 @@ const columns = [
   {
     title: "Tienda",
     links: [
-      { label: "Edición Mundial 2026", href: "#mundial-2026" },
+      { label: "Letreros personalizados", href: "/producto/letrero-de-acrilico-personalizado-para-negocio" },
       { label: "Más vendidos", href: "#bestsellers" },
       { label: "Coleccionables", href: "#" },
       { label: "Decoración MDF", href: "#" },
@@ -38,8 +38,8 @@ export function SiteFooter() {
             LUASER<span className="text-gold">.</span>
           </p>
           <p className="mt-3 text-sm text-graystone-300 max-w-xs">
-            Piezas de acrílico y MDF cortadas a láser con precisión, hechas para que tu colección
-            se exhiba, no se guarde.
+            Letreros y piezas de acrílico cortadas a láser con precisión. Maquilamos cualquier
+            diseño personalizado y enviamos a todo México.
           </p>
         </div>
         {columns.map((col) => (

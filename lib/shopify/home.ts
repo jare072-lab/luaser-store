@@ -2,8 +2,7 @@ import { shopifyFetch } from "@/lib/shopify/client";
 import { HOME_QUERY } from "@/lib/shopify/queries/home";
 import type { HomeData, ShopifyProduct } from "@/lib/shopify/types";
 
-const HERO_PRODUCT_HANDLE =
-  "caja-acrilica-para-album-de-estampas-2026-personalizada-con-placa-dorada";
+const HERO_PRODUCT_HANDLE = "letrero-de-acrilico-personalizado-para-negocio";
 
 interface RawHomeData {
   shop: { name: string };

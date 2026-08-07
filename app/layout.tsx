@@ -41,11 +41,11 @@ function resolveSiteUrl(): URL {
 export const metadata: Metadata = {
   metadataBase: resolveSiteUrl(),
   title: {
-    default: "Luaser — Piezas de acrílico cortadas a láser | Edición Mundial 2026",
+    default: "Luaser — Letreros y piezas de acrílico personalizadas en México",
     template: "%s | Luaser",
   },
   description:
-    "Cajas acrílicas, vitrinas y decoración cortadas a láser en México. Pieza estrella: caja de colección para tu álbum del Mundial 2026.",
+    "Letreros de acrílico personalizados con tu logo, cortados y grabados a láser. Maquilamos cualquier pieza a la medida y enviamos a todo México.",
   openGraph: {
     type: "website",
     locale: "es_MX",
