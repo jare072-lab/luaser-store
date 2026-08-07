@@ -39,22 +39,31 @@ interface AllProductHandlesResponse {
 }
 
 export async function getAllProductHandles(): Promise<{ handle: string; updatedAt: string }[]> {
-  const handles: { handle: string; updatedAt: string }[] = [];
-  let after: string | undefined;
+  // Usado por generateStaticParams y el sitemap. El sitio es 100% dinámico
+  // (el layout raíz lee la cookie del carrito), así que estas dos cosas son
+  // solo una optimización — nunca deben tumbar el build completo si la
+  // Storefront API falla momentáneamente o hay una var de entorno mal puesta.
+  try {
+    const handles: { handle: string; updatedAt: string }[] = [];
+    let after: string | undefined;
 
-  while (true) {
-    const data = await shopifyFetch<AllProductHandlesResponse>({
-      query: ALL_PRODUCT_HANDLES_QUERY,
-      variables: { first: 100, after },
-      tags: ["products"],
-      revalidate: CATALOG_REVALIDATE_SECONDS,
-    });
+    while (true) {
+      const data = await shopifyFetch<AllProductHandlesResponse>({
+        query: ALL_PRODUCT_HANDLES_QUERY,
+        variables: { first: 100, after },
+        tags: ["products"],
+        revalidate: CATALOG_REVALIDATE_SECONDS,
+      });
 
-    handles.push(...data.products.edges.map((e) => e.node));
+      handles.push(...data.products.edges.map((e) => e.node));
 
-    if (!data.products.pageInfo.hasNextPage) break;
-    after = data.products.pageInfo.endCursor ?? undefined;
+      if (!data.products.pageInfo.hasNextPage) break;
+      after = data.products.pageInfo.endCursor ?? undefined;
+    }
+
+    return handles;
+  } catch (error) {
+    console.error("[getAllProductHandles] No se pudo consultar la Storefront API:", error);
+    return [];
   }
-
-  return handles;
 }
