@@ -40,35 +40,11 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  let cart = null;
-  let debugError: string | null = null;
-
-  try {
-    cart = await getCurrentCart();
-  } catch (err) {
-    debugError = err instanceof Error ? `${err.message}\n\n${err.stack ?? ""}` : String(err);
-  }
+  const cart = await getCurrentCart();
 
   return (
     <html lang="es-MX" className={`${display.variable} ${body.variable}`}>
       <body className="font-body">
-        {/* DIAGNÓSTICO TEMPORAL — quitar en cuanto se resuelva el error de producción */}
-        {debugError && (
-          <pre
-            style={{
-              background: "#2a0000",
-              color: "#ffb3b3",
-              padding: "16px",
-              margin: "16px",
-              borderRadius: "8px",
-              whiteSpace: "pre-wrap",
-              fontSize: "12px",
-              overflowX: "auto",
-            }}
-          >
-            {debugError}
-          </pre>
-        )}
         {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
         {META_PIXEL_ID && <MetaPixel pixelId={META_PIXEL_ID} />}
         <CartUIProvider>
