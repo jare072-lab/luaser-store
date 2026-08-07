@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/storefront/site-header";
 import { SiteFooter } from "@/components/storefront/site-footer";
 import { CartUIProvider } from "@/components/storefront/cart-ui-context";
 import { CartDrawer } from "@/components/storefront/cart-drawer";
+import { WhatsAppButton } from "@/components/storefront/whatsapp-button";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
 import { getCurrentCart } from "@/app/actions/cart";
@@ -65,6 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <main>{children}</main>
           <SiteFooter />
           <CartDrawer cart={cart} />
+          <WhatsAppButton />
         </CartUIProvider>
       </body>
     </html>
