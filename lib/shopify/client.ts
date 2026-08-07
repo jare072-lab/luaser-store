@@ -1,8 +1,4 @@
-const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN;
-const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN;
 const apiVersion = process.env.SHOPIFY_STOREFRONT_API_VERSION ?? "2025-01";
-
-const endpoint = `https://${domain}/api/${apiVersion}/graphql.json`;
 
 export async function shopifyFetch<T>({
   query,
@@ -17,11 +13,18 @@ export async function shopifyFetch<T>({
   revalidate?: number;
   cache?: "no-store";
 }): Promise<T> {
+  // Leídas dentro de la función (no a nivel de módulo) para evitar cualquier
+  // ambigüedad sobre cuándo se evalúan en el entorno serverless de Vercel.
+  const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN;
+  const token = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN;
+
   if (!domain || !token) {
     throw new Error(
-      "Faltan NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN o NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN en .env.local"
+      `Faltan variables de entorno de Shopify en runtime. NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=${domain ? "OK" : "AUSENTE"}, NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN=${token ? "OK" : "AUSENTE"}`
     );
   }
+
+  const endpoint = `https://${domain}/api/${apiVersion}/graphql.json`;
 
   const res = await fetch(endpoint, {
     method: "POST",
@@ -34,10 +37,26 @@ export async function shopifyFetch<T>({
     ...(cache === "no-store" ? { cache: "no-store" as const } : { next: { tags, revalidate } }),
   });
 
-  const json = await res.json();
+  // Leemos como texto primero: si Shopify responde algo que no es JSON
+  // (por dominio o versión de API inválidos, por ejemplo), queremos ver el
+  // cuerpo crudo en el error en vez de un fallo genérico de res.json().
+  const rawText = await res.text();
+
+  let json: { data?: T; errors?: unknown };
+  try {
+    json = JSON.parse(rawText);
+  } catch {
+    throw new Error(
+      `Shopify respondió algo que no es JSON (status ${res.status} en ${endpoint}): ${rawText.slice(0, 300)}`
+    );
+  }
+
+  if (!res.ok) {
+    throw new Error(`Shopify respondió ${res.status} en ${endpoint}: ${JSON.stringify(json).slice(0, 500)}`);
+  }
 
   if (json.errors) {
-    throw new Error(json.errors.map((e: { message: string }) => e.message).join("\n"));
+    throw new Error(`Shopify GraphQL devolvió errores: ${JSON.stringify(json.errors).slice(0, 500)}`);
   }
 
   return json.data as T;
