@@ -20,12 +20,25 @@ const body = Inter({
   variable: "--font-body",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
+// NEXT_PUBLIC_SITE_URL mal puesta (sin protocolo, vacía, con espacios) no debe
+// tumbar el build entero — degrada a localhost y sigue adelante.
+function resolveSiteUrl(): URL {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  try {
+    return new URL(raw || "http://localhost:3000");
+  } catch {
+    console.error(
+      `NEXT_PUBLIC_SITE_URL no es una URL válida: "${raw}". Debe incluir el protocolo, ej. https://tu-dominio.com. Usando http://localhost:3000 como respaldo.`
+    );
+    return new URL("http://localhost:3000");
+  }
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+  metadataBase: resolveSiteUrl(),
   title: {
     default: "Luaser — Piezas de acrílico cortadas a láser | Edición Mundial 2026",
     template: "%s | Luaser",
