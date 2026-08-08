@@ -13,18 +13,18 @@ const columns = [
   {
     title: "Ayuda",
     links: [
-      { label: "Envíos y tiempos", href: "#" },
-      { label: "Garantía", href: "#" },
-      { label: "Preguntas frecuentes", href: "#" },
-      { label: "Contacto", href: "#" },
+      { label: "Envíos y tiempos", href: "/paginas/envios-y-tiempos" },
+      { label: "Garantía", href: "/paginas/garantia" },
+      { label: "Preguntas frecuentes", href: "/paginas/preguntas-frecuentes" },
+      { label: "Contacto", href: "/paginas/contacto" },
     ],
   },
   {
     title: "Marca",
     links: [
       { label: "Nuestro proceso", href: "#historia" },
-      { label: "Términos y condiciones", href: "#" },
-      { label: "Privacidad", href: "#" },
+      { label: "Términos y condiciones", href: "/paginas/terminos-y-condiciones" },
+      { label: "Privacidad", href: "/paginas/privacidad" },
     ],
   },
 ];

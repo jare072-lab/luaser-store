@@ -5,16 +5,44 @@ export function WhatsAppButton() {
   const href = `https://wa.me/${PHONE}?text=${encodeURIComponent(MESSAGE)}`;
 
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Chatea por WhatsApp"
-      className="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-black/30 transition-transform hover:scale-105"
-    >
-      <svg viewBox="0 0 32 32" className="h-7 w-7 fill-white" aria-hidden="true">
-        <path d="M16.001 2.667c-7.363 0-13.334 5.97-13.334 13.333 0 2.353.617 4.56 1.696 6.474L2.667 29.333l7.043-1.848a13.27 13.27 0 0 0 6.291 1.6h.006c7.362 0 13.333-5.97 13.333-13.333S23.363 2.667 16.001 2.667Zm7.81 18.836c-.331.933-1.646 1.707-2.694 1.933-.716.153-1.652.276-4.803-1.032-4.03-1.669-6.623-5.756-6.824-6.022-.194-.267-1.63-2.17-1.63-4.14 0-1.97 1.03-2.938 1.396-3.34.331-.363.72-.454.96-.454.242 0 .484.002.695.013.223.011.522-.084.816.622.331.79.001.795 1.19.795 1.19.036.098.263.632.15 1.253-.113.62-.169.796-.339.977-.169.181-.354.404-.505.542-.169.155-.345.324-.148.634.196.31.872 1.44 1.872 2.332 1.286 1.147 2.37 1.503 2.68 1.674.31.17.492.142.673-.086.181-.226.775-.905.982-1.215.208-.31.416-.259.703-.156.288.104 1.826.862 2.14 1.019.31.155.518.233.594.362.076.128.076.744-.255 1.462Z" />
-      </svg>
-    </a>
+    <div className="fixed bottom-5 right-5 z-40 flex items-center gap-3">
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chatea por WhatsApp"
+        className="group relative flex h-14 w-14 items-center justify-center"
+      >
+        {/* Halo pulsante sutil, tono dorado de marca */}
+        <span className="absolute inset-0 rounded-full bg-gold/30 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
+        <span className="absolute inset-0 animate-ping rounded-full bg-[#25D366]/40 [animation-duration:2.5s]" />
+
+        {/* Etiqueta que se desliza al hacer hover (desktop) */}
+        <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-full bg-ink px-4 py-2 font-body text-sm text-bone opacity-0 shadow-lg shadow-black/30 ring-1 ring-gold/30 transition-all duration-300 group-hover:opacity-100 md:block">
+          Cotiza por WhatsApp
+        </span>
+
+        {/* Botón */}
+        <span
+          className="relative flex h-14 w-14 items-center justify-center rounded-full
+                     bg-gradient-to-br from-[#2FE375] via-[#25D366] to-[#128C7E]
+                     shadow-lg shadow-black/40 ring-2 ring-white/15
+                     transition-all duration-300 ease-out
+                     group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-[#128C7E]/50
+                     group-active:scale-95"
+        >
+          <svg viewBox="0 0 24 24" className="h-7 w-7 drop-shadow-sm" aria-hidden="true">
+            <path
+              fill="#FFFFFF"
+              d="M12.01 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.08-1.33A9.96 9.96 0 0 0 12.01 22C17.53 22 22 17.52 22 12S17.53 2 12.01 2Zm0 18.2c-1.6 0-3.09-.46-4.35-1.26l-.31-.19-3.02.79.81-2.94-.2-.31A8.17 8.17 0 0 1 3.8 12c0-4.53 3.68-8.2 8.21-8.2 4.53 0 8.2 3.67 8.2 8.2 0 4.53-3.67 8.2-8.2 8.2Z"
+            />
+            <path
+              fill="#FFFFFF"
+              d="M16.55 14.22c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.78.98-.14.17-.29.19-.53.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.84-.2-.48-.41-.42-.56-.42-.14-.01-.31-.01-.48-.01-.16 0-.44.06-.67.31-.23.25-.87.85-.87 2.08 0 1.22.89 2.4 1.02 2.57.12.17 1.75 2.67 4.24 3.74.59.26 1.06.41 1.42.52.6.19 1.14.16 1.57.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.23-.17-.48-.29Z"
+            />
+          </svg>
+        </span>
+      </a>
+    </div>
   );
 }
