@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/storefront/hero-section";
 import { TrustBar } from "@/components/storefront/trust-bar";
 import { BestsellersSection } from "@/components/storefront/bestsellers-section";
 import { StorytellingSection } from "@/components/storefront/storytelling-section";
+import { MaterialsSection } from "@/components/storefront/materials-section";
 import { MundialSection } from "@/components/storefront/mundial-section";
 import { BundleSection } from "@/components/storefront/bundle-section";
 import { TestimonialsSection } from "@/components/storefront/testimonials-section";
@@ -22,6 +23,7 @@ export default async function HomePage() {
         products={bestsellers?.products ?? []}
       />
       <StorytellingSection />
+      <MaterialsSection />
       <MundialSection />
       <BundleSection products={bestsellers?.products ?? []} />
       <TestimonialsSection />
