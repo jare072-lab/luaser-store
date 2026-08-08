@@ -20,6 +20,7 @@ export interface ShopifyProduct {
   };
   featuredImage: ShopifyImage | null;
   totalInventory: number;
+  images?: ShopifyImage[];
 }
 
 export interface HomeData {

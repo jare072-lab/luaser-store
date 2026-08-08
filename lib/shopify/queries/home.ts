@@ -25,6 +25,16 @@ export const HOME_QUERY = /* GraphQL */ `
     }
     heroProduct: product(handle: $heroHandle) {
       ${PRODUCT_FIELDS}
+      images(first: 6) {
+        edges {
+          node {
+            url
+            altText
+            width
+            height
+          }
+        }
+      }
     }
     bestsellers: collection(handle: "frontpage") {
       title
