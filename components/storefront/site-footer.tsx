@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/storefront/logo";
 
 const columns = [
   {
@@ -34,9 +35,7 @@ export function SiteFooter() {
     <footer className="bg-ink border-t border-ink-border text-graystone-100">
       <div className="mx-auto max-w-content px-4 sm:px-6 py-16 grid grid-cols-2 md:grid-cols-4 gap-10">
         <div className="col-span-2 md:col-span-1">
-          <p className="font-display text-2xl text-bone">
-            LUASER<span className="text-gold">.</span>
-          </p>
+          <Logo />
           <p className="mt-3 text-sm text-graystone-300 max-w-xs">
             Letreros y piezas de acrílico cortadas a láser con precisión. Maquilamos cualquier
             diseño personalizado y enviamos a todo México.

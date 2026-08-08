@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { CartButton } from "@/components/storefront/cart-button";
+import { Logo } from "@/components/storefront/logo";
 
 export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
   return (
@@ -9,8 +10,8 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
         Envíos a todo México · Maquilamos cualquier pieza personalizada
       </div>
       <div className="mx-auto max-w-content px-4 sm:px-6 flex items-center justify-between h-16">
-        <Link href="/" className="font-display text-2xl tracking-tight text-bone">
-          LUASER<span className="text-gold">.</span>
+        <Link href="/" aria-label="Luaser">
+          <Logo />
         </Link>
         <nav className="hidden md:flex items-center gap-8 font-body text-sm text-graystone-100">
           <Link href="#bestsellers" className="hover:text-gold transition-colors">
