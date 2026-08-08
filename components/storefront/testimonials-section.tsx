@@ -2,12 +2,12 @@ import { Star } from "lucide-react";
 
 const testimonials = [
   {
-    name: "Fernanda L.",
-    location: "Monterrey",
-    tag: "Lua Eventos",
-    initials: "FL",
+    name: "Diego H.",
+    location: "Guadalupe",
+    tag: "Luaser",
+    initials: "DH",
     quote:
-      "Contratamos la barra de frappés y crepas para el XV de mi hija y fue lo más comentado de la fiesta. Puntuales, todo muy limpio y el sabor buenísimo. Sin duda los vuelvo a contratar.",
+      "Le mandé un diseño por WhatsApp para un regalo de cumpleaños y en 3 días ya lo tenía en la puerta de mi casa. El acabado del acrílico se ve carísimo y el precio fue muy justo.",
   },
   {
     name: "Andrea R.",
@@ -36,8 +36,7 @@ export function TestimonialsSection() {
             Lo que dicen nuestros clientes
           </h2>
           <p className="mt-2 font-body text-graystone-300">
-            Opiniones reales de eventos y piezas personalizadas en Monterrey y su área
-            metropolitana.
+            Opiniones reales de piezas personalizadas en Monterrey y su área metropolitana.
           </p>
         </div>
 
