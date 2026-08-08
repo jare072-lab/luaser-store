@@ -5,10 +5,8 @@ import { Logo } from "@/components/storefront/logo";
 
 const PHONE = "528131092383";
 const CHAT_MESSAGE = "Hola, tengo una duda sobre sus productos";
-const QUOTE_MESSAGE = "Hola, quiero solicitar una cotización. Esto es lo que necesito: ";
 
 const chatHref = `https://wa.me/${PHONE}?text=${encodeURIComponent(CHAT_MESSAGE)}`;
-const quoteHref = `https://wa.me/${PHONE}?text=${encodeURIComponent(QUOTE_MESSAGE)}`;
 
 export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
   return (
@@ -44,15 +42,13 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
             </svg>
             WhatsApp
           </a>
-          <a
-            href={quoteHref}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/cotiza"
             className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-gold px-4 py-2 font-body text-sm font-semibold text-ink transition-colors hover:bg-gold-bright"
           >
             Solicitar cotización
             <ArrowRight className="h-4 w-4" />
-          </a>
+          </Link>
           <button aria-label="Buscar" className="hover:text-gold transition-colors">
             <Search className="h-5 w-5" />
           </button>
