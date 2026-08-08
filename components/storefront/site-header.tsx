@@ -44,9 +44,10 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
           </a>
           <Link
             href="/cotiza"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-gold px-4 py-2 font-body text-sm font-semibold text-ink transition-colors hover:bg-gold-bright"
+            className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3 sm:px-4 py-2 font-body text-sm font-semibold text-ink transition-colors hover:bg-gold-bright"
           >
-            Solicitar cotización
+            <span className="sm:hidden">Cotizar</span>
+            <span className="hidden sm:inline">Solicitar cotización</span>
             <ArrowRight className="h-4 w-4" />
           </Link>
           <button aria-label="Buscar" className="hover:text-gold transition-colors">
