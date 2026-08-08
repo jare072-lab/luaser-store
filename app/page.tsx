@@ -5,7 +5,8 @@ import { BestsellersSection } from "@/components/storefront/bestsellers-section"
 import { StorytellingSection } from "@/components/storefront/storytelling-section";
 import { MundialSection } from "@/components/storefront/mundial-section";
 import { BundleSection } from "@/components/storefront/bundle-section";
-import { NewsletterSection } from "@/components/storefront/newsletter-section";
+import { TestimonialsSection } from "@/components/storefront/testimonials-section";
+import { B2BSection } from "@/components/storefront/b2b-section";
 
 export const revalidate = 3600;
 
@@ -23,7 +24,8 @@ export default async function HomePage() {
       <StorytellingSection />
       <MundialSection />
       <BundleSection products={bestsellers?.products ?? []} />
-      <NewsletterSection />
+      <TestimonialsSection />
+      <B2BSection />
     </>
   );
 }
