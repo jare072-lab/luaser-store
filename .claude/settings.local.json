@@ -3,7 +3,24 @@
     "allow": [
       "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__get-shop-info",
       "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__search_products",
-      "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__search_collections"
+      "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__search_collections",
+      "Bash(curl -sL -o frappe_raw.bin \"https://drive.google.com/uc?export=download&id=1aLxeb_GRUKxOCu4XVoMC54CrOefYdTa1\")",
+      "Bash(mv frappe_raw.bin frappe.jpg)",
+      "Bash(base64 -w 0 frappe.jpg)",
+      "Bash(python3 -c ' *)",
+      "Bash(node -e ' *)",
+      "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_get_ad_accounts",
+      "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_get_ad_account_pages",
+      "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_get_ig_accounts",
+      "mcp__f6fdecdc-2d3d-434f-8c2f-638120e2d6bf__help",
+      "mcp__f6fdecdc-2d3d-434f-8c2f-638120e2d6bf__upload-asset-from-url",
+      "mcp__f6fdecdc-2d3d-434f-8c2f-638120e2d6bf__generate-design",
+      "mcp__f6fdecdc-2d3d-434f-8c2f-638120e2d6bf__create-design-from-candidate",
+      "mcp__f6fdecdc-2d3d-434f-8c2f-638120e2d6bf__export-design",
+      "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_creative_upload_image",
+      "Bash(curl -sL -o lua_ad_feed_1080x1080.png \"https://export-download.canva.com/SOx9Q/DAHR1ESOx9Q/-1/0-442990850384384178.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQYCGKMUH5AO7UJ26%2F20260809%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260809T174134Z&X-Amz-Expires=18053&X-Amz-Signature=97f9eab65a912c220476545d297d8681208c201d736fbd800dcdd5bc7e336408&X-Amz-SignedHeaders=host%3Bx-amz-expected-bucket-owner&response-expires=Sun%2C%2009%20Aug%202026%2022%3A42%3A27%20GMT\")",
+      "Bash(curl -sL -o lua_ad_story_1080x1920.png \"https://export-download.canva.com/CO1jc/DAHR1HCO1jc/-1/0-25281984035968661.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQYCGKMUH5AO7UJ26%2F20260809%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260809T203037Z&X-Amz-Expires=5285&X-Amz-Signature=c121cde7136d91f7ad97d6f00aafd2da550211265614048cb6bfdcd959f2faf8&X-Amz-SignedHeaders=host%3Bx-amz-expected-bucket-owner&response-expires=Sun%2C%2009%20Aug%202026%2021%3A58%3A42%20GMT\")",
+      "Bash(ls -la ~/Desktop 2>&1 | head -100)"
     ]
   }
 }
