@@ -1,6 +1,7 @@
 import { getHomeData } from "@/lib/shopify/home";
 import { HeroSection } from "@/components/storefront/hero-section";
 import { TrustBar } from "@/components/storefront/trust-bar";
+import { TrabajosSection } from "@/components/storefront/trabajos-section";
 import { BestsellersSection } from "@/components/storefront/bestsellers-section";
 import { StorytellingSection } from "@/components/storefront/storytelling-section";
 import { MaterialsSection } from "@/components/storefront/materials-section";
@@ -19,6 +20,7 @@ export default async function HomePage() {
     <>
       <HeroSection product={heroProduct} />
       <TrustBar />
+      <TrabajosSection />
       <BestsellersSection
         title={bestsellers?.title ?? "Página de inicio"}
         products={bestsellers?.products ?? []}

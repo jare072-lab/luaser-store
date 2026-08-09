@@ -19,7 +19,7 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
           <Logo />
         </Link>
         <nav className="hidden md:flex items-center gap-8 font-body text-sm text-graystone-100">
-          <Link href="/#bestsellers" className="hover:text-gold transition-colors">
+          <Link href="/#letreros" className="hover:text-gold transition-colors">
             Letreros
           </Link>
           <Link href="/coleccion/frontpage" className="hover:text-gold transition-colors">
