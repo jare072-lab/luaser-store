@@ -22,8 +22,8 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
           <Link href="/#bestsellers" className="hover:text-gold transition-colors">
             Letreros
           </Link>
-          <Link href="/#bestsellers" className="hover:text-gold transition-colors">
-            Más vendidos
+          <Link href="/coleccion/frontpage" className="hover:text-gold transition-colors">
+            Productos
           </Link>
           <Link href="/#historia" className="hover:text-gold transition-colors">
             Nuestro proceso
