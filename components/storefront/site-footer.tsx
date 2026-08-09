@@ -70,6 +70,12 @@ export function SiteFooter() {
             Letreros y piezas de acrílico cortadas a láser con precisión. Maquilamos cualquier
             diseño personalizado y enviamos a todo México.
           </p>
+          <a
+            href="mailto:contacto@luaser.mx"
+            className="mt-4 inline-block text-sm text-graystone-300 hover:text-gold transition-colors"
+          >
+            contacto@luaser.mx
+          </a>
           <div className="mt-5 flex items-center gap-3">
             {socialLinks.map((social) => (
               <a
