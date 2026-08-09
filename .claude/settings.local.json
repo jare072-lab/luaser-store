@@ -26,7 +26,13 @@
       "Bash(cp \"C:\\\\Users\\\\jorge\\\\OneDrive\\\\Desktop\\\\LUASER.MX\\\\16566ac2-5194-4d74-82a6-60dc3aa6317c.jpg\" \"C:\\\\Users\\\\jorge\\\\CLAUDE\\\\public\\\\trabajos\\\\glow-beauty.jpg\")",
       "Bash(cp \"C:\\\\Users\\\\jorge\\\\OneDrive\\\\Desktop\\\\LUASER.MX\\\\23e78332-942b-439f-8020-bbb70beed53f.jpg\" \"C:\\\\Users\\\\jorge\\\\CLAUDE\\\\public\\\\trabajos\\\\eterno-barbershop.jpg\")",
       "Bash(cp \"C:\\\\Users\\\\jorge\\\\OneDrive\\\\Desktop\\\\LUASER.MX\\\\5b5797fc-5eac-4d84-8f44-37db3c5108a6.jpg\" \"C:\\\\Users\\\\jorge\\\\CLAUDE\\\\public\\\\trabajos\\\\linda-floristeria.jpg\")",
-      "Bash(cp \"C:\\\\Users\\\\jorge\\\\OneDrive\\\\Desktop\\\\LUASER.MX\\\\66e5692d-844f-437a-b794-fae20b930008.jpg\" \"C:\\\\Users\\\\jorge\\\\CLAUDE\\\\public\\\\trabajos\\\\la-chukiza.jpg\")"
+      "Bash(cp \"C:\\\\Users\\\\jorge\\\\OneDrive\\\\Desktop\\\\LUASER.MX\\\\66e5692d-844f-437a-b794-fae20b930008.jpg\" \"C:\\\\Users\\\\jorge\\\\CLAUDE\\\\public\\\\trabajos\\\\la-chukiza.jpg\")",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(gh auth *)",
+      "Bash(git fetch *)"
     ]
   }
 }
