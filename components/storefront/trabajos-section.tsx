@@ -1,7 +1,14 @@
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/button";
 
-const trabajos = [
+interface Trabajo {
+  src: string;
+  cliente: string;
+  detalle: string;
+  span?: string;
+}
+
+const trabajos: Trabajo[] = [
   {
     src: "/trabajos/quinta-carmen.jpg",
     cliente: "Quinta Carmen",
@@ -50,7 +57,7 @@ const trabajos = [
     cliente: "La Chukiza Boutique",
     detalle: "Corte de contorno multicapa",
   },
-] as const;
+];
 
 export function TrabajosSection() {
   return (
