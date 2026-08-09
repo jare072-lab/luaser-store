@@ -8,6 +8,7 @@ import { MundialSection } from "@/components/storefront/mundial-section";
 import { BundleSection } from "@/components/storefront/bundle-section";
 import { TestimonialsSection } from "@/components/storefront/testimonials-section";
 import { B2BSection } from "@/components/storefront/b2b-section";
+import { ContactSection } from "@/components/storefront/contact-section";
 
 export const revalidate = 3600;
 
@@ -28,6 +29,7 @@ export default async function HomePage() {
       <BundleSection products={bestsellers?.products ?? []} />
       <TestimonialsSection />
       <B2BSection />
+      <ContactSection />
     </>
   );
 }
