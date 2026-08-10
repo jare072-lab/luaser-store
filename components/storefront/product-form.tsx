@@ -18,12 +18,16 @@ function findVariant(variants: ProductVariant[], selected: Record<string, string
   );
 }
 
-export function ProductForm({ product }: { product: ProductDetail }) {
+export function ProductForm({
+  product,
+  selected,
+  onSelect,
+}: {
+  product: ProductDetail;
+  selected: Record<string, string>;
+  onSelect: (optionName: string, value: string) => void;
+}) {
   const { variants, options } = product;
-  const [selected, setSelected] = useState<Record<string, string>>(() => {
-    const first = variants[0];
-    return Object.fromEntries(first.selectedOptions.map((o) => [o.name, o.value]));
-  });
   const [personalization, setPersonalization] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isPending, startTransition] = useTransition();
@@ -95,7 +99,7 @@ export function ProductForm({ product }: { product: ProductDetail }) {
                 return (
                   <button
                     key={value}
-                    onClick={() => setSelected((prev) => ({ ...prev, [option.name]: value }))}
+                    onClick={() => onSelect(option.name, value)}
                     className={cn(
                       "rounded-full border px-4 py-2 text-sm font-body transition-colors",
                       isSelected

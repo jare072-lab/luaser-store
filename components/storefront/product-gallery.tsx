@@ -1,19 +1,32 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { ShopifyImage } from "@/lib/shopify/types";
 
 export function ProductGallery({
   images,
   title,
+  variantImage,
 }: {
   images: ShopifyImage[];
   title: string;
+  variantImage?: ShopifyImage | null;
 }) {
+  const gallery = useMemo(() => {
+    if (!variantImage) return images;
+    const rest = images.filter((image) => image.url !== variantImage.url);
+    return [variantImage, ...rest];
+  }, [images, variantImage]);
+
   const [active, setActive] = useState(0);
-  const current = images[active] ?? null;
+
+  useEffect(() => {
+    setActive(0);
+  }, [variantImage?.url]);
+
+  const current = gallery[active] ?? null;
 
   return (
     <div>
@@ -29,9 +42,9 @@ export function ProductGallery({
           />
         )}
       </div>
-      {images.length > 1 && (
+      {gallery.length > 1 && (
         <div className="mt-4 grid grid-cols-5 gap-3">
-          {images.map((image, index) => (
+          {gallery.map((image, index) => (
             <button
               key={image.url}
               onClick={() => setActive(index)}
