@@ -46,7 +46,9 @@
       "Bash(vercel --version)",
       "Bash(nslookup luaser.mx)",
       "Bash(nslookup www.luaser.mx)",
-      "Bash(nslookup -type=CNAME www.luaser.mx)"
+      "Bash(nslookup -type=CNAME www.luaser.mx)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" -X POST https://luaser-store-five.vercel.app/api/revalidate -H \"Content-Type: application/json\" -d '{}')",
+      "WebSearch"
     ]
   }
 }
