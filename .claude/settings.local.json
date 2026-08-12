@@ -61,7 +61,8 @@
       "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_get_ad_preview",
       "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_create_ad",
       "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_activate_entity",
-      "WebFetch(domain:community.shopify.com)"
+      "WebFetch(domain:community.shopify.com)",
+      "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__list-orders"
     ]
   }
 }
