@@ -12,7 +12,7 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
   return (
     <header className="sticky top-0 z-50 bg-ink/95 backdrop-blur border-b border-ink-border">
       <div className="bg-pitch text-bone text-center text-xs sm:text-sm py-2 px-4 font-body">
-        Envíos a todo México · Maquilamos cualquier pieza personalizada
+        🔥 Promoción: letrero personalizado 30cm a $499 (antes $800) · Por tiempo limitado
       </div>
       <div className="mx-auto max-w-content px-4 sm:px-6 flex items-center justify-between h-16">
         <Link href="/" aria-label="Luaser">
