@@ -65,7 +65,9 @@
       "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__list-orders",
       "Bash(curl -s -X POST http://localhost:3000/api/upload-logo -F \"file=@C:\\\\Users\\\\jorge\\\\OneDrive\\\\Desktop\\\\LUASER.MX\\\\16566ac2-5194-4d74-82a6-60dc3aa6317c.jpg;type=image/jpeg\")",
       "Bash(rm -f app/api/upload-logo/route.ts lib/shopify/admin.ts)",
-      "Bash(rmdir app/api/upload-logo)"
+      "Bash(rmdir app/api/upload-logo)",
+      "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_get_datasets",
+      "Bash(git check-ignore *)"
     ]
   }
 }
