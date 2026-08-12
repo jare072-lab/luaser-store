@@ -7,6 +7,7 @@ export const PRODUCT_QUERY = /* GraphQL */ `
       description
       descriptionHtml
       totalInventory
+      tags
       options {
         name
         values

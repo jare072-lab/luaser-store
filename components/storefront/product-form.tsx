@@ -44,11 +44,17 @@ export function ProductForm({
     product.description.toLowerCase().includes("personaliza") ||
     product.title.toLowerCase().includes("personaliz");
 
+  const hasLogoUpload = product.tags.includes("logo");
+  const logoWhatsappHref = `https://wa.me/528131092383?text=${encodeURIComponent(
+    `Hola, acabo de comprar "${product.title}" y quiero enviarles mi logo.`
+  )}`;
+
   function handleAddToCart() {
     startTransition(async () => {
-      const attributes = personalization.trim()
-        ? [{ key: "Personalización", value: personalization.trim() }]
-        : undefined;
+      const attributes: { key: string; value: string }[] = [];
+      if (personalization.trim()) {
+        attributes.push({ key: "Personalización", value: personalization.trim() });
+      }
 
       const eventId = crypto.randomUUID();
       const currency = selectedVariant.price.currencyCode;
@@ -114,6 +120,26 @@ export function ProductForm({
             </div>
           </div>
         ))}
+
+      {hasLogoUpload && (
+        <div className="mt-6 rounded-xl border border-ink-border bg-ink-soft px-4 py-3">
+          <p className="text-xs font-body font-semibold uppercase tracking-wide text-graystone-100 mb-1">
+            ¿Ya tienes tu logo listo?
+          </p>
+          <p className="text-sm font-body text-graystone-100 mb-3">
+            Compra ahora y mándanos tu logo por WhatsApp — te damos atención personalizada para
+            que quede exactamente como lo imaginas.
+          </p>
+          <a
+            href={logoWhatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full border border-pitch/50 bg-pitch/10 px-4 py-2 text-sm font-body font-semibold text-pitch-light transition-colors hover:bg-pitch/20"
+          >
+            Enviar mi logo por WhatsApp
+          </a>
+        </div>
+      )}
 
       {hasPersonalization && (
         <div className="mt-6">

@@ -54,6 +54,7 @@ export interface ProductDetail {
   description: string;
   descriptionHtml: string;
   totalInventory: number;
+  tags: string[];
   options: ProductOption[];
   images: ShopifyImage[];
   variants: ProductVariant[];
