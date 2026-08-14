@@ -33,6 +33,10 @@ export const PRODUCT_QUERY = /* GraphQL */ `
               amount
               currencyCode
             }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
             selectedOptions {
               name
               value

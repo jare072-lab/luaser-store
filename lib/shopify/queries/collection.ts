@@ -18,6 +18,12 @@ export const COLLECTION_QUERY = /* GraphQL */ `
                 currencyCode
               }
             }
+            compareAtPriceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
             featuredImage {
               url
               altText

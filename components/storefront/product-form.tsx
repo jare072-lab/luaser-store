@@ -83,12 +83,25 @@ export function ProductForm({
     });
   }
 
+  const price = Number(selectedVariant.price.amount);
+  const compareAt = selectedVariant.compareAtPrice ? Number(selectedVariant.compareAtPrice.amount) : 0;
+  const hasDiscount = compareAt > price;
+  const discountPct = hasDiscount ? Math.round((1 - price / compareAt) * 100) : 0;
+
   return (
     <div>
       <div className="flex items-center gap-3">
-        <span className="font-display text-3xl text-gold">
-          {formatMXN(selectedVariant.price.amount)}
-        </span>
+        <span className="font-display text-3xl text-gold">{formatMXN(price)}</span>
+        {hasDiscount && (
+          <>
+            <span className="font-body text-lg text-graystone-500 line-through">
+              {formatMXN(compareAt)}
+            </span>
+            <span className="rounded-full bg-pitch px-2.5 py-1 text-xs font-body font-semibold text-bone">
+              -{discountPct}%
+            </span>
+          </>
+        )}
         <ScarcityBadge quantity={selectedVariant.quantityAvailable} />
       </div>
 

@@ -67,7 +67,25 @@
       "Bash(rm -f app/api/upload-logo/route.ts lib/shopify/admin.ts)",
       "Bash(rmdir app/api/upload-logo)",
       "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_get_datasets",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_get_ad_entities",
+      "Skill(schedule)",
+      "Skill(schedule:*)",
+      "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__get-order",
+      "Bash(sed -i 's/528100000000/5218131092383/g' \"C:\\\\Users\\\\jorge\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-jorge-CLAUDE\\\\acc8040c-ef89-4d5d-960c-935ce29a1e04\\\\scratchpad\\\\lua-eventos.html\")",
+      "Bash(sed -i 's/WhatsApp 81 0000 0000/WhatsApp 81 3109 2383/' \"C:\\\\Users\\\\jorge\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-jorge-CLAUDE\\\\acc8040c-ef89-4d5d-960c-935ce29a1e04\\\\scratchpad\\\\lua-eventos.html\")",
+      "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__switch-shop",
+      "mcp__b1cc953f-5205-43a2-a621-cb03271f899d__get-new-store-previews",
+      "Bash(python3 -)",
+      "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_get_errors",
+      "Bash(find \"C:/Users/jorge/AppData/Local/Temp/claude\" -iname \"*.png\" -o -iname \"*.jpg\" -o -iname \"*.jpeg\" 2>/dev/null | grep -v lua-imgs | grep -v lua-eventos | tail -30)",
+      "mcp__273fc0f1-5901-4999-8616-e8aa8015a6f3__ads_get_creatives",
+      "Read(//c/Users/jorge/Desktop/**)",
+      "Read(//c/Users/jorge/OneDrive/Desktop/mercadolibre/**)",
+      "Read(//c/Users/jorge/**)",
+      "Read(//c/Users/jorge/OneDrive/Desktop/**)",
+      "mcp__claude-in-chrome__tabs_create_mcp",
+      "Bash(curl -s -F \"reqtype=fileupload\" -F \"fileToUpload=@/c/Users/jorge/OneDrive/Desktop/CLAUDECAJA.png\" https://catbox.moe/user/api.php)"
     ]
   }
 }

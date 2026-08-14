@@ -18,6 +18,9 @@ export interface ShopifyProduct {
   priceRange: {
     minVariantPrice: ShopifyMoney;
   };
+  compareAtPriceRange?: {
+    minVariantPrice: ShopifyMoney | null;
+  };
   featuredImage: ShopifyImage | null;
   totalInventory: number;
   images?: ShopifyImage[];
@@ -43,6 +46,7 @@ export interface ProductVariant {
   availableForSale: boolean;
   quantityAvailable: number | null;
   price: ShopifyMoney;
+  compareAtPrice: ShopifyMoney | null;
   selectedOptions: { name: string; value: string }[];
   image: ShopifyImage | null;
 }

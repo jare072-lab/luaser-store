@@ -5,6 +5,12 @@ import { ScarcityBadge } from "@/components/storefront/scarcity-badge";
 import type { ShopifyProduct } from "@/lib/shopify/types";
 
 export function ProductCard({ product }: { product: ShopifyProduct }) {
+  const price = Number(product.priceRange.minVariantPrice.amount);
+  const compareAtAmount = product.compareAtPriceRange?.minVariantPrice?.amount;
+  const compareAt = compareAtAmount ? Number(compareAtAmount) : 0;
+  const hasDiscount = compareAt > price;
+  const discountPct = hasDiscount ? Math.round((1 - price / compareAt) * 100) : 0;
+
   return (
     <Link
       href={`/producto/${product.handle}`}
@@ -20,15 +26,25 @@ export function ProductCard({ product }: { product: ShopifyProduct }) {
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         )}
-        <div className="absolute top-3 left-3">
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
           <ScarcityBadge quantity={product.totalInventory} />
+          {hasDiscount && (
+            <span className="rounded-full bg-pitch px-2.5 py-1 text-xs font-body font-semibold text-bone">
+              -{discountPct}%
+            </span>
+          )}
         </div>
       </div>
       <div className="p-4">
         <h3 className="font-body text-sm text-bone line-clamp-2">{product.title}</h3>
-        <p className="mt-2 font-display text-gold">
-          {formatMXN(product.priceRange.minVariantPrice.amount)}
-        </p>
+        <div className="mt-2 flex items-baseline gap-2">
+          <p className="font-display text-gold">{formatMXN(price)}</p>
+          {hasDiscount && (
+            <p className="font-body text-xs text-graystone-500 line-through">
+              {formatMXN(compareAt)}
+            </p>
+          )}
+        </div>
       </div>
     </Link>
   );

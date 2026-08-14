@@ -10,6 +10,12 @@ const PRODUCT_FIELDS = /* GraphQL */ `
       currencyCode
     }
   }
+  compareAtPriceRange {
+    minVariantPrice {
+      amount
+      currencyCode
+    }
+  }
   featuredImage {
     url
     altText

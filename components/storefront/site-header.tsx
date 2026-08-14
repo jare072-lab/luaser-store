@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Search, ArrowRight } from "lucide-react";
 import { CartButton } from "@/components/storefront/cart-button";
 import { Logo } from "@/components/storefront/logo";
+import { socialLinks } from "@/lib/social-links";
 
 const PHONE = "528131092383";
 const CHAT_MESSAGE = "Hola, tengo una duda sobre sus productos";
@@ -30,6 +31,20 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
           </Link>
         </nav>
         <div className="flex items-center gap-3 sm:gap-4 text-bone">
+          <div className="hidden md:flex items-center gap-2 pr-1 border-r border-ink-border mr-1">
+            {socialLinks.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.label}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-graystone-100 transition-colors hover:text-gold"
+              >
+                {social.icon}
+              </a>
+            ))}
+          </div>
           <a
             href={chatHref}
             target="_blank"
