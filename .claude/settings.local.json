@@ -85,7 +85,8 @@
       "Read(//c/Users/jorge/**)",
       "Read(//c/Users/jorge/OneDrive/Desktop/**)",
       "mcp__claude-in-chrome__tabs_create_mcp",
-      "Bash(curl -s -F \"reqtype=fileupload\" -F \"fileToUpload=@/c/Users/jorge/OneDrive/Desktop/CLAUDECAJA.png\" https://catbox.moe/user/api.php)"
+      "Bash(curl -s -F \"reqtype=fileupload\" -F \"fileToUpload=@/c/Users/jorge/OneDrive/Desktop/CLAUDECAJA.png\" https://catbox.moe/user/api.php)",
+      "Bash(git status *)"
     ]
   }
 }
