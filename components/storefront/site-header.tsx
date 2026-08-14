@@ -12,8 +12,26 @@ const chatHref = `https://wa.me/${PHONE}?text=${encodeURIComponent(CHAT_MESSAGE)
 export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
   return (
     <header className="sticky top-0 z-50 bg-ink/95 backdrop-blur border-b border-ink-border">
-      <div className="bg-pitch text-bone text-center text-xs sm:text-sm py-2 px-4 font-body">
-        🔥 Promoción: letrero personalizado 30cm a $499 (antes $800) · Por tiempo limitado
+      <div className="bg-pitch text-bone text-xs sm:text-sm font-body">
+        <div className="mx-auto max-w-content px-4 sm:px-6 py-2 flex items-center justify-between gap-3">
+          <p className="flex-1 text-center sm:text-left">
+            🔥 Descuentos de hasta 50% en productos seleccionados · 📦 Envíos a todo México
+          </p>
+          <div className="hidden sm:flex items-center gap-2 shrink-0">
+            {socialLinks.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.label}
+                className="flex h-6 w-6 items-center justify-center rounded-full text-bone/90 transition-colors hover:text-ink hover:bg-bone"
+              >
+                {social.icon}
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
       <div className="mx-auto max-w-content px-4 sm:px-6 flex items-center justify-between h-16">
         <Link href="/" aria-label="Luaser">
@@ -31,20 +49,6 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
           </Link>
         </nav>
         <div className="flex items-center gap-3 sm:gap-4 text-bone">
-          <div className="hidden md:flex items-center gap-2 pr-1 border-r border-ink-border mr-1">
-            {socialLinks.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={social.label}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-graystone-100 transition-colors hover:text-gold"
-              >
-                {social.icon}
-              </a>
-            ))}
-          </div>
           <a
             href={chatHref}
             target="_blank"
