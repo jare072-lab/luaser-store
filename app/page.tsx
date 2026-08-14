@@ -18,13 +18,13 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroSection product={heroProduct} />
-      <TrustBar />
-      <TrabajosSection />
       <BestsellersSection
         title={bestsellers?.title ?? "Página de inicio"}
         products={bestsellers?.products ?? []}
       />
+      <HeroSection product={heroProduct} />
+      <TrustBar />
+      <TrabajosSection />
       <StorytellingSection />
       <MaterialsSection />
       <MundialSection />
