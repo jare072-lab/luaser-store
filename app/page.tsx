@@ -5,8 +5,7 @@ import { TrabajosSection } from "@/components/storefront/trabajos-section";
 import { BestsellersSection } from "@/components/storefront/bestsellers-section";
 import { StorytellingSection } from "@/components/storefront/storytelling-section";
 import { MaterialsSection } from "@/components/storefront/materials-section";
-import { MundialSection } from "@/components/storefront/mundial-section";
-import { BundleSection } from "@/components/storefront/bundle-section";
+import { SocialSection } from "@/components/storefront/social-section";
 import { TestimonialsSection } from "@/components/storefront/testimonials-section";
 import { B2BSection } from "@/components/storefront/b2b-section";
 import { ContactSection } from "@/components/storefront/contact-section";
@@ -27,8 +26,7 @@ export default async function HomePage() {
       <TrabajosSection />
       <StorytellingSection />
       <MaterialsSection />
-      <MundialSection />
-      <BundleSection products={bestsellers?.products ?? []} />
+      <SocialSection />
       <TestimonialsSection />
       <B2BSection />
       <ContactSection />
