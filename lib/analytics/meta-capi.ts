@@ -6,12 +6,15 @@ interface MetaCapiEvent {
   eventName: string;
   eventId: string;
   customData: Record<string, unknown>;
+  // Hashes SHA-256 (em/ph) para Advanced Matching — mejora el Event Match
+  // Quality en eventos server-side donde no hay cookie de navegador.
+  userData?: Record<string, string[] | undefined>;
 }
 
 // Espejo server-side del evento de Meta Pixel: sobrevive a bloqueadores de
 // anuncios y a Safari/ITP. Nunca debe romper el flujo de compra, por eso
 // atrapa cualquier error en silencio.
-export async function sendMetaCapiEvent({ eventName, eventId, customData }: MetaCapiEvent) {
+export async function sendMetaCapiEvent({ eventName, eventId, customData, userData }: MetaCapiEvent) {
   if (!PIXEL_ID || !ACCESS_TOKEN) return;
 
   try {
@@ -28,6 +31,7 @@ export async function sendMetaCapiEvent({ eventName, eventId, customData }: Meta
               event_id: eventId,
               action_source: "website",
               custom_data: customData,
+              user_data: userData,
             },
           ],
         }),
