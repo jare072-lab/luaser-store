@@ -1,8 +1,9 @@
 import type { Config } from "tailwindcss";
 
-// Sistema de color — ver sección 2 del plan de arquitectura Luaser.
-// El dorado se reserva para CTAs de conversión; el verde solo para
-// confirmaciones/confianza; el terracota solo para escasez/urgencia.
+// Sistema de color "Acrílico Neón" — inspirado en los acabados de acrílico
+// espejo que vende Luaser (dorado rosa, plateado). El rosa dorado se reserva
+// para CTAs de conversión; el azul eléctrico para confirmaciones/confianza;
+// el rosa neón solo para escasez/urgencia.
 const config: Config = {
   content: [
     "./app/**/*.{ts,tsx}",
@@ -22,16 +23,16 @@ const config: Config = {
           muted: "#EFEDE7",
         },
         gold: {
-          DEFAULT: "#C9A227", // acento primario / CTA
-          bright: "#D4AF37",
-          dark: "#9C7E1D",
+          DEFAULT: "#E8927A", // acento primario / CTA — dorado rosa
+          bright: "#F5AF95",
+          dark: "#B8654C",
         },
         pitch: {
-          DEFAULT: "#1B5E3F", // acento secundario — verde estadio
-          light: "#237A52",
+          DEFAULT: "#2E7FE8", // acento secundario — azul eléctrico
+          light: "#5B9FFF",
         },
         terracotta: {
-          DEFAULT: "#B5432E", // urgencia / escasez
+          DEFAULT: "#E63980", // urgencia / escasez — rosa neón
         },
         graystone: {
           50: "#F5F4F2",
