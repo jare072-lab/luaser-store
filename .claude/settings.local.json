@@ -126,7 +126,16 @@
       "Bash(higgsfield upload *)",
       "mcp__visualize__read_me",
       "Bash(curl -sL -o \"C:/Users/jorge/AppData/Local/Temp/claude/C--Users-jorge-CLAUDE/acc8040c-ef89-4d5d-960c-935ce29a1e04/scratchpad/ugc_mama_v1.mp4\" \"https://d8j0ntlcm91z4.cloudfront.net/user_3Hgr5t4H8Ybh5M4IOI4jYfNBmqj/hf_20260818_022229_0b3ae11a-32ab-4758-88b1-9e9ae433ac5c.mp4\")",
-      "Bash(curl -sL -o \"C:/Users/jorge/AppData/Local/Temp/claude/C--Users-jorge-CLAUDE/acc8040c-ef89-4d5d-960c-935ce29a1e04/scratchpad/ugc_mama_v2_promo.mp4\" \"https://d8j0ntlcm91z4.cloudfront.net/user_3Hgr5t4H8Ybh5M4IOI4jYfNBmqj/hf_20260818_022251_50aec459-473e-42ab-a8c7-72245eb241e3.mp4\")"
+      "Bash(curl -sL -o \"C:/Users/jorge/AppData/Local/Temp/claude/C--Users-jorge-CLAUDE/acc8040c-ef89-4d5d-960c-935ce29a1e04/scratchpad/ugc_mama_v2_promo.mp4\" \"https://d8j0ntlcm91z4.cloudfront.net/user_3Hgr5t4H8Ybh5M4IOI4jYfNBmqj/hf_20260818_022251_50aec459-473e-42ab-a8c7-72245eb241e3.mp4\")",
+      "Bash(mkdir -p \"/c/Users/jorge/OneDrive/Desktop/Higgsfield\")",
+      "Bash(cp \"C:/Users/jorge/AppData/Local/Temp/claude/C--Users-jorge-CLAUDE/acc8040c-ef89-4d5d-960c-935ce29a1e04/scratchpad/frappe_14oz_10oz_comparison.mp4\" \"/c/Users/jorge/OneDrive/Desktop/Higgsfield/\")",
+      "Bash(cp \"C:/Users/jorge/AppData/Local/Temp/claude/C--Users-jorge-CLAUDE/acc8040c-ef89-4d5d-960c-935ce29a1e04/scratchpad/ugc_mama_v1.mp4\" \"/c/Users/jorge/OneDrive/Desktop/Higgsfield/\")",
+      "Bash(cp \"C:/Users/jorge/AppData/Local/Temp/claude/C--Users-jorge-CLAUDE/acc8040c-ef89-4d5d-960c-935ce29a1e04/scratchpad/ugc_mama_v2_promo.mp4\" \"/c/Users/jorge/OneDrive/Desktop/Higgsfield/\")",
+      "Bash(curl -sL -o \"/c/Users/jorge/OneDrive/Desktop/Higgsfield/ugc_mama_v3_corregido.mp4\" \"https://d8j0ntlcm91z4.cloudfront.net/user_3Hgr5t4H8Ybh5M4IOI4jYfNBmqj/hf_20260818_023342_d8a64a02-4220-49c2-af2d-01d66f93fa26.mp4\")",
+      "Bash(curl -sL -o \"/c/Users/jorge/OneDrive/Desktop/Higgsfield/luaser_banner_wide.png\" \"https://d8j0ntlcm91z4.cloudfront.net/user_3Hgr5t4H8Ybh5M4IOI4jYfNBmqj/hf_20260818_024434_60517302-fdc1-4c9c-961d-8f8a25d2a347.png\")",
+      "Bash(cp \"/c/Users/jorge/OneDrive/Desktop/Higgsfield/luaser_banner_wide.png\" \"C:/Users/jorge/CLAUDE/public/generated/luaser_banner_wide.png\")",
+      "Bash(mkdir -p \"C:/Users/jorge/CLAUDE/public/generated\" *)",
+      "Bash(curl -sL -o \"/c/Users/jorge/OneDrive/Desktop/Higgsfield/luaser_workshop.png\" \"https://d8j0ntlcm91z4.cloudfront.net/user_3Hgr5t4H8Ybh5M4IOI4jYfNBmqj/hf_20260818_024407_39fef467-1b19-4104-aa1c-997f5726bdf5.png\")"
     ]
   }
 }
