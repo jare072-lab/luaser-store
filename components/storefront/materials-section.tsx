@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   Package,
   FileText,
@@ -69,17 +70,28 @@ export function MaterialsSection() {
   return (
     <section className="bg-ink-soft py-16 md:py-24">
       <div className="mx-auto max-w-content px-4 sm:px-6">
-        <div className="text-center max-w-xl mx-auto">
-          <p className="text-xs font-body font-semibold uppercase tracking-widest text-pitch">
-            Materiales
-          </p>
-          <h2 className="mt-2 font-display text-3xl sm:text-4xl text-bone">
-            ¿Qué puede cortar y grabar nuestra máquina?
-          </h2>
-          <p className="mt-3 font-body text-graystone-300">
-            Trabajamos con corte y grabado láser CO2 sobre una amplia variedad de materiales —
-            manda el tuyo y te decimos si se puede.
-          </p>
+        <div className="grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <p className="text-xs font-body font-semibold uppercase tracking-widest text-pitch">
+              Materiales
+            </p>
+            <h2 className="mt-2 font-display text-3xl sm:text-4xl text-bone">
+              ¿Qué puede cortar y grabar nuestra máquina?
+            </h2>
+            <p className="mt-3 font-body text-graystone-300">
+              Trabajamos con corte y grabado láser CO2 sobre una amplia variedad de materiales —
+              manda el tuyo y te decimos si se puede.
+            </p>
+          </div>
+          <div className="relative aspect-[4/3] rounded-3xl overflow-hidden border border-ink-border">
+            <Image
+              src="/generated/luaser_workshop.png"
+              alt="Láser CO2 grabando un diseño de rosa en acrílico"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
         </div>
 
         <div className="mt-12">
