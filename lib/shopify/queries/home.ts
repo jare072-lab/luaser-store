@@ -44,7 +44,7 @@ export const HOME_QUERY = /* GraphQL */ `
     }
     bestsellers: collection(handle: "frontpage") {
       title
-      products(first: 6) {
+      products(first: 24) {
         edges {
           node {
             ${PRODUCT_FIELDS}

@@ -8,9 +8,13 @@ import { useCartUI } from "@/components/storefront/cart-ui-context";
 import { addToCartAction } from "@/app/actions/cart";
 import { trackAddToCart } from "@/lib/analytics/track";
 import { cn, formatMXN } from "@/lib/utils";
+import {
+  buildInitialValues,
+  getMissingRequired,
+  getPersonalizationFields,
+  toCartAttributes,
+} from "@/lib/personalization";
 import type { ProductDetail, ProductVariant } from "@/lib/shopify/types";
-
-const PERSONALIZATION_MAX_LENGTH = 15;
 
 function findVariant(variants: ProductVariant[], selected: Record<string, string>) {
   return variants.find((variant) =>
@@ -28,7 +32,14 @@ export function ProductForm({
   onSelect: (optionName: string, value: string) => void;
 }) {
   const { variants, options } = product;
-  const [personalization, setPersonalization] = useState("");
+  const personalizationFields = useMemo(
+    () => getPersonalizationFields(product.tags),
+    [product.tags]
+  );
+  const [personalization, setPersonalization] = useState(() =>
+    buildInitialValues(personalizationFields)
+  );
+  const [showErrors, setShowErrors] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [isPending, startTransition] = useTransition();
   const [justAdded, setJustAdded] = useState(false);
@@ -40,9 +51,8 @@ export function ProductForm({
     selected,
   ]);
 
-  const hasPersonalization =
-    product.description.toLowerCase().includes("personaliza") ||
-    product.title.toLowerCase().includes("personaliz");
+  const missingRequired = getMissingRequired(personalizationFields, personalization);
+  const hasPersonalization = personalizationFields.length > 0;
 
   const hasLogoUpload = product.tags.includes("logo");
   const logoWhatsappHref = `https://wa.me/528131092383?text=${encodeURIComponent(
@@ -50,11 +60,18 @@ export function ProductForm({
   )}`;
 
   function handleAddToCart() {
+    // Una pieza personalizada sin texto es una pieza que no se puede fabricar:
+    // se bloquea aquí en vez de descubrirlo cuando ya entró el pedido.
+    if (missingRequired.length > 0) {
+      setShowErrors(true);
+      document
+        .getElementById(`perso-${missingRequired[0]}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
     startTransition(async () => {
-      const attributes: { key: string; value: string }[] = [];
-      if (personalization.trim()) {
-        attributes.push({ key: "Personalización", value: personalization.trim() });
-      }
+      const attributes = toCartAttributes(personalizationFields, personalization);
 
       const eventId = crypto.randomUUID();
       const currency = selectedVariant.price.currencyCode;
@@ -155,25 +172,95 @@ export function ProductForm({
       )}
 
       {hasPersonalization && (
-        <div className="mt-6">
-          <label
-            htmlFor="personalization"
-            className="text-xs font-body font-semibold uppercase tracking-wide text-graystone-100 mb-2 block"
-          >
-            Personalización (opcional)
-          </label>
-          <input
-            id="personalization"
-            type="text"
-            value={personalization}
-            maxLength={PERSONALIZATION_MAX_LENGTH}
-            onChange={(e) => setPersonalization(e.target.value)}
-            placeholder="Nombre o texto a grabar"
-            className="w-full rounded-xl border border-ink-border bg-ink-soft px-4 py-3 text-sm font-body text-bone placeholder:text-graystone-500 outline-none focus:border-gold"
-          />
-          <p className="mt-1 text-xs text-graystone-500">
-            {personalization.length}/{PERSONALIZATION_MAX_LENGTH} caracteres
+        <div className="mt-6 rounded-xl border border-ink-border bg-ink-soft px-4 py-4">
+          <p className="text-xs font-body font-semibold uppercase tracking-wide text-gold mb-3">
+            Personaliza tu pieza
           </p>
+
+          <div className="space-y-4">
+            {personalizationFields.map((field) => {
+              const value = personalization[field.key] ?? "";
+              const isMissing = showErrors && missingRequired.includes(field.key);
+              const inputId = `perso-${field.key}`;
+              const controlClasses = cn(
+                "w-full rounded-xl border bg-ink px-4 py-3 text-sm font-body text-bone placeholder:text-graystone-500 outline-none transition-colors",
+                isMissing
+                  ? "border-terracotta focus:border-terracotta"
+                  : "border-ink-border focus:border-gold"
+              );
+
+              function update(next: string) {
+                setPersonalization((prev) => ({ ...prev, [field.key]: next }));
+              }
+
+              return (
+                <div key={field.key}>
+                  <label
+                    htmlFor={inputId}
+                    className="text-xs font-body font-semibold uppercase tracking-wide text-graystone-100 mb-2 block"
+                  >
+                    {field.label}
+                    {field.required ? (
+                      <span className="text-terracotta"> *</span>
+                    ) : (
+                      <span className="text-graystone-500 normal-case font-normal"> (opcional)</span>
+                    )}
+                  </label>
+
+                  {field.type === "select" ? (
+                    <select
+                      id={inputId}
+                      value={value}
+                      onChange={(e) => update(e.target.value)}
+                      className={controlClasses}
+                    >
+                      {field.options?.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  ) : field.type === "textarea" ? (
+                    <textarea
+                      id={inputId}
+                      value={value}
+                      rows={2}
+                      maxLength={field.maxLength}
+                      onChange={(e) => update(e.target.value)}
+                      placeholder={field.placeholder}
+                      className={cn(controlClasses, "resize-y")}
+                    />
+                  ) : (
+                    <input
+                      id={inputId}
+                      type="text"
+                      value={value}
+                      maxLength={field.maxLength}
+                      onChange={(e) => update(e.target.value)}
+                      placeholder={field.placeholder}
+                      className={controlClasses}
+                    />
+                  )}
+
+                  <div className="mt-1 flex items-baseline justify-between gap-3">
+                    <p
+                      className={cn(
+                        "text-xs",
+                        isMissing ? "text-terracotta" : "text-graystone-500"
+                      )}
+                    >
+                      {isMissing ? "Completa este dato para continuar." : field.help}
+                    </p>
+                    {field.maxLength && field.type !== "select" && (
+                      <p className="shrink-0 text-xs text-graystone-500">
+                        {value.length}/{field.maxLength}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -200,6 +287,7 @@ export function ProductForm({
           size="lg"
           className="flex-1"
           disabled={isPending || !selectedVariant.availableForSale}
+          aria-describedby={showErrors && missingRequired.length > 0 ? "perso-aviso" : undefined}
           onClick={handleAddToCart}
         >
           {!selectedVariant.availableForSale
@@ -211,6 +299,12 @@ export function ProductForm({
                 : "Agregar al carrito"}
         </Button>
       </div>
+
+      {showErrors && missingRequired.length > 0 && (
+        <p id="perso-aviso" role="alert" className="mt-3 text-sm font-body text-terracotta">
+          Falta completar: {missingRequired.join(", ")}.
+        </p>
+      )}
     </div>
   );
 }
