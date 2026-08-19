@@ -22,6 +22,27 @@ export const PRODUCT_QUERY = /* GraphQL */ `
           }
         }
       }
+      media(first: 10) {
+        edges {
+          node {
+            __typename
+            ... on Video {
+              id
+              alt
+              previewImage {
+                url
+              }
+              sources {
+                url
+                mimeType
+                format
+                width
+                height
+              }
+            }
+          }
+        }
+      }
       variants(first: 20) {
         edges {
           node {

@@ -1,10 +1,19 @@
 import { shopifyFetch } from "@/lib/shopify/client";
 import { PRODUCT_QUERY, ALL_PRODUCT_HANDLES_QUERY } from "@/lib/shopify/queries/product";
-import type { ProductDetail, ProductVariant, ShopifyImage } from "@/lib/shopify/types";
+import type { ProductDetail, ProductVariant, ShopifyImage, ShopifyVideo, ShopifyVideoSource } from "@/lib/shopify/types";
+
+interface RawMediaNode {
+  __typename: string;
+  id?: string;
+  alt?: string | null;
+  previewImage?: { url: string } | null;
+  sources?: ShopifyVideoSource[];
+}
 
 interface RawProductDetail
-  extends Omit<ProductDetail, "images" | "variants" | "primaryCollection"> {
+  extends Omit<ProductDetail, "images" | "videos" | "variants" | "primaryCollection"> {
   images: { edges: { node: ShopifyImage }[] };
+  media: { edges: { node: RawMediaNode }[] };
   variants: { edges: { node: ProductVariant }[] };
   collections: { edges: { node: { title: string; handle: string } }[] };
 }
@@ -23,9 +32,19 @@ export async function getProductByHandle(handle: string): Promise<ProductDetail 
 
   if (!data.product) return null;
 
+  const videos: ShopifyVideo[] = data.product.media.edges
+    .filter((e) => e.node.__typename === "Video")
+    .map((e) => ({
+      id: e.node.id ?? "",
+      alt: e.node.alt ?? null,
+      previewImageUrl: e.node.previewImage?.url ?? null,
+      sources: e.node.sources ?? [],
+    }));
+
   return {
     ...data.product,
     images: data.product.images.edges.map((e) => e.node),
+    videos,
     variants: data.product.variants.edges.map((e) => e.node),
     primaryCollection: data.product.collections.edges[0]?.node ?? null,
   };

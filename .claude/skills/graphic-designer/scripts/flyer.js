@@ -1,0 +1,453 @@
+/**
+ * Reusable flyer/promo-graphic compositing templates for Lúa Eventos and Luaser.
+ *
+ * Consolidates the layout patterns already proven on this project (full-bleed headline,
+ * bottom band, side panel, polaroid frame, quote/promo card) into one library instead of
+ * rewriting sharp/SVG compositing per request. Extend this file with new template functions
+ * as new layout needs come up — don't start a fresh one-off script.
+ *
+ * Usage as a library:
+ *   const { fullBleed, bottomBand, sidePanel, polaroid, quoteCard, BRANDS } = require("./flyer.js");
+ *   await bottomBand({ photoPath, eyebrow, headline, logoPath, brand: BRANDS.luaEventos, width: 1080, height: 1080, outPath });
+ *
+ * Usage from the CLI with a JSON config (one or more slides):
+ *   node flyer.js config.json
+ *   // config.json: { "slides": [ { "template": "bottomBand", ...params } ] }
+ */
+
+const sharp = require("sharp");
+const path = require("path");
+const fs = require("fs");
+
+// ---- Brand palettes — see references/brand-guides.md for the source of truth. Keep in sync. ----
+const BRANDS = {
+  luaEventos: {
+    navy: "#1B4A6B",
+    navyDark: "#0B1423",
+    accent: "#F5AF95",
+    urgency: "#E63980",
+    text: "#ffffff",
+  },
+  luaser: {
+    navy: "#0B0C0E",
+    navyDark: "#16181C",
+    accent: "#E8927A",
+    urgency: "#E63980",
+    text: "#ffffff",
+  },
+};
+
+// ---- Text helpers ----
+
+function escapeXml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// SVG text rendered with system fonts (Arial-family) has no emoji glyphs available — they
+// render as blank boxes ("tofu"). Strip them rather than trying to render them. See
+// content-critic-loop's image-checklist.md for why this matters.
+const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}️]/gu;
+function stripEmoji(s) {
+  return s.replace(EMOJI_RE, "").replace(/\s+/g, " ").trim();
+}
+
+function wrapText(rawText, maxCharsPerLine) {
+  const text = stripEmoji(rawText).replace(/\n/g, " ");
+  const words = text.split(" ");
+  const lines = [];
+  let current = "";
+  for (const w of words) {
+    if ((current + " " + w).trim().length > maxCharsPerLine) {
+      lines.push(current.trim());
+      current = w;
+    } else {
+      current = (current + " " + w).trim();
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
+}
+
+// ---- Logo helper ----
+
+async function circleLogo(logoPath, size) {
+  return sharp(logoPath)
+    .resize(size, size)
+    .composite([{ input: Buffer.from(`<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}"/></svg>`), blend: "dest-in" }])
+    .png()
+    .toBuffer();
+}
+
+function ringSvg(size) {
+  return `<svg width="${size + 8}" height="${size + 8}"><circle cx="${(size + 8) / 2}" cy="${(size + 8) / 2}" r="${size / 2 + 2}" fill="none" stroke="#ffffff" stroke-width="4"/></svg>`;
+}
+
+// ---- Templates ----
+
+/**
+ * Full-bleed photo with a top gradient scrim, headline text, and a corner logo badge.
+ * Good default for a single strong photo carrying most of the message.
+ */
+async function fullBleed({ photoPath, headline, logoPath, brand, width = 1080, height = 1080, outPath, logoCorner = "right" }) {
+  const lines = wrapText(headline, width === height ? 22 : 20);
+  const fontSize = 56;
+  const lineHeight = 70;
+  const startY = 100;
+  const textSvgLines = lines
+    .map((line, i) => `<text x="56" y="${startY + i * lineHeight}" font-family="Arial, sans-serif" font-weight="800" font-size="${fontSize}" fill="#ffffff">${escapeXml(line)}</text>`)
+    .join("\n");
+
+  const logoSize = 84;
+  const logoTop = 36;
+  const logoLeft = logoCorner === "right" ? width - logoSize - 36 : 36;
+
+  const overlaySvg = `
+  <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${brand.navyDark}" stop-opacity="0.85"/>
+        <stop offset="100%" stop-color="${brand.navyDark}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="${width}" height="320" fill="url(#g)"/>
+    ${textSvgLines}
+  </svg>`;
+
+  const logoBuf = await circleLogo(logoPath, logoSize);
+
+  await sharp(photoPath)
+    .resize(width, height, { fit: "cover" })
+    .composite([
+      { input: Buffer.from(overlaySvg), top: 0, left: 0 },
+      { input: logoBuf, top: logoTop, left: logoLeft },
+      { input: Buffer.from(ringSvg(logoSize)), top: logoTop - 4, left: logoLeft - 4 },
+    ])
+    .png()
+    .toFile(outPath);
+}
+
+/**
+ * Photo with an opaque gradient band across the bottom carrying an eyebrow label + headline.
+ * Good when the top of the photo needs to stay fully visible (e.g. a wide establishing shot).
+ */
+async function bottomBand({ photoPath, eyebrow, headline, logoPath, brand, width = 1080, height = 1080, outPath }) {
+  const lines = wrapText(headline, 24);
+  const bandHeight = 260 + lines.length * 10;
+  const fontSize = 50;
+
+  const textSvg = `
+  <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0%" stop-color="${brand.navyDark}" stop-opacity="0.95"/>
+        <stop offset="100%" stop-color="${brand.navyDark}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="${height - bandHeight}" width="${width}" height="${bandHeight}" fill="url(#g)"/>
+    ${eyebrow ? `<text x="56" y="${height - bandHeight + 90}" font-family="Arial, sans-serif" font-weight="700" font-size="26" letter-spacing="3" fill="${brand.accent}">${escapeXml(stripEmoji(eyebrow).toUpperCase())}</text>` : ""}
+    ${lines.map((l, i) => `<text x="56" y="${height - bandHeight + 150 + i * 62}" font-family="Arial, sans-serif" font-weight="800" font-size="${fontSize}" fill="#ffffff">${escapeXml(l)}</text>`).join("\n")}
+  </svg>`;
+
+  const logoSize = 78;
+  const logoBuf = await circleLogo(logoPath, logoSize);
+
+  await sharp(photoPath)
+    .resize(width, height, { fit: "cover" })
+    .composite([
+      { input: Buffer.from(textSvg), top: 0, left: 0 },
+      { input: logoBuf, top: 36, left: 36 },
+      { input: Buffer.from(ringSvg(logoSize)), top: 32, left: 32 },
+    ])
+    .png()
+    .toFile(outPath);
+}
+
+/**
+ * Photo on one side, solid brand-color panel with text on the other. Keeps the whole photo
+ * visible with zero scrim — use when the photo itself shouldn't be dimmed at all.
+ */
+async function sidePanel({ photoPath, eyebrow, headline, logoPath, brand, size = 1080, outPath, panelSide = "right", panelWidth = 380 }) {
+  const photoWidth = size - panelWidth;
+  const lines = wrapText(headline, 14);
+
+  const photoResized = await sharp(photoPath).resize(photoWidth, size, { fit: "cover" }).toBuffer();
+
+  const panelSvg = `
+  <svg width="${panelWidth}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="${panelWidth}" height="${size}" fill="${brand.navy}"/>
+    ${eyebrow ? `<text x="40" y="120" font-family="Arial, sans-serif" font-weight="700" font-size="24" letter-spacing="2" fill="${brand.accent}">${escapeXml(stripEmoji(eyebrow).toUpperCase())}</text>` : ""}
+    ${lines.map((l, i) => `<text x="40" y="${180 + i * 58}" font-family="Arial, sans-serif" font-weight="800" font-size="44" fill="#ffffff">${escapeXml(l)}</text>`).join("\n")}
+  </svg>`;
+
+  const logoSize = 90;
+  const logoBuf = await circleLogo(logoPath, logoSize);
+
+  const panelBuf = await sharp(Buffer.from(panelSvg))
+    .composite([
+      { input: logoBuf, top: size - logoSize - 60, left: 40 },
+      { input: Buffer.from(ringSvg(logoSize)), top: size - logoSize - 64, left: 36 },
+    ])
+    .png()
+    .toBuffer();
+
+  const photoLeft = panelSide === "right" ? 0 : panelWidth;
+  const panelLeft = panelSide === "right" ? photoWidth : 0;
+
+  await sharp({ create: { width: size, height: size, channels: 4, background: "#000" } })
+    .composite([
+      { input: photoResized, top: 0, left: photoLeft },
+      { input: panelBuf, top: 0, left: panelLeft },
+    ])
+    .png()
+    .toFile(outPath);
+}
+
+/**
+ * White-bordered "polaroid" photo frame with a caption below on a solid brand background.
+ * Good for a single sentimental/testimonial-feeling photo rather than a bold sales message.
+ */
+async function polaroid({ photoPath, headline, logoPath, brand, size = 1080, outPath }) {
+  const margin = 60;
+  const photoSize = size - margin * 2;
+  const captionHeight = 340;
+  const totalHeight = photoSize - 80 + margin + captionHeight;
+
+  const photoResized = await sharp(photoPath).resize(photoSize, photoSize - 80, { fit: "cover" }).toBuffer();
+  const lines = wrapText(headline, 26);
+
+  const logoSize = 70;
+  const logoTop = photoSize - 80 + margin + 30;
+  const textStartY = logoTop + logoSize + 60;
+
+  const frameSvg = `
+  <svg width="${size}" height="${totalHeight}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="${size}" height="${totalHeight}" fill="${brand.navyDark}"/>
+    <rect x="${margin - 20}" y="${margin - 20}" width="${photoSize + 40}" height="${photoSize - 80 + 40}" fill="#ffffff"/>
+    ${lines.map((l, i) => `<text x="${size / 2}" y="${textStartY + i * 54}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="42" fill="#ffffff">${escapeXml(l)}</text>`).join("\n")}
+  </svg>`;
+
+  const logoBuf = await circleLogo(logoPath, logoSize);
+
+  await sharp(Buffer.from(frameSvg))
+    .composite([
+      { input: photoResized, top: margin, left: margin },
+      { input: logoBuf, top: Math.round(logoTop), left: Math.round(size / 2 - logoSize / 2) },
+    ])
+    .png()
+    .toFile(outPath);
+}
+
+/**
+ * Text-only card on a radial brand-color background with a centered logo — for promos,
+ * CTAs, or announcements with no photo. This is a generated graphic, not a photo composite,
+ * so it's the one template safe to use even when no real photo fits the message.
+ */
+async function quoteCard({ text, logoPath, brand, width = 1080, height = 1080, outPath, accentColor }) {
+  const lines = wrapText(text, 16);
+  const fontSize = 68;
+  const lineHeight = 84;
+  const totalTextHeight = lines.length * lineHeight;
+  const startY = height / 2 - totalTextHeight / 2 + 200;
+
+  const textSvgLines = lines
+    .map((line, i) => `<text x="${width / 2}" y="${startY + i * lineHeight}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800" font-size="${fontSize}" fill="#ffffff">${escapeXml(line)}</text>`)
+    .join("\n");
+
+  const logoSize = 220;
+  const svg = `
+  <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="rg" cx="50%" cy="30%" r="80%">
+        <stop offset="0%" stop-color="${accentColor || brand.navy}"/>
+        <stop offset="100%" stop-color="${brand.navyDark}"/>
+      </radialGradient>
+    </defs>
+    <rect width="${width}" height="${height}" fill="url(#rg)"/>
+    ${textSvgLines}
+  </svg>`;
+
+  const logoBuf = await circleLogo(logoPath, logoSize);
+  const logoTop = height / 2 - totalTextHeight / 2 - logoSize - 60;
+  const logoLeft = (width - logoSize) / 2;
+
+  await sharp(Buffer.from(svg))
+    .composite([
+      { input: logoBuf, top: Math.round(logoTop), left: Math.round(logoLeft) },
+      { input: Buffer.from(ringSvg(logoSize)), top: Math.round(logoTop) - 5, left: Math.round(logoLeft) - 5 },
+    ])
+    .png()
+    .toFile(outPath);
+}
+
+/**
+ * Product-hero promo flyer: one large product photo bottom-left cut by the frame edge,
+ * a two-tone stacked headline top-right, a small icon/feature row under the headline,
+ * an isolated logo+tagline corner, a small secondary-product cluster, and a thin bottom
+ * contact bar. Modeled on the classic "hero bottle + feature icons" beverage-ad layout —
+ * use this whenever the brief is closer to a product ad than a photo-caption card.
+ *
+ * heroPhotoPath / secondaryPhotoPaths should already be tightly cropped around the product
+ * (see compositing notes in graphic-designer/references) — this template feathers the edges
+ * into the background but does not crop for you.
+ */
+async function productHero({
+  width = 1080, height = 1080,
+  brand, accentColor,
+  headlineTop, headlineBottom,
+  icons = [], // [{label}]
+  logoPath, tagline,
+  heroPhotoPath, heroScale = 0.42,
+  secondaryPhotoPaths = [], // small cluster, opposite corner from hero
+  contactLine,
+  outPath,
+}) {
+  const accent = accentColor || brand.accent;
+  const contactZone = contactLine ? 64 : 0;
+  const heroW = Math.round(width * heroScale);
+  const heroHRaw = Math.round(height * (heroScale * 1.55));
+  const heroH = Math.min(heroHRaw, height - contactZone);
+  const heroLeft = 0;
+  const heroTop = height - contactZone - heroH; // bottom touches the frame/contact bar, no gap
+
+  const heroRaw = await sharp(heroPhotoPath).resize(heroW, heroH, { fit: "cover" }).toBuffer();
+  // A gradient fade on a rectangle still reads as "a photo pasted in a box" no matter how
+  // generous, because the left and bottom edges stay perfectly straight — two hard right
+  // angles read as a rectangle regardless of what the other two edges do. The fix used by
+  // real product-ad layouts isn't hiding the edge, it's making the cut an obviously
+  // deliberate diagonal — one angled line, not an attempted-but-unconvincing fade.
+  const cutX = Math.round(heroW * 0.62); // where the diagonal meets the top edge
+  const heroMaskSvg = `<svg width="${heroW}" height="${heroH}" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="0,${Math.round(heroH * 0.58)} ${cutX},0 ${heroW},0 ${heroW},${heroH} 0,${heroH}" fill="#fff"/>
+  </svg>`;
+  const heroFeathered = await sharp(heroRaw)
+    .composite([{ input: Buffer.from(heroMaskSvg), blend: "dest-in" }])
+    .blur(0.4)
+    .png()
+    .toBuffer();
+
+  const headlineSize = Math.round(width * 0.082);
+  const headline2Size = Math.round(width * 0.105);
+  const headlineRight = width - 56;
+  const headlineTopY = Math.round(height * 0.16);
+  const hlLines1 = wrapText(headlineTop, 14);
+  const hlLines2 = wrapText(headlineBottom, 10);
+
+  const hl1Svg = hlLines1
+    .map((l, i) => `<text x="${headlineRight}" y="${headlineTopY + i * headlineSize * 1.05}" text-anchor="end" font-family="Arial, sans-serif" font-weight="800" font-size="${headlineSize}" fill="#ffffff">${escapeXml(l)}</text>`)
+    .join("\n");
+  const hl2StartY = headlineTopY + hlLines1.length * headlineSize * 1.05 + headline2Size * 0.55;
+  // Second headline treatment: italic + a slight rotation reads as a marker/script accent
+  // against the first line's square bold weight — the two-tone contrast bar.md calls for.
+  const hl2Svg = hlLines2
+    .map((l, i) => `<text x="${headlineRight}" y="${hl2StartY + i * headline2Size * 1.0}" text-anchor="end" font-family="Arial, sans-serif" font-style="italic" font-weight="800" font-size="${headline2Size}" fill="${accent}" transform="rotate(-3 ${headlineRight} ${hl2StartY + i * headline2Size})">${escapeXml(l)}</text>`)
+    .join("\n");
+
+  const iconsY = hl2StartY + hlLines2.length * headline2Size * 1.0 + 60;
+  const iconSize = 30;
+  let iconsSvg = "";
+  const iconBlockLeft = heroW + 40; // stay clear of the hero photo, which sits underneath this row
+  const iconBlockWidth = headlineRight - iconBlockLeft;
+  const perRow = icons.length; // one horizontal row, per bar.md mechanism 3
+  const colWidth = iconBlockWidth / Math.max(perRow, 1);
+  icons.forEach((ic, i) => {
+    const cx = iconBlockLeft + i * colWidth + colWidth / 2;
+    const cy = iconsY;
+    const labelLines = wrapText(ic.label, 15);
+    const labelSvg = labelLines
+      .map((l, li) => `<text x="${cx}" y="${cy + iconSize / 2 + 20 + li * 16}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="600" font-size="12.5" fill="#ffffff">${escapeXml(l)}</text>`)
+      .join("\n");
+    iconsSvg += `<circle cx="${cx}" cy="${cy}" r="${iconSize / 2}" fill="none" stroke="${accent}" stroke-width="2.5"/>
+      <path d="M${cx - 7} ${cy} L${cx - 2} ${cy + 5} L${cx + 7} ${cy - 6}" stroke="${accent}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      ${labelSvg}`;
+  });
+
+  const logoSize = 78;
+  const logoBuf = await circleLogo(logoPath, logoSize);
+
+  const bgSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bgGlow" cx="78%" cy="10%" r="70%">
+        <stop offset="0%" stop-color="${brand.navy}"/>
+        <stop offset="100%" stop-color="${brand.navyDark}"/>
+      </radialGradient>
+    </defs>
+    <rect width="${width}" height="${height}" fill="url(#bgGlow)"/>
+    ${hl1Svg}
+    ${hl2Svg}
+    ${iconsSvg}
+    ${tagline ? `<text x="56" y="${56 + logoSize + 30}" font-family="Arial, sans-serif" font-style="italic" font-weight="500" font-size="16" fill="#ffffff" opacity="0.85">${escapeXml(stripEmoji(tagline))}</text>` : ""}
+  </svg>`;
+
+  const diagLine = Buffer.from(
+    `<svg width="${heroW}" height="${heroH}"><line x1="0" y1="${Math.round(heroH * 0.58)}" x2="${cutX}" y2="0" stroke="${accent}" stroke-width="4" stroke-linecap="round"/></svg>`
+  );
+
+  const composites = [
+    { input: Buffer.from(bgSvg), top: 0, left: 0 },
+    { input: heroFeathered, top: Math.round(heroTop), left: heroLeft },
+    { input: diagLine, top: Math.round(heroTop), left: heroLeft },
+    { input: logoBuf, top: 56, left: 56 },
+    { input: Buffer.from(ringSvg(logoSize)), top: 52, left: 52 },
+  ];
+
+  if (secondaryPhotoPaths.length) {
+    const chipSize = Math.round(heroW * 0.34);
+    const chipGap = 14;
+    const clusterRight = width - 56;
+    const clusterTop = height - contactZone - chipSize - 20;
+    for (let i = 0; i < secondaryPhotoPaths.length; i++) {
+      const chipRaw = await sharp(secondaryPhotoPaths[i]).resize(chipSize, chipSize, { fit: "cover" }).toBuffer();
+      const chipMask = `<svg width="${chipSize}" height="${chipSize}"><rect width="${chipSize}" height="${chipSize}" rx="14" ry="14"/></svg>`;
+      const chip = await sharp(chipRaw).composite([{ input: Buffer.from(chipMask), blend: "dest-in" }]).png().toBuffer();
+      const chipLeft = clusterRight - chipSize - i * (chipSize + chipGap);
+      composites.push({ input: chip, top: clusterTop, left: chipLeft });
+      composites.push({ input: Buffer.from(`<svg width="${chipSize + 4}" height="${chipSize + 4}"><rect x="2" y="2" width="${chipSize}" height="${chipSize}" rx="14" ry="14" fill="none" stroke="#ffffff" stroke-width="2" stroke-opacity="0.5"/></svg>`), top: clusterTop - 2, left: chipLeft - 2 });
+    }
+  }
+
+  // Contact bar goes last, on top of the hero photo and every other layer, full width —
+  // this is required text and must never be obscured by anything above it.
+  if (contactLine) {
+    const barSvg = `<svg width="${width}" height="${contactZone}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="${width}" height="${contactZone}" fill="${brand.navyDark}"/>
+      <text x="${width / 2}" y="${contactZone / 2 + 5}" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="15" letter-spacing="0.5" fill="#ffffff">${escapeXml(stripEmoji(contactLine))}</text>
+    </svg>`;
+    composites.push({ input: Buffer.from(barSvg), top: height - contactZone, left: 0 });
+  }
+
+  await sharp(Buffer.from(bgSvg))
+    .composite(composites.slice(1))
+    .png()
+    .toFile(outPath);
+}
+
+const TEMPLATES = { fullBleed, bottomBand, sidePanel, polaroid, quoteCard, productHero };
+
+// ---- CLI entry point ----
+
+async function runFromConfig(configPath) {
+  const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+  for (const slide of config.slides) {
+    const { template, brand: brandKey, ...params } = slide;
+    const fn = TEMPLATES[template];
+    if (!fn) throw new Error(`Unknown template "${template}". Available: ${Object.keys(TEMPLATES).join(", ")}`);
+    const brand = BRANDS[brandKey];
+    if (!brand) throw new Error(`Unknown brand "${brandKey}". Available: ${Object.keys(BRANDS).join(", ")}`);
+    await fn({ ...params, brand });
+    console.log("wrote:", params.outPath);
+  }
+}
+
+if (require.main === module) {
+  const configPath = process.argv[2];
+  if (!configPath) {
+    console.error("Usage: node flyer.js <config.json>");
+    process.exit(1);
+  }
+  runFromConfig(path.resolve(configPath)).catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}
+
+module.exports = { fullBleed, bottomBand, sidePanel, polaroid, quoteCard, productHero, BRANDS, stripEmoji, wrapText };

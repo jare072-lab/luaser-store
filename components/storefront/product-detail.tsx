@@ -22,7 +22,12 @@ export function ProductDetail({ product }: { product: ProductDetailType }) {
 
   return (
     <>
-      <ProductGallery images={product.images} title={product.title} variantImage={selectedVariant.image} />
+      <ProductGallery
+        images={product.images}
+        videos={product.videos}
+        title={product.title}
+        variantImage={selectedVariant.image}
+      />
       <div>
         <h1 className="font-display text-3xl sm:text-4xl text-bone">{product.title}</h1>
         <div className="mt-6">

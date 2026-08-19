@@ -10,6 +10,21 @@ export interface ShopifyImage {
   height: number;
 }
 
+export interface ShopifyVideoSource {
+  url: string;
+  mimeType: string;
+  format: string;
+  width: number;
+  height: number;
+}
+
+export interface ShopifyVideo {
+  id: string;
+  alt: string | null;
+  previewImageUrl: string | null;
+  sources: ShopifyVideoSource[];
+}
+
 export interface ShopifyProduct {
   id: string;
   title: string;
@@ -61,6 +76,7 @@ export interface ProductDetail {
   tags: string[];
   options: ProductOption[];
   images: ShopifyImage[];
+  videos: ShopifyVideo[];
   variants: ProductVariant[];
   priceRange: {
     minVariantPrice: ShopifyMoney;

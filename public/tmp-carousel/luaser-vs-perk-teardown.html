@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Luaser vs Perk design teardown</title>
+<style>
+:root{
+  --void:#08090a; --carbon:#0f1011; --obsidian:#161718;
+  --graphite:#23252a; --smoke:#383b3f;
+  --ash:#62666d; --fog:#8a8f98; --mist:#d0d6e0; --bone:#e5e5e6; --paper:#fff;
+  --luaser:#e8927a; --red:#eb5757; --green:#27a644;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;scroll-padding-top:96px}
+body{
+  margin:0;background:var(--void);color:var(--mist);
+  font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
+  font-size:15px;line-height:1.6;letter-spacing:-0.011em;
+}
+::selection{background:rgba(232,146,122,.25);color:#fff}
+
+.top{position:fixed;top:0;left:0;right:0;z-index:60;height:56px;
+  background:rgba(8,9,10,.72);backdrop-filter:blur(20px) saturate(160%);
+  border-bottom:1px solid var(--graphite);display:flex;align-items:center;gap:18px;padding:0 22px}
+.bar{position:absolute;bottom:-1px;left:0;height:1.5px;background:var(--luaser);width:0;
+  box-shadow:0 0 10px rgba(232,146,122,.6);transition:width .1s linear}
+.vs{display:flex;align-items:center;gap:11px;font-family:var(--mono);font-size:11px;color:var(--ash)}
+.vs svg{display:block}
+.spacer{flex:1}
+.kb{font-family:var(--mono);font-size:10.5px;color:var(--ash);display:flex;gap:6px;align-items:center}
+.key{display:inline-block;min-width:18px;text-align:center;padding:1px 5px;border-radius:4px;
+  background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px var(--graphite);color:var(--mist)}
+
+.master{display:flex;align-items:center;background:rgba(255,255,255,.04);
+  box-shadow:inset 0 0 0 1px var(--graphite);border-radius:9999px;padding:3px;position:relative}
+.master button{position:relative;z-index:2;border:0;background:transparent;cursor:pointer;
+  font:inherit;font-size:12px;font-weight:500;letter-spacing:-0.011em;color:var(--fog);
+  padding:5px 15px;border-radius:9999px;transition:color .2s var(--ease);white-space:nowrap}
+.master button.on{color:var(--void)}
+.knob{position:absolute;top:3px;bottom:3px;border-radius:9999px;background:var(--bone);
+  transition:all .32s var(--ease);z-index:1}
+body.after .knob{background:var(--luaser)}
+
+.shell{display:grid;grid-template-columns:190px minmax(0,1fr);gap:56px;max-width:1220px;margin:0 auto;padding:0 28px}
+.rail{position:sticky;top:96px;align-self:start;height:max-content;padding-bottom:60px}
+.rail a{display:block;font-size:12.5px;color:var(--ash);text-decoration:none;padding:5px 0 5px 13px;
+  border-left:1px solid var(--graphite);transition:all .18s var(--ease);letter-spacing:-0.008em}
+.rail a:hover{color:var(--mist)}
+.rail a.act{color:var(--paper);border-left-color:var(--luaser)}
+.rail a:focus-visible{outline:2px solid var(--luaser);outline-offset:2px}
+.rail .rh{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--smoke);margin:0 0 10px 13px}
+main{min-width:0;padding-top:56px}
+
+section{padding:76px 0;border-bottom:1px solid var(--graphite)}
+section:last-of-type{border:0}
+h1{font-size:54px;font-weight:600;line-height:1.04;letter-spacing:-0.022em;color:var(--paper);margin:0 0 20px;text-wrap:balance}
+h2{font-size:30px;font-weight:600;line-height:1.12;letter-spacing:-0.022em;color:var(--paper);margin:0 0 10px;text-wrap:balance}
+h3{font-size:17px;font-weight:600;letter-spacing:-0.016em;color:var(--paper);margin:0 0 6px}
+p{margin:0 0 14px;max-width:66ch}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--fog);margin:0 0 14px;display:flex;align-items:center;gap:8px}
+.eyebrow:before{content:"";width:5px;height:5px;border-radius:50%;background:var(--luaser);box-shadow:0 0 8px rgba(232,146,122,.8)}
+.lede{font-size:19px;line-height:1.5;color:var(--fog);letter-spacing:-0.014em;max-width:62ch}
+.dim{color:var(--ash);font-size:14px}
+code{font-family:var(--mono);font-size:12.5px;color:var(--mist);background:rgba(255,255,255,.05);padding:1px 5px;border-radius:4px;letter-spacing:-0.013em}
+
+.hero{padding:104px 0 76px;position:relative}
+.hero .glow{position:absolute;top:-60px;left:-140px;width:520px;height:340px;pointer-events:none;
+  background:radial-gradient(50% 50%,rgba(232,146,122,.07) 0%,rgba(232,146,122,0) 70%)}
+.hero>*{position:relative}
+.matchup{display:flex;align-items:center;gap:18px;margin-bottom:30px}
+.mlogo{display:flex;align-items:center;gap:9px;padding:8px 15px;border-radius:9999px;
+  background:rgba(255,255,255,.03);box-shadow:inset 0 0 0 1px var(--graphite);
+  font-size:13.5px;font-weight:500;color:var(--mist);letter-spacing:-0.011em}
+.mvs{font-family:var(--mono);font-size:11px;color:var(--smoke)}
+.stats{display:flex;gap:30px;margin-top:34px;flex-wrap:wrap}
+.stat b{display:block;font-size:26px;font-weight:600;letter-spacing:-0.022em;color:var(--paper);line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--ash);letter-spacing:-0.006em}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
+.card{background:var(--carbon);border-radius:12px;box-shadow:inset 0 0 0 1px var(--graphite);
+  padding:22px;transition:all .25s var(--ease)}
+.card:hover{background:var(--obsidian);transform:translateY(-2px)}
+.card .n{font-family:var(--mono);font-size:11px;color:var(--luaser);margin-bottom:12px}
+
+.lab{background:var(--carbon);border-radius:12px;box-shadow:inset 0 0 0 1px var(--graphite);
+  margin-top:24px;overflow:hidden}
+.lab-head{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--graphite);
+  background:rgba(255,255,255,.015);flex-wrap:wrap}
+.lab-head .t{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--fog)}
+.lab-head .hint{margin-left:auto;font-size:11.5px;color:var(--smoke)}
+.lab-body{padding:30px 26px}
+.stage{background:var(--void);border-radius:8px;box-shadow:inset 0 0 0 1px var(--graphite);
+  padding:38px 30px;min-height:150px;display:flex;flex-direction:column;justify-content:center}
+
+.slider-row{display:flex;align-items:center;gap:16px;margin-top:26px}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:3px;border-radius:2px;
+  background:linear-gradient(90deg,var(--smoke),var(--graphite));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+  background:var(--luaser);cursor:grab;box-shadow:0 0 0 4px rgba(232,146,122,.16),0 2px 6px rgba(0,0,0,.5)}
+input[type=range]:focus-visible{outline:2px solid var(--luaser);outline-offset:6px}
+.readout{font-family:var(--mono);font-size:12.5px;color:var(--mist);min-width:96px;text-align:right;font-variant-numeric:tabular-nums}
+.marks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--smoke);margin-top:9px}
+.verdict{margin-top:18px;font-size:13px;font-family:var(--mono);letter-spacing:-0.006em;transition:color .2s}
+
+.seg{display:inline-flex;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--graphite);
+  border-radius:9999px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;font:inherit;font-size:12px;font-weight:500;color:var(--fog);
+  padding:5px 13px;border-radius:9999px;cursor:pointer;transition:all .2s var(--ease);letter-spacing:-0.011em}
+.seg button.on{background:var(--bone);color:var(--void)}
+.seg button:hover:not(.on){color:var(--mist)}
+.seg button:focus-visible{outline:2px solid var(--luaser);outline-offset:2px}
+
+.ladder{display:flex;align-items:center;justify-content:center;padding:12px 0}
+.rung{width:100%;max-width:440px;border-radius:12px;padding:16px 20px;display:flex;align-items:center;
+  gap:12px;transition:all .35s var(--ease);font-size:13.5px}
+.rung .hx{font-family:var(--mono);font-size:11px;color:var(--ash);margin-left:auto}
+
+.mockwrap{position:relative;padding:34px 20px 0;border-radius:8px;overflow:hidden;transition:background .4s var(--ease)}
+.mockwrap.floor{background:radial-gradient(52% 58% at 50% 100%,rgba(8,9,10,0) 0%,rgba(8,9,10,.5) 100%),linear-gradient(#08090a 10%,#d0d6e0 100%)}
+.mock{background:#0c0c0e;border-radius:12px;overflow:hidden;transition:box-shadow .45s var(--ease),transform .45s var(--ease)}
+.mock.drop{box-shadow:0 4px 6px -4px rgba(0,0,0,.4),0 10px 15px -3px rgba(0,0,0,.4),0 0 0 2px rgba(255,255,255,.15);transform:translateY(-6px)}
+.mock.hair{box-shadow:0 3px 12px rgba(0,0,0,.08)}
+.mock .bar{position:static;display:flex;gap:6px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.06);background:none;width:auto;height:auto}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--graphite)}
+.mock .body{padding:22px 18px 30px;display:flex;flex-direction:column;gap:9px}
+.ln{height:8px;border-radius:3px;background:rgba(255,255,255,.07)}
+
+.fauxnav{display:flex;align-items:center;gap:14px;padding:11px 16px;border-bottom:1px solid var(--graphite);font-size:12.5px;color:var(--fog)}
+.fauxnav .brand{display:flex;align-items:center;gap:7px;color:var(--paper);font-weight:600;font-size:14px;letter-spacing:-0.014em}
+.fauxnav .sp{flex:1}
+.fbtn{padding:5px 13px;border-radius:6px;font-size:12px;font-weight:500;letter-spacing:-0.011em;transition:all .35s var(--ease)}
+.fhero{padding:34px 18px 38px}
+.fh1{font-size:31px;font-weight:600;letter-spacing:-0.022em;line-height:1.05;color:var(--paper);margin:0}
+.fh1 em{font-style:normal;color:var(--fog)}
+.fsub{font-size:13.5px;color:var(--fog);margin:11px 0 0;max-width:38ch}
+.cta-big{display:inline-block;margin-top:20px;padding:9px 17px;font-size:13.5px;font-weight:600;
+  letter-spacing:-0.011em;transition:all .35s var(--ease)}
+.tally{display:flex;align-items:baseline;gap:10px;margin-top:20px;font-family:var(--mono);font-size:12px}
+.tally .cnt{font-size:22px;font-weight:600;letter-spacing:-0.02em;transition:color .3s;font-variant-numeric:tabular-nums}
+.blob{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .5s var(--ease);
+  background:radial-gradient(60% 70% at 82% 45%,rgba(232,146,122,.42) 0%,rgba(184,101,76,.14) 45%,rgba(0,0,0,0) 75%)}
+.blob.show{opacity:1}
+
+.radii{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:16px 0}
+.rchip{width:62px;height:62px;background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px var(--graphite);
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;font-family:var(--mono);
+  font-size:10px;color:var(--ash);transition:all .45s var(--ease)}
+.rchip.dim{opacity:.35;filter:grayscale(.6)}
+
+.sw{display:flex;gap:7px;flex-wrap:wrap;margin-top:22px}
+.chip{width:70px;cursor:pointer;border:0;background:none;padding:0;text-align:left;font:inherit}
+.chip i{display:block;height:48px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);transition:transform .2s var(--ease)}
+.chip:hover i{transform:translateY(-3px)}
+.chip:focus-visible{outline:2px solid var(--luaser);outline-offset:3px;border-radius:8px}
+.chip span{display:block;font-family:var(--mono);font-size:9.5px;color:var(--ash);margin-top:6px;letter-spacing:0}
+.chip b{display:block;font-family:var(--mono);font-size:9px;color:var(--smoke);font-weight:400}
+
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin-top:24px;font-size:14px;min-width:600px}
+th{text-align:left;font-weight:600;color:var(--fog);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:0 12px 10px;border-bottom:1px solid var(--graphite)}
+th.hl{color:var(--luaser)}
+td{padding:11px 12px;border-bottom:1px solid rgba(35,37,42,.6);vertical-align:top}
+td:first-child{color:var(--fog);width:22%}
+tr{transition:background .15s}
+tr:hover td{background:rgba(255,255,255,.02)}
+.them{color:var(--paper)}
+.tag{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:4px;margin-left:6px;white-space:nowrap}
+.bad{background:rgba(235,87,87,.14);color:#f08a8a}
+.ok{background:rgba(39,166,68,.14);color:#5fca7f}
+
+.find{display:grid;grid-template-columns:34px 1fr;gap:18px;padding:24px 0;border-bottom:1px solid rgba(35,37,42,.7)}
+.find:last-child{border:0}
+.num{font-family:var(--mono);font-size:11.5px;color:var(--luaser);padding-top:4px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:14px}
+.box{border-radius:8px;padding:13px 15px;font-family:var(--mono);font-size:11.5px;line-height:1.7;letter-spacing:-0.013em;white-space:pre-wrap;overflow-x:auto}
+.box b{display:block;font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-bottom:8px}
+.now{background:rgba(235,87,87,.055);box-shadow:inset 0 0 0 1px rgba(235,87,87,.2);color:#e5b0b0}
+.now b{color:var(--red)}
+.next{background:rgba(39,166,68,.05);box-shadow:inset 0 0 0 1px rgba(39,166,68,.2);color:#b3dabe}
+.next b{color:var(--green)}
+
+.prewrap{position:relative;margin-top:22px}
+pre{background:var(--carbon);box-shadow:inset 0 0 0 1px var(--graphite);border-radius:12px;
+  padding:24px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.72;
+  color:var(--mist);letter-spacing:-0.013em;margin:0}
+pre .c{color:var(--ash)}
+pre .k{color:var(--fog)}
+pre .v{color:#cbaea5}
+.copy{position:absolute;top:13px;right:13px;border:0;background:rgba(255,255,255,.06);
+  box-shadow:inset 0 0 0 1px var(--graphite);color:var(--mist);font:inherit;font-size:11.5px;
+  padding:5px 11px;border-radius:6px;cursor:pointer;transition:all .2s var(--ease)}
+.copy:hover{background:rgba(255,255,255,.11);color:var(--paper)}
+.copy:focus-visible{outline:2px solid var(--luaser);outline-offset:2px}
+
+ul.order{list-style:none;padding:0;margin:24px 0 0}
+ul.order li{display:grid;grid-template-columns:22px 1fr auto;gap:15px;align-items:center;
+  padding:13px 0;border-bottom:1px solid rgba(35,37,42,.7);cursor:pointer}
+ul.order li:last-child{border:0}
+.tick{width:17px;height:17px;border-radius:5px;box-shadow:inset 0 0 0 1px var(--smoke);display:flex;
+  align-items:center;justify-content:center;transition:all .22s var(--ease)}
+.tick svg{opacity:0;transition:opacity .2s}
+li.done .tick{background:var(--luaser);box-shadow:none}
+li.done .tick svg{opacity:1}
+li.done .lbl{color:var(--ash);text-decoration:line-through;text-decoration-color:var(--smoke)}
+.lbl{font-size:14.5px;color:var(--mist);letter-spacing:-0.011em;transition:color .2s}
+.eff{font-family:var(--mono);font-size:10.5px;color:var(--ash);white-space:nowrap}
+.prog{margin-top:16px;font-family:var(--mono);font-size:11.5px;color:var(--fog)}
+
+.toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,20px);z-index:80;
+  background:var(--obsidian);box-shadow:inset 0 0 0 1px var(--graphite),0 8px 30px rgba(0,0,0,.6);
+  color:var(--mist);font-family:var(--mono);font-size:12px;padding:9px 16px;border-radius:9999px;
+  opacity:0;pointer-events:none;transition:all .28s var(--ease)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+footer{padding:46px 0 80px;color:var(--ash);font-size:13px;max-width:70ch}
+
+.rv{opacity:0;transform:translateY(14px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.rv.in{opacity:1;transform:none}
+
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  html{scroll-behavior:auto}
+  .rv{opacity:1;transform:none}
+}
+@media(max-width:960px){
+  .shell{grid-template-columns:1fr;gap:0;padding:0 20px}
+  .rail{display:none}
+  .grid3,.cmp{grid-template-columns:1fr}
+  h1{font-size:38px}
+  .kb{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="bar" id="bar"></div>
+  <div class="vs">
+    <svg width="17" height="15" viewBox="0 0 100 100" fill="none" role="img" aria-label="Luaser"><circle cx="50" cy="52" r="32" stroke="#e8927a" stroke-width="4" stroke-dasharray="14 7"></circle><circle cx="50" cy="52" r="24" stroke="#e8927a" stroke-width="3" stroke-dasharray="9 6"></circle><path d="M50 20 L44 52 L56 52 Z" fill="#e8927a"></path></svg>
+    <span>VS</span>
+    <svg width="26" height="13" viewBox="0 0 138 71" fill="#E2E4E6" role="img" aria-label="Perk"><path d="M48.3146 28.488C39.4161 28.488 33.4059 34.8839 33.4059 44.2723C33.4059 53.6607 39.6203 59.9393 48.5772 59.9393C55.5209 59.9393 61.2685 55.5678 62.4355 49.612C62.4647 49.4066 62.3188 49.2306 62.1438 49.2306H55.9586C55.8127 49.2306 55.696 49.3186 55.6668 49.436C54.5581 52.3992 51.9615 53.9835 48.5188 53.9835C43.8216 53.9835 40.8165 50.9322 40.3205 45.8859H62.2896C62.4647 45.8859 62.5814 45.7686 62.6106 45.5926C62.6689 44.6244 62.6397 43.8029 62.5814 43.0988C62.2313 33.857 56.863 28.488 48.3146 28.488ZM40.6123 40.6343C41.5459 36.2628 44.1717 33.9744 48.2562 33.9744C52.3408 33.9744 54.9666 36.3802 55.5209 40.6343H40.6123ZM101.414 41.7785L113.113 29.7202C113.142 29.6909 113.142 29.6616 113.142 29.6322C113.142 29.5442 113.084 29.4855 112.997 29.4855H104.623C104.536 29.4855 104.448 29.5149 104.39 29.5736L92.9531 41.5145V17.75C92.9531 17.574 92.8072 17.4273 92.6321 17.4273H86.3011C86.126 17.4273 85.9801 17.574 85.9801 17.75V58.619C85.9801 58.795 86.126 58.9417 86.3011 58.9417H92.6321C92.8072 58.9417 92.9531 58.795 92.9531 58.619V47.1182H97.0668L105.499 58.8244C105.557 58.9124 105.644 58.9417 105.761 58.9417H113.522C113.638 58.9417 113.755 58.8244 113.755 58.707C113.755 58.6483 113.726 58.619 113.697 58.5603L101.414 41.7785ZM16.6884 28.488C11.9911 28.488 8.66512 31.9207 8.11078 33.4463H6.73953V29.8376C6.73953 29.6616 6.59366 29.5149 6.4186 29.5149H0.32093C0.145877 29.5149 0 29.6616 0 29.8376C0.058351 31.0112 0.116702 32.8302 0.116702 34.9426V70.6773C0.116702 70.8533 0.262579 71 0.437632 71H6.71036C6.88541 71 7.03129 70.8533 7.03129 70.6773V56.6826H8.40254C9.68626 58.7364 12.8956 59.9686 16.3966 59.9686C25.2368 59.9686 30.8677 52.9273 30.8677 44.1843C30.8677 35.4413 25.7036 28.488 16.6884 28.488ZM15.2296 53.8368C10.2114 53.8368 6.65201 49.964 6.65201 44.2136C6.65201 38.4632 10.2114 34.7079 15.2296 34.7079C20.2478 34.7079 23.6905 38.4339 23.6905 44.2136C23.6905 49.9934 20.1894 53.8368 15.2296 53.8368ZM74.1641 32.5368H72.7928L72.7636 29.8083C72.7636 29.6322 72.6178 29.4855 72.4427 29.4855H66.1408C65.9658 29.4855 65.8199 29.6322 65.8199 29.8083C65.8782 31.1285 65.9366 33.0062 65.9366 34.9132V58.619C65.9366 58.795 66.0825 58.9417 66.2575 58.9417H72.5886C72.7636 58.9417 72.9095 58.795 72.9095 58.619V44.3017C72.9095 38.6686 76.0313 35.5587 81.312 35.5587C81.8372 35.5587 82.3332 35.588 82.8584 35.6467C83.0334 35.676 83.2085 35.5293 83.2085 35.324V29.4562C83.2085 29.3095 83.1209 29.1921 82.9751 29.1628C82.6249 29.0748 82.0998 29.0161 81.5746 28.9868C78.307 29.0748 75.5645 29.955 74.1641 32.5368ZM121.924 0.26405C121.953 0.117355 122.099 0 122.245 0H124.433C124.579 0 124.725 0.117355 124.754 0.26405L126.038 9.71116C126.067 9.91653 125.892 10.0926 125.659 10.0632L123.383 9.68182H123.266L120.991 10.0632C120.786 10.0926 120.582 9.91653 120.611 9.71116L121.924 0.26405ZM137.708 17.0752C137.883 17.0752 138 16.9285 138 16.7525V14.5814C138 14.4054 137.883 14.288 137.708 14.2587L123.383 12.9091H123.325L108.97 14.2587C108.795 14.288 108.679 14.4054 108.679 14.5814V16.7525C108.679 16.9285 108.795 17.0459 108.97 17.0752L119.561 17.9554C119.649 17.9554 119.707 17.9847 119.765 18.0434L120.524 18.8062C120.582 18.8649 120.611 18.9236 120.611 18.9822L121.924 29.1921C121.953 29.3388 122.07 29.4562 122.245 29.4562H124.433C124.579 29.4562 124.725 29.3388 124.754 29.1921L126.067 18.9822C126.067 18.9236 126.096 18.8355 126.155 18.8062L126.913 18.0434C126.972 17.9847 127.03 17.9554 127.118 17.9554L137.708 17.0752Z"/></svg>
+  </div>
+  <div class="spacer"></div>
+  <div class="kb"><span class="key">B</span> flip both states &nbsp;<span class="key">&larr;</span><span class="key">&rarr;</span> tracking</div>
+  <div class="master" id="master">
+    <div class="knob" id="knob"></div>
+    <button class="on" data-m="before">Luaser now</button>
+    <button data-m="after">Adjusted</button>
+  </div>
+</div>
+
+<div class="shell">
+
+<nav class="rail" aria-label="Sections">
+  <p class="rh">Contenido</p>
+  <a href="#summary">Resumen</a>
+  <a href="#tracking">Tracking</a>
+  <a href="#surfaces">Superficies</a>
+  <a href="#elevation">Sombras</a>
+  <a href="#accent">Frecuencia de acento</a>
+  <a href="#radii">Radios</a>
+  <a href="#tokens">Tabla de tokens</a>
+  <a href="#notes">Decisiones de diseño</a>
+  <a href="#patch">Parche de tokens</a>
+  <a href="#order">Orden de prioridad</a>
+</nav>
+
+<main>
+
+<div class="hero">
+  <div class="glow"></div>
+  <div class="matchup">
+    <span class="mlogo">
+      <svg width="15" height="15" viewBox="0 0 100 100" fill="none" role="img" aria-label="Luaser"><circle cx="50" cy="52" r="32" stroke="#e8927a" stroke-width="4" stroke-dasharray="14 7"></circle><circle cx="50" cy="52" r="24" stroke="#e8927a" stroke-width="3" stroke-dasharray="9 6"></circle><path d="M50 20 L44 52 L56 52 Z" fill="#e8927a"></path></svg>
+      Luaser
+    </span>
+    <span class="mvs">vs</span>
+    <span class="mlogo">
+      <svg width="24" height="12" viewBox="0 0 138 71" fill="#E2E4E6" role="img" aria-label="Perk"><path d="M48.3146 28.488C39.4161 28.488 33.4059 34.8839 33.4059 44.2723C33.4059 53.6607 39.6203 59.9393 48.5772 59.9393C55.5209 59.9393 61.2685 55.5678 62.4355 49.612C62.4647 49.4066 62.3188 49.2306 62.1438 49.2306H55.9586C55.8127 49.2306 55.696 49.3186 55.6668 49.436C54.5581 52.3992 51.9615 53.9835 48.5188 53.9835C43.8216 53.9835 40.8165 50.9322 40.3205 45.8859H62.2896C62.4647 45.8859 62.5814 45.7686 62.6106 45.5926C62.6689 44.6244 62.6397 43.8029 62.5814 43.0988C62.2313 33.857 56.863 28.488 48.3146 28.488ZM40.6123 40.6343C41.5459 36.2628 44.1717 33.9744 48.2562 33.9744C52.3408 33.9744 54.9666 36.3802 55.5209 40.6343H40.6123ZM101.414 41.7785L113.113 29.7202C113.142 29.6909 113.142 29.6616 113.142 29.6322C113.142 29.5442 113.084 29.4855 112.997 29.4855H104.623C104.536 29.4855 104.448 29.5149 104.39 29.5736L92.9531 41.5145V17.75C92.9531 17.574 92.8072 17.4273 92.6321 17.4273H86.3011C86.126 17.4273 85.9801 17.574 85.9801 17.75V58.619C85.9801 58.795 86.126 58.9417 86.3011 58.9417H92.6321C92.8072 58.9417 92.9531 58.795 92.9531 58.619V47.1182H97.0668L105.499 58.8244C105.557 58.9124 105.644 58.9417 105.761 58.9417H113.522C113.638 58.9417 113.755 58.8244 113.755 58.707C113.755 58.6483 113.726 58.619 113.697 58.5603L101.414 41.7785ZM16.6884 28.488C11.9911 28.488 8.66512 31.9207 8.11078 33.4463H6.73953V29.8376C6.73953 29.6616 6.59366 29.5149 6.4186 29.5149H0.32093C0.145877 29.5149 0 29.6616 0 29.8376C0.058351 31.0112 0.116702 32.8302 0.116702 34.9426V70.6773C0.116702 70.8533 0.262579 71 0.437632 71H6.71036C6.88541 71 7.03129 70.8533 7.03129 70.6773V56.6826H8.40254C9.68626 58.7364 12.8956 59.9686 16.3966 59.9686C25.2368 59.9686 30.8677 52.9273 30.8677 44.1843C30.8677 35.4413 25.7036 28.488 16.6884 28.488ZM15.2296 53.8368C10.2114 53.8368 6.65201 49.964 6.65201 44.2136C6.65201 38.4632 10.2114 34.7079 15.2296 34.7079C20.2478 34.7079 23.6905 38.4339 23.6905 44.2136C23.6905 49.9934 20.1894 53.8368 15.2296 53.8368ZM74.1641 32.5368H72.7928L72.7636 29.8083C72.7636 29.6322 72.6178 29.4855 72.4427 29.4855H66.1408C65.9658 29.4855 65.8199 29.6322 65.8199 29.8083C65.8782 31.1285 65.9366 33.0062 65.9366 34.9132V58.619C65.9366 58.795 66.0825 58.9417 66.2575 58.9417H72.5886C72.7636 58.9417 72.9095 58.795 72.9095 58.619V44.3017C72.9095 38.6686 76.0313 35.5587 81.312 35.5587C81.8372 35.5587 82.3332 35.588 82.8584 35.6467C83.0334 35.676 83.2085 35.5293 83.2085 35.324V29.4562C83.2085 29.3095 83.1209 29.1921 82.9751 29.1628C82.6249 29.0748 82.0998 29.0161 81.5746 28.9868C78.307 29.0748 75.5645 29.955 74.1641 32.5368ZM121.924 0.26405C121.953 0.117355 122.099 0 122.245 0H124.433C124.579 0 124.725 0.117355 124.754 0.26405L126.038 9.71116C126.067 9.91653 125.892 10.0926 125.659 10.0632L123.383 9.68182H123.266L120.991 10.0632C120.786 10.0926 120.582 9.91653 120.611 9.71116L121.924 0.26405ZM137.708 17.0752C137.883 17.0752 138 16.9285 138 16.7525V14.5814C138 14.4054 137.883 14.288 137.708 14.2587L123.383 12.9091H123.325L108.97 14.2587C108.795 14.288 108.679 14.4054 108.679 14.5814V16.7525C108.679 16.9285 108.795 17.0459 108.97 17.0752L119.561 17.9554C119.649 17.9554 119.707 17.9847 119.765 18.0434L120.524 18.8062C120.582 18.8649 120.611 18.9236 120.611 18.9822L121.924 29.1921C121.953 29.3388 122.07 29.4562 122.245 29.4562H124.433C124.579 29.4562 124.725 29.3388 124.754 29.1921L126.067 18.9822C126.067 18.9236 126.096 18.8355 126.155 18.8062L126.913 18.0434C126.972 17.9847 127.03 17.9554 127.118 17.9554L137.708 17.0752Z"/></svg>
+      Perk
+    </span>
+  </div>
+
+  <h1>Luaser medido contra el sistema de Perk</h1>
+  <p class="lede">Perk (antes TravelPerk) es un producto SaaS de gasto corporativo, muy distinto en formato al e-commerce de piezas de acrílico de Luaser — así que esto no es una plantilla a copiar, es una vara de disciplina tipográfica y de restricción. Cada valor de abajo se leyó del CSS computado en vivo en ambos sitios el 18 de agosto de 2026.</p>
+
+  <div class="stats">
+    <div class="stat"><b>0em &rarr; -0.030em</b><span>tracking en encabezados</span></div>
+    <div class="stat"><b>15 &rarr; 3</b><span>usos de acento sobre el pliegue</span></div>
+    <div class="stat"><b>.40 &rarr; .08</b><span>opacidad de sombra</span></div>
+    <div class="stat"><b>4 vs 8</b><span>radios — Luaser ya es más ajustado</span></div>
+  </div>
+</div>
+
+<section id="summary" class="rv">
+  <p class="eyebrow">Resumen</p>
+  <h2>Las tres brechas más grandes</h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="n">01</div>
+      <h3>Los encabezados no tienen tracking</h3>
+      <p class="dim" style="margin:0">Todo el texto grande de Luaser (36px, 48px, 60px) midió <code>letter-spacing: normal</code>, es decir 0em. Perk aplica <code>-0.030em</code> de forma consistente en cada tamaño de encabezado medido. Ese único valor es lo que hace que un título de 60px se sienta "por defecto del navegador" en vez de diseñado.</p>
+    </div>
+    <div class="card">
+      <div class="n">02</div>
+      <h3>El acento aparece 5 veces más seguido</h3>
+      <p class="dim" style="margin:0">El probe contó 15 elementos con el dorado <code>#e8927a</code> solo en el primer viewport de luaser.mx, contra 3 usos de lima en el de Perk. El dorado ya no funciona como acento — funciona como color base.</p>
+    </div>
+    <div class="card">
+      <div class="n">03</div>
+      <h3>Una sola sombra, y es pesada</h3>
+      <p class="dim" style="margin:0">Luaser solo usa <code>box-shadow</code> en un lugar del sitio, y es una sombra de caída al 40% de opacidad. Perk usa una sombra ambiental suave, 8% de opacidad, en todo el sitio. Restraint está bien — la sombra que sí existe debería ser tan discreta como el resto del sistema.</p>
+    </div>
+  </div>
+</section>
+
+<section id="tracking" class="rv">
+  <p class="eyebrow">Interactivo</p>
+  <h2>Letter spacing</h2>
+  <p class="dim">El tracking escala con el tamaño de tipo. Arrastra el slider desde el valor actual de Luaser (0em, sin ajuste) hasta el de Perk y observa en qué punto el encabezado deja de sentirse genérico.</p>
+
+  <div class="lab">
+    <div class="lab-head">
+      <span class="t">Letter spacing</span>
+      <span class="hint">arrastra, o usa las flechas</span>
+    </div>
+    <div class="lab-body">
+      <div class="stage">
+        <div id="trackDemo" style="font-size:44px;font-weight:600;line-height:1.02;color:#fff;letter-spacing:0em;font-family:-apple-system,sans-serif">Letreros de acrílico a la medida</div>
+        <div id="trackSmall" style="font-size:14px;margin-top:18px;color:#8a8f98;letter-spacing:0em">Cortado a la décima de milímetro, entrega en toda la república.</div>
+      </div>
+      <div class="slider-row">
+        <input type="range" id="trackRange" min="-35" max="5" value="0" step="1" aria-label="Letter spacing en milésimas de em">
+        <span class="readout" id="trackOut">0.000em</span>
+      </div>
+      <div class="marks">
+        <span>-0.035em</span><span>Perk -0.030em</span><span>Luaser 0em</span><span>+0.005em</span>
+      </div>
+      <div class="verdict" id="trackVerdict"></div>
+    </div>
+  </div>
+</section>
+
+<section id="surfaces" class="rv">
+  <p class="eyebrow">Interactivo</p>
+  <h2>Superficies</h2>
+  <p class="dim">Este es uno de los pocos puntos donde Luaser ya está bien encaminado: el canvas <code>#0b0c0e</code> y la tarjeta <code>#16181c</code> son valores distintos, y el hairline <code>#2a2d33</code> ya es un gris neutro calibrado — no un blanco al 10% haciendo todo el trabajo. Perk resuelve lo mismo con su propio par (crema <code>#f5f5eb</code> / gris <code>#d2d2c8</code>). Ambos sistemas tienen una escalera de 2 niveles que funciona; no hay nada que copiar aquí, solo confirmar que se mantenga así.</p>
+
+  <div class="lab">
+    <div class="lab-head">
+      <span class="t">Tarjeta sobre canvas</span>
+      <span class="hint">
+        <span class="seg" id="ladderSeg">
+          <button class="on" data-l="0">Luaser ahora</button>
+          <button data-l="1">Sin disciplina (ejemplo)</button>
+        </span>
+      </span>
+    </div>
+    <div class="lab-body">
+      <div class="stage" style="padding:26px">
+        <div class="ladder">
+          <div class="rung" id="rungCard">
+            <span style="color:#fff;font-weight:600">Caja acrílica</span>
+            <span class="hx" id="rungHex">bg #16181c · borde #2a2d33</span>
+          </div>
+        </div>
+        <p class="dim" id="ladderNote" style="text-align:center;margin:14px 0 0;font-size:12.5px">Canvas y tarjeta ya son valores distintos, y el borde ya es un gris neutro calibrado. Este sistema no necesita cambios.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="elevation" class="rv">
+  <p class="eyebrow">Interactivo</p>
+  <h2>Tratamiento de sombra</h2>
+  <p class="dim">El único <code>box-shadow</code> medido en luaser.mx (un anillo blanco + sombra de caída, probablemente en una foto/avatar) va al 40% de opacidad. Perk resuelve la misma necesidad de "esto flota sobre la página" con una sombra ambiental al 8%, sin anillo.</p>
+
+  <div class="lab">
+    <div class="lab-head">
+      <span class="t">Elemento con sombra</span>
+      <span class="hint">
+        <span class="seg" id="shadowSeg">
+          <button class="on" data-s="drop">Sombra actual (40%)</button>
+          <button data-s="hair">Sombra ambiental (8%, de Perk)</button>
+        </span>
+      </span>
+    </div>
+    <div class="lab-body">
+      <div class="stage" style="padding:0;overflow:hidden">
+        <div class="mockwrap" id="mockwrap">
+          <div class="mock drop" id="mock" style="max-width:400px;margin:0 auto">
+            <div class="bar"><i class="dot" style="background:#e8927a"></i><i class="dot"></i><i class="dot"></i></div>
+            <div class="body">
+              <div class="ln" style="width:52%"></div><div class="ln" style="width:88%"></div>
+              <div class="ln" style="width:74%"></div><div class="ln" style="width:35%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="dim" id="shadowNote" style="margin:16px 0 0;font-size:12px;font-family:var(--mono);overflow-x:auto">box-shadow: 0 4px 6px -4px rgba(0,0,0,.4), 0 10px 15px -3px rgba(0,0,0,.4), 0 0 0 2px rgba(255,255,255,.15)</p>
+    </div>
+  </div>
+</section>
+
+<section id="accent" class="rv">
+  <p class="eyebrow">Interactivo</p>
+  <h2>Frecuencia de acento</h2>
+  <p class="dim">El probe encontró el dorado <code>#e8927a</code> en 15 elementos distintos dentro del primer viewport de luaser.mx (nav, botones, badges, texto, fondo), contra 3 usos de lima en el de Perk. Esta miniatura ilustra la misma proporción a escala reducida: nav, botón hero, punto del eyebrow y fondo — cuatro usos que se pueden reducir a uno sin perder la marca.</p>
+
+  <div class="lab">
+    <div class="lab-head">
+      <span class="t">Sobre el pliegue</span>
+      <span class="hint">
+        <span class="seg" id="accentSeg">
+          <button class="on" data-a="many">Luaser ahora</button>
+          <button data-a="one">Un acento</button>
+        </span>
+      </span>
+    </div>
+    <div class="lab-body">
+      <div class="stage" style="padding:0;overflow:hidden;position:relative">
+        <div class="blob show" id="blob"></div>
+        <div style="position:relative">
+          <div class="fauxnav">
+            <span class="brand">
+              <svg width="14" height="14" viewBox="0 0 100 100" fill="none" role="img" aria-label="Luaser"><circle cx="50" cy="52" r="32" stroke="#e8927a" stroke-width="4" stroke-dasharray="14 7"></circle><circle cx="50" cy="52" r="24" stroke="#e8927a" stroke-width="3" stroke-dasharray="9 6"></circle><path d="M50 20 L44 52 L56 52 Z" fill="#e8927a"></path></svg>
+              Luaser
+            </span>
+            <span>Catálogo</span><span>Cotizar</span><span>FAQ</span>
+            <span class="sp"></span>
+            <span>Mi cuenta</span>
+            <span class="fbtn" id="navBtn" style="background:#e8927a;color:#0b0c0e;border-radius:9999px">Comprar</span>
+          </div>
+          <div class="fhero">
+            <p class="eyebrow" style="margin-bottom:12px">Corte láser de precisión</p>
+            <h3 class="fh1">Piezas de acrílico<br><em>hechas a tu medida</em></h3>
+            <p class="fsub">Letreros, cajas y displays cortados a la décima de milímetro, listos en días.</p>
+            <span class="cta-big" id="heroBtn" style="background:#e8927a;color:#0b0c0e;border-radius:9999px">Ver catálogo</span>
+          </div>
+        </div>
+      </div>
+      <div class="tally">
+        <span class="cnt" id="limeCount" style="color:#eb5757">15</span>
+        <span style="color:var(--ash)" id="limeLabel">usos del dorado sobre el pliegue, medidos en luaser.mx</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="radii" class="rv">
+  <p class="eyebrow">Interactivo</p>
+  <h2>Vocabulario de radios</h2>
+  <p class="dim">Otro punto donde Luaser ya gana: 4 valores de radio en todo el DOM (<code>pill</code>, <code>16px</code>, <code>12px</code>, <code>24px</code>), cada uno con un trabajo claro. Perk mide 8 valores distintos — un vocabulario más fragmentado. No hay una acción aquí, solo confirmar que no se agreguen radios nuevos sin razón.</p>
+
+  <div class="lab">
+    <div class="lab-head">
+      <span class="t">Radios en uso</span>
+      <span class="hint">
+        <span class="seg" id="radiusSeg">
+          <button class="on" data-r="luaser">Luaser, 4 valores</button>
+          <button data-r="perk">Perk, 8 valores</button>
+        </span>
+      </span>
+    </div>
+    <div class="lab-body">
+      <div class="stage" style="padding:22px">
+        <div class="radii" id="radiiRow"></div>
+      </div>
+      <p class="dim" id="radiusNote" style="margin:14px 0 0;font-size:12.5px">Pill 58 usos, 16px 38 usos, 12px 6 usos, 24px 3 usos — cada valor con un trabajo claro.</p>
+    </div>
+  </div>
+</section>
+
+<section id="tokens" class="rv">
+  <p class="eyebrow">Tabla de tokens</p>
+  <h2>Valores lado a lado</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Token</th><th>Luaser</th><th class="hl">Perk</th></tr></thead>
+    <tbody>
+      <tr><td>Canvas</td><td>#0b0c0e, ink oscuro</td><td class="them">#f5f5eb, crema claro<span class="tag ok">medio distinto, no copiar</span></td></tr>
+      <tr><td>Escalera de superficie</td><td>#0b0c0e &rarr; #16181c<span class="tag ok">ya funciona</span></td><td class="them">#f5f5eb &rarr; #d2d2c8</td></tr>
+      <tr><td>Hairlines</td><td>#2a2d33, 0.67px<span class="tag ok">ya neutro</span></td><td class="them">#6e6e64, 0.67px</td></tr>
+      <tr><td>Texto primario</td><td>#faf9f6 (66 usos)</td><td class="them">#14140f (129 usos)</td></tr>
+      <tr><td>Texto como acento</td><td>#e8927a en 27 textos<span class="tag bad">revisar</span></td><td class="them">sin texto en el color de acento</td></tr>
+      <tr><td>Acento</td><td>#e8927a<span class="tag ok">bueno como color</span></td><td class="them">#beff50</td></tr>
+      <tr><td>Uso de acento (primer viewport)</td><td>15 elementos<span class="tag bad">saturado</span></td><td class="them">3 elementos</td></tr>
+      <tr><td>Tracking en encabezados</td><td>0em<span class="tag bad">sin ajustar</span></td><td class="them">-0.030em, consistente</td></tr>
+      <tr><td>Tracking en cuerpo</td><td>0em, algunos +0.025em</td><td class="them">0em, eyebrows +0.100em</td></tr>
+      <tr><td>Tamaños de tipo</td><td>11 distintos</td><td class="them">12 distintos<span class="tag ok">similar, no es el problema</span></td></tr>
+      <tr><td>Familias tipográficas</td><td>Space Grotesk + Inter</td><td class="them">OTSono (custom)</td></tr>
+      <tr><td>Radios en el DOM</td><td>pill, 12, 16, 24px<span class="tag ok">4, ya ajustado</span></td><td class="them">0, 4, 6, 8, 18, 26, 28px, pill — 8</td></tr>
+      <tr><td>Sombra</td><td>1 sombra, 40% opacidad<span class="tag bad">pesada</span></td><td class="them">8% opacidad, sin anillo</td></tr>
+      <tr><td>Contenedor</td><td>1280px, consistente<span class="tag ok">un solo valor</span></td><td class="them">896 / 660 / 1293 / 860px</td></tr>
+      <tr><td>Padding de sección</td><td>96px, consistente</td><td class="them">54px (dato parcial, contenido lazy)</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p class="dim" style="margin-top:26px;font-size:12.5px">Click en cualquier muestra para copiar su hex.</p>
+  <div class="sw" id="swatches"></div>
+</section>
+
+<section id="notes" class="rv">
+  <p class="eyebrow">Decisiones de diseño</p>
+  <h2>Dos cambios que requieren una decisión tuya</h2>
+
+  <div class="find">
+    <div class="num">01</div>
+    <div>
+      <h3>El dorado se usa como color de texto 27 veces</h3>
+      <p class="dim">No es un error de medición — es una elección real y consistente en luaser.mx. La pregunta es si ese dorado como color de texto (no solo como fondo de botón) es la voz de marca que quieres, o si parte de ese texto ganaría legibilidad en un gris neutro (<code>#e7e5e1</code> o <code>#b7b4ad</code>, que ya existen en tu paleta) reservando el dorado sólido para botones y badges únicamente.</p>
+      <div class="cmp">
+        <div class="box now"><b>Luaser ahora</b>color de texto: #e8927a
+uso: 27 nodos de texto</div>
+        <div class="box next"><b>Opción a considerar</b>texto secundario: #e7e5e1 / #b7b4ad
+#e8927a: reservado a botones y badges</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="find">
+    <div class="num">02</div>
+    <div>
+      <h3>11 tamaños de tipo distintos</h3>
+      <p class="dim">Está en el límite de lo razonable (Perk mide 12, así que tampoco es el villano aquí) pero vale la pena revisar si los 11 pasos realmente tienen un rol distinto o si dos o tres son variantes accidentales del mismo texto. Esto necesita ojo humano sobre el diseño real, no un valor que se pueda copiar y pegar.</p>
+    </div>
+  </div>
+</section>
+
+<section id="patch" class="rv">
+  <p class="eyebrow">Parche de tokens</p>
+  <h2>Valores para tu archivo de tokens</h2>
+  <p class="dim">La arquitectura se queda igual. Esto solo reemplaza valores puntuales — mantén el dorado y el resto de la paleta Luaser.</p>
+  <div class="prewrap">
+    <button class="copy" id="copyBtn">Copiar</button>
+<pre id="patchCode"><span class="c">/* tracking: aplicar a h1-h3 y cualquier texto grande de marca */</span>
+<span class="k">--tracking-display</span>: <span class="v">-0.030em</span>;  <span class="c">/* era normal / 0em */</span>
+
+<span class="c">/* sombra: reemplazar el único box-shadow del sitio */</span>
+<span class="k">--shadow-elevated</span>: <span class="v">0 3px 12px rgba(0,0,0,.08)</span>;
+<span class="c">/* era: 0 4px 6px -4px rgba(0,0,0,.4), 0 10px 15px -3px rgba(0,0,0,.4), 0 0 0 2px rgba(255,255,255,.15) */</span>
+
+<span class="c">/* acento: mismo color, menos apariciones por vista */</span>
+<span class="c">/* meta: 3-4 usos de --gold por viewport, no 15 */</span>
+<span class="k">--gold</span>: <span class="v">#E8927A</span>;  <span class="c">/* sin cambio de valor, solo de frecuencia */</span>
+
+<span class="c">/* texto: sacar el dorado del rol de texto secundario */</span>
+<span class="k">--text-secondary</span>: <span class="v">#e7e5e1</span>;  <span class="c">/* candidato a reemplazar --gold en texto */</span>
+<span class="k">--text-muted</span>:     <span class="v">#b7b4ad</span>;</pre>
+  </div>
+</section>
+
+<section id="order" class="rv">
+  <p class="eyebrow">Orden de prioridad</p>
+  <h2>Ordenado por efecto visible por hora</h2>
+  <p class="dim">Click en cualquier renglón para marcarlo. Los dos primeros son casi el mismo cambio de una hora y explican la mayor parte de la diferencia visible.</p>
+  <ul class="order" id="checklist">
+    <li><span class="tick"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6.2 4.7 9 10 3.3" stroke="#08090a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lbl">Agregar <code>letter-spacing: -0.03em</code> a h1-h3 y cualquier título grande</span><span class="eff">1 hr · mayor efecto</span></li>
+    <li><span class="tick"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6.2 4.7 9 10 3.3" stroke="#08090a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lbl">Cambiar la sombra del sitio de 40% a 8% de opacidad, quitar el anillo blanco</span><span class="eff">20 min</span></li>
+    <li><span class="tick"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6.2 4.7 9 10 3.3" stroke="#08090a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lbl">Reducir el dorado sobre el pliegue de 15 a 3-4 apariciones (nav, un CTA, un badge)</span><span class="eff">1-2 hrs</span></li>
+    <li><span class="tick"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6.2 4.7 9 10 3.3" stroke="#08090a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lbl">Decidir si el dorado sigue siendo color de texto o se limita a botones/badges</span><span class="eff">necesita decisión</span></li>
+    <li><span class="tick"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6.2 4.7 9 10 3.3" stroke="#08090a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lbl">Revisar si los 11 tamaños de tipo tienen un rol distinto o se pueden consolidar</span><span class="eff">necesita decisión</span></li>
+  </ul>
+  <p class="prog" id="prog">0 de 5 hechos</p>
+</section>
+
+<footer>
+  Valores medidos del CSS computado en vivo en luaser.mx y perk.com (Perk, antes TravelPerk), el 18 de agosto de 2026, vía el probe de <code>design-teardown</code>. Perk se usa como referencia de disciplina — nada aquí reproduce su copy o imágenes de producto. Ambos logos pertenecen a sus respectivas marcas.
+</footer>
+
+</main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var $ = function(s){ return document.querySelector(s); };
+  var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+
+  var tt;
+  function toast(msg){
+    var t = $('#toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(tt); tt = setTimeout(function(){ t.classList.remove('show'); }, 1600);
+  }
+
+  var bar = $('#bar'), links = $$('.rail a');
+  var secs = links.map(function(a){ return document.getElementById(a.getAttribute('href').slice(1)); });
+  function onScroll(){
+    var max = document.documentElement.scrollHeight - innerHeight;
+    bar.style.width = (max > 0 ? (scrollY / max) * 100 : 0) + '%';
+    var idx = 0;
+    secs.forEach(function(s,i){ if(s && s.getBoundingClientRect().top < innerHeight * 0.35) idx = i; });
+    links.forEach(function(a,i){ a.classList.toggle('act', i === idx); });
+  }
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.08});
+  $$('.rv').forEach(function(e){ io.observe(e); });
+
+  var knob = $('#knob'), mBtns = $$('#master button');
+  function sizeKnob(){
+    var on = $('#master button.on'); if(!on) return;
+    knob.style.left = on.offsetLeft + 'px';
+    knob.style.width = on.offsetWidth + 'px';
+  }
+  function setMode(mode){
+    document.body.classList.toggle('after', mode === 'after');
+    mBtns.forEach(function(b){ b.classList.toggle('on', b.dataset.m === mode); });
+    sizeKnob();
+    setTrack(mode === 'after' ? -30 : 0);
+    setLadder(mode === 'after' ? 0 : 0);
+    setShadow(mode === 'after' ? 'hair' : 'drop');
+    setAccent(mode === 'after' ? 'one' : 'many');
+    setRadius(mode === 'after' ? 'luaser' : 'luaser');
+  }
+  mBtns.forEach(function(b){ b.addEventListener('click', function(){ setMode(b.dataset.m); }); });
+  addEventListener('resize', sizeKnob);
+
+  var range = $('#trackRange'), demo = $('#trackDemo'), small = $('#trackSmall'),
+      out = $('#trackOut'), vd = $('#trackVerdict');
+  function setTrack(v){
+    range.value = v;
+    var em = v / 1000;
+    demo.style.letterSpacing = em + 'em';
+    small.style.letterSpacing = (v <= -14 ? -0.011 : (v===0?0:0.010)) + 'em';
+    out.textContent = em.toFixed(3) + 'em';
+    var msg, col;
+    if(v > 2){ msg = 'Más suelto que el valor actual de Luaser'; col = '#eb5757'; }
+    else if(v > -6){ msg = 'El valor actual de Luaser: 0em, sin ajuste'; col = '#eb5757'; }
+    else if(v > -22){ msg = 'Entre los dos valores'; col = '#f5b23e'; }
+    else if(v >= -32){ msg = 'El rango de Perk: -0.030em en tamaños de display'; col = '#27a644'; }
+    else { msg = 'Más apretado que Perk. Las letras empiezan a chocar a este tamaño.'; col = '#f5b23e'; }
+    vd.textContent = msg; vd.style.color = col;
+  }
+  range.addEventListener('input', function(e){ setTrack(+e.target.value); });
+
+  var rung = $('#rungCard'), rhex = $('#rungHex'), lnote = $('#ladderNote');
+  var LAD = [
+    {bg:'#16181c', bd:'inset 0 0 0 1px #2a2d33', r:'12px',
+     hex:'bg #16181c · borde #2a2d33',
+     note:'Canvas y tarjeta ya son valores distintos, y el borde ya es un gris neutro calibrado. Este sistema no necesita cambios.'},
+    {bg:'#0b0c0e', bd:'inset 0 0 0 1px rgba(255,255,255,.1)', r:'12px',
+     hex:'bg #0b0c0e · borde blanco al 10% (ejemplo de lo que NO está pasando)',
+     note:'Así se ve el error común: tarjeta y canvas idénticos, sostenidos solo por un borde blanco brillante. Luaser ya evita esto.'}
+  ];
+  function setLadder(i){
+    var s = LAD[i];
+    rung.style.background = s.bg; rung.style.boxShadow = s.bd; rung.style.borderRadius = s.r;
+    rhex.textContent = s.hex; lnote.textContent = s.note;
+    $$('#ladderSeg button').forEach(function(b){ b.classList.toggle('on', +b.dataset.l === i); });
+  }
+  $$('#ladderSeg button').forEach(function(b){ b.addEventListener('click', function(){ setLadder(+b.dataset.l); }); });
+
+  var mock = $('#mock'), mwrap = $('#mockwrap'), snote = $('#shadowNote');
+  function setShadow(m){
+    mock.classList.toggle('drop', m === 'drop');
+    mock.classList.toggle('hair', m === 'hair');
+    mwrap.classList.toggle('floor', m === 'hair');
+    snote.textContent = m === 'drop'
+      ? 'box-shadow: 0 4px 6px -4px rgba(0,0,0,.4), 0 10px 15px -3px rgba(0,0,0,.4), 0 0 0 2px rgba(255,255,255,.15)'
+      : 'box-shadow: 0 3px 12px rgba(0,0,0,.08)  ·  valor real medido en perk.com';
+    $$('#shadowSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.s === m); });
+  }
+  $$('#shadowSeg button').forEach(function(b){ b.addEventListener('click', function(){ setShadow(b.dataset.s); }); });
+
+  var navBtn = $('#navBtn'), heroBtn = $('#heroBtn'), blob = $('#blob'),
+      cnt = $('#limeCount'), clabel = $('#limeLabel');
+  function setAccent(m){
+    var many = m === 'many';
+    blob.classList.toggle('show', many);
+    if(many){
+      navBtn.style.cssText = 'background:#e8927a;color:#0b0c0e;border-radius:9999px';
+      heroBtn.style.cssText = 'background:#e8927a;color:#0b0c0e;border-radius:9999px';
+      cnt.textContent = '15'; cnt.style.color = '#eb5757';
+      clabel.textContent = 'usos del dorado sobre el pliegue, medidos en luaser.mx (nav, botones, badges, texto, fondo)';
+    } else {
+      navBtn.style.cssText = 'background:#e5e5e6;color:#0b0c0e;border-radius:9999px;padding:5px 14px';
+      heroBtn.style.cssText = 'background:#e8927a;color:#0b0c0e;border-radius:9999px;font-weight:600;' +
+        'box-shadow:0 3px 12px rgba(0,0,0,.08)';
+      cnt.textContent = '3'; cnt.style.color = '#27a644';
+      clabel.textContent = 'usos de acento, y cada uno marca la acción principal — el número de referencia de Perk';
+    }
+    $$('#accentSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.a === m); });
+  }
+  $$('#accentSeg button').forEach(function(b){ b.addEventListener('click', function(){ setAccent(b.dataset.a); }); });
+
+  var RAD_LUASER = [
+    {v:'pill', n:'58 usos'}, {v:'16px', n:'38 usos'}, {v:'12px', n:'6 usos'}, {v:'24px', n:'3 usos'}
+  ];
+  var RAD_PERK = [
+    {v:'28px', n:'50 usos'}, {v:'26px', n:'18 usos'}, {v:'pill', n:'11 usos'}, {v:'18px', n:'4 usos'},
+    {v:'6px', n:'4 usos'}, {v:'8px', n:'2 usos'}, {v:'4px', n:'1 uso'}, {v:'0px', n:'1 uso'}
+  ];
+  var rrow = $('#radiiRow');
+  function renderRadii(set){
+    rrow.innerHTML = set.map(function(r){
+      return '<div class="rchip" style="border-radius:' + (r.v === 'pill' ? '9999px' : r.v) + '">' + r.v + '</div>';
+    }).join('');
+  }
+  var rnote = $('#radiusNote');
+  function setRadius(m){
+    var perk = m === 'perk';
+    renderRadii(perk ? RAD_PERK : RAD_LUASER);
+    rnote.innerHTML = perk
+      ? '28px 50 usos, 26px 18 usos, pill 11 usos, 18px 4 usos, 6px 4 usos, 8px 2 usos, 4px 1 uso, 0px 1 uso — 8 valores, más fragmentado.'
+      : 'Pill 58 usos, 16px 38 usos, 12px 6 usos, 24px 3 usos — cada valor con un trabajo claro.';
+    $$('#radiusSeg button').forEach(function(b){ b.classList.toggle('on', b.dataset.r === m); });
+  }
+  $$('#radiusSeg button').forEach(function(b){ b.addEventListener('click', function(){ setRadius(b.dataset.r); }); });
+
+  var SW = [
+    ['#0b0c0e','canvas','Luaser'], ['#16181c','tarjeta','Luaser'], ['#2a2d33','hairline','Luaser'],
+    ['#e8927a','acento','Luaser'], ['#faf9f6','texto primario','Luaser'],
+    ['#f5f5eb','canvas','Perk'], ['#d2d2c8','tarjeta','Perk'], ['#6e6e64','hairline','Perk'],
+    ['#beff50','acento','Perk'], ['#14140f','texto primario','Perk']
+  ];
+  $('#swatches').innerHTML = SW.map(function(s){
+    return '<button class="chip" type="button" data-hex="' + s[0] + '" aria-label="Copiar ' + s[0] + '">' +
+      '<i style="background:' + s[0] + '"></i><span>' + s[0] + '</span><b>' + s[1] + ' · ' + s[2] + '</b></button>';
+  }).join('');
+  $$('.chip').forEach(function(c){
+    c.addEventListener('click', function(){
+      navigator.clipboard.writeText(c.dataset.hex).then(function(){ toast('Copiado ' + c.dataset.hex); });
+    });
+  });
+
+  $('#copyBtn').addEventListener('click', function(){
+    navigator.clipboard.writeText($('#patchCode').innerText).then(function(){
+      toast('Parche de tokens copiado');
+      $('#copyBtn').textContent = 'Copiado';
+      setTimeout(function(){ $('#copyBtn').textContent = 'Copiar'; }, 1600);
+    });
+  });
+
+  var items = $$('#checklist li'), prog = $('#prog');
+  function updateProg(){
+    var n = $$('#checklist li.done').length;
+    prog.textContent = n + ' de ' + items.length + ' hechos';
+    prog.style.color = n === items.length ? '#27a644' : '';
+  }
+  items.forEach(function(li){ li.addEventListener('click', function(){ li.classList.toggle('done'); updateProg(); }); });
+
+  addEventListener('keydown', function(e){
+    if(e.target.tagName === 'INPUT') return;
+    if(e.key.toLowerCase() === 'b'){ setMode(document.body.classList.contains('after') ? 'before' : 'after'); }
+    if(e.key === 'ArrowLeft'){ setTrack(Math.max(-35, +range.value - 1)); e.preventDefault(); }
+    if(e.key === 'ArrowRight'){ setTrack(Math.min(5, +range.value + 1)); e.preventDefault(); }
+  });
+
+  setTrack(0); setLadder(0); setShadow('drop'); setAccent('many'); setRadius('luaser');
+  requestAnimationFrame(sizeKnob);
+})();
+</script>
+</body>
+</html>
