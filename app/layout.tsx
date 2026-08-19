@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter } from "next/font/google";
+import { Space_Grotesk, Manrope } from "next/font/google";
 import { SiteHeader } from "@/components/storefront/site-header";
 import { SiteFooter } from "@/components/storefront/site-footer";
 import { CartUIProvider } from "@/components/storefront/cart-ui-context";
@@ -16,9 +16,10 @@ const display = Space_Grotesk({
   weight: ["500", "600", "700"],
 });
 
-const body = Inter({
+const body = Manrope({
   subsets: ["latin"],
   variable: "--font-body",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;

@@ -57,6 +57,11 @@ const trabajos: Trabajo[] = [
     cliente: "La Chukiza Boutique",
     detalle: "Corte de contorno multicapa",
   },
+  {
+    src: "/trabajos/dental-igra.jpg",
+    cliente: "Dental Igra",
+    detalle: "Logo institucional en acero espejo",
+  },
 ];
 
 export function TrabajosSection() {

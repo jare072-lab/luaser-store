@@ -68,7 +68,7 @@ function MaterialCard({ icon: Icon, label, note }: Material) {
 
 export function MaterialsSection() {
   return (
-    <section className="bg-ink-soft py-16 md:py-24">
+    <section id="materiales" className="bg-ink-soft py-16 md:py-24">
       <div className="mx-auto max-w-content px-4 sm:px-6">
         <div className="grid md:grid-cols-2 gap-10 items-center">
           <div>

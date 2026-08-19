@@ -181,7 +181,10 @@
       "Skill(content-critic-loop)",
       "Skill(content-critic-loop:*)",
       "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' -F GoogleAccessId=video-production@video-production-225115.iam.gserviceaccount.com -F key=c/o/v/053c9018c7734ab3bbfde9cf971fc2a7.mp4 -F policy=eyJjb25kaXRpb25zIjpbWyJlcSIsIiRidWNrZXQiLCJzaG9waWZ5LXZpZGVvLXByb2R1Y3Rpb24tY29yZS1vcmlnaW5hbHMiXSxbImVxIiwiJGtleSIsImMvby92LzA1M2M5MDE4Yzc3MzRhYjNiYmZkZTljZjk3MWZjMmE3Lm1wNCJdLFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLDk4NDIxNjEsOTg0MjE2MV1dLCJleHBpcmF0aW9uIjoiMjAyNi0wOC0xOVQwMToxMTozMVoifQ== -F signature=r2dZs5slb4A5j8rLO2+1YqP7RdwfcZIo2LCTp5nTdbucNiM+GMJ6qMXcWJcUiuY9guUsF5JXfMk4XXXJ8i/CBlTbSg+i90nKFabNbEmx0vY8eZVNlpa1cH8EWB+B6G5nMXVK2qzl6fFerGzPVC83njRL0n1qa1jeXMiuVUrL8Ks1CcCpQcKoHjU82YY3V3HruWOGd3xbogLaBfxrRji0sv8OovrPyCIN6DH8YLVMako2/xmYXdNk0+H5jH1UwpMksewVO3VOtF9ErDGRsiECDe5RsL7O6keJkBiP3rSBa/Flx5Z5LbH8CxxQikjyV4BQlPrroeOE4fCDw6TWR5TmKQ== -F 'file=@luaser-caja-ugc.mp4;type=video/mp4' https://shopify-video-production-core-originals.storage.googleapis.com)",
-      "Bash(cp \"C:\\\\Users\\\\jorge\\\\OneDrive\\\\Desktop\\\\Luaser Homepage - Descarga.html\" \"C:\\\\Users\\\\jorge\\\\CLAUDE\\\\public\\\\tmp-carousel\\\\luaser-homepage-download.html\")"
+      "Bash(cp \"C:\\\\Users\\\\jorge\\\\OneDrive\\\\Desktop\\\\Luaser Homepage - Descarga.html\" \"C:\\\\Users\\\\jorge\\\\CLAUDE\\\\public\\\\tmp-carousel\\\\luaser-homepage-download.html\")",
+      "Bash(identify \"C:\\\\Users\\\\jorge\\\\CLAUDE\\\\public\\\\trabajos\\\\quinta-carmen.jpg\")",
+      "Bash(node -e \"require\\('sharp'\\)\\('C:/Users/jorge/CLAUDE/public/trabajos/quinta-carmen.jpg'\\).metadata\\(\\).then\\(m=>console.log\\(m.width,m.height,m.size\\)\\)\")",
+      "Bash(node -e \"require\\('C:/Users/jorge/CLAUDE/node_modules/sharp'\\)\\('C:/Users/jorge/CLAUDE/public/trabajos/quinta-carmen.jpg'\\).metadata\\(\\).then\\(m=>console.log\\(JSON.stringify\\(m\\)\\)\\)\")"
     ]
   }
 }

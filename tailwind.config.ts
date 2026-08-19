@@ -71,6 +71,24 @@ const config: Config = {
           "0%": { transform: "rotate(360deg)" },
           "100%": { transform: "rotate(0deg)" },
         },
+        blob1: {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "50%": { transform: "translate(30px, -20px) scale(1.1)" },
+        },
+        blob2: {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "50%": { transform: "translate(-25px, 25px) scale(1.08)" },
+        },
+        beam: {
+          "0%": { transform: "translateX(-10%)", opacity: "0" },
+          "8%": { opacity: "1" },
+          "92%": { opacity: "1" },
+          "100%": { transform: "translateX(110%)", opacity: "0" },
+        },
+        "badge-float": {
+          "0%, 100%": { transform: "translateY(0px) rotate(-2deg)" },
+          "50%": { transform: "translateY(-8px) rotate(2deg)" },
+        },
       },
       animation: {
         marquee: "marquee 22s linear infinite",
@@ -78,6 +96,10 @@ const config: Config = {
         shine: "shine 3s ease-in-out infinite",
         "spin-slow": "spin-slow 16s linear infinite",
         "spin-slow-reverse": "spin-slow-reverse 12s linear infinite",
+        blob1: "blob1 9s ease-in-out infinite",
+        blob2: "blob2 11s ease-in-out infinite",
+        beam: "beam 4s ease-in-out infinite",
+        "badge-float": "badge-float 5s ease-in-out infinite",
       },
     },
   },
