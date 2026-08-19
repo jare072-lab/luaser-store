@@ -18,9 +18,13 @@ interface RawProductDetail
   collections: { edges: { node: { title: string; handle: string } }[] };
 }
 
-// El revalidate largo es una red de seguridad: la frescura real la da el
-// webhook de Shopify (revalidateTag) en app/api/revalidate/route.ts.
-const CATALOG_REVALIDATE_SECONDS = 86400;
+// Cuando el webhook de Shopify (revalidateTag en app/api/revalidate/route.ts)
+// esta registrado y firmando bien, el purgado es instantaneo y este numero casi
+// no se usa. Cuando no lo esta, este numero ES el unico mecanismo de frescura:
+// con 86400 un cambio de precio o de stock tardaba hasta 24 h en verse.
+// 5 minutos con stale-while-revalidate: el usuario nunca espera y el catalogo
+// se corrige solo.
+const CATALOG_REVALIDATE_SECONDS = 300;
 
 export async function getProductByHandle(handle: string): Promise<ProductDetail | null> {
   const data = await shopifyFetch<{ product: RawProductDetail | null }>({

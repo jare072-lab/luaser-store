@@ -22,7 +22,8 @@ export async function getHomeData(): Promise<HomeData> {
     query: HOME_QUERY,
     variables: { heroHandle: HERO_PRODUCT_HANDLE },
     tags: ["home", "products", "collections"],
-    revalidate: 86400,
+    // Ver la nota en lib/shopify/product.ts sobre por que no son 24 h.
+    revalidate: 300,
   });
 
   return {

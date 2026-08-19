@@ -8,7 +8,9 @@ interface RawCollectionDetail extends Omit<CollectionDetail, "products"> {
 
 // El revalidate largo es una red de seguridad: la frescura real la da el
 // webhook de Shopify (revalidateTag) en app/api/revalidate/route.ts.
-const CATALOG_REVALIDATE_SECONDS = 86400;
+// Ver la nota en lib/shopify/product.ts: sin webhook registrado, este numero
+// es el unico mecanismo de frescura del catalogo.
+const CATALOG_REVALIDATE_SECONDS = 300;
 
 export async function getCollectionByHandle(
   handle: string,

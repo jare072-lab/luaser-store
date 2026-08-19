@@ -21,7 +21,25 @@ export async function POST(request: NextRequest) {
   const topic = request.headers.get("x-shopify-topic") ?? "";
   const rawBody = await request.text();
 
-  if (!secret || !hmacHeader || !isValidShopifyHmac(rawBody, hmacHeader, secret)) {
+  // Estos tres casos se veían idénticos desde fuera (un 401 mudo) y son el
+  // modo de falla más probable al montar los webhooks: el secreto de Shopify
+  // tiene que ser el mismo que SHOPIFY_WEBHOOK_SECRET en Vercel. Sin este log,
+  // un webhook mal firmado se reintenta, Shopify lo desactiva y nadie se enteró.
+  if (!secret) {
+    console.error("[revalidate] Falta SHOPIFY_WEBHOOK_SECRET en el entorno.");
+    return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
+  }
+
+  if (!hmacHeader) {
+    console.error(`[revalidate] Petición sin cabecera HMAC (topic: ${topic || "desconocido"}).`);
+    return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
+  }
+
+  if (!isValidShopifyHmac(rawBody, hmacHeader, secret)) {
+    console.error(
+      `[revalidate] HMAC no coincide (topic: ${topic || "desconocido"}). ` +
+        "Revisa que SHOPIFY_WEBHOOK_SECRET sea el mismo secreto con el que Shopify firma este webhook."
+    );
     return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
   }
 
@@ -77,7 +95,10 @@ async function reportPurchaseToMeta(rawBody: string) {
         ph: order.phone ? [sha256(order.phone.replace(/\D/g, ""))] : undefined,
       },
     });
-  } catch {
-    // Ver comentario arriba.
+  } catch (error) {
+    // Nunca rompemos el 200 de vuelta a Shopify (ver comentario arriba), pero
+    // sí lo dejamos en los logs: si el Purchase no llega a Meta, el motivo
+    // tiene que ser visible en algún lado.
+    console.error("[revalidate] No se pudo enviar el Purchase a Meta CAPI:", error);
   }
 }
