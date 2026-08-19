@@ -184,7 +184,12 @@
       "Bash(cp \"C:\\\\Users\\\\jorge\\\\OneDrive\\\\Desktop\\\\Luaser Homepage - Descarga.html\" \"C:\\\\Users\\\\jorge\\\\CLAUDE\\\\public\\\\tmp-carousel\\\\luaser-homepage-download.html\")",
       "Bash(identify \"C:\\\\Users\\\\jorge\\\\CLAUDE\\\\public\\\\trabajos\\\\quinta-carmen.jpg\")",
       "Bash(node -e \"require\\('sharp'\\)\\('C:/Users/jorge/CLAUDE/public/trabajos/quinta-carmen.jpg'\\).metadata\\(\\).then\\(m=>console.log\\(m.width,m.height,m.size\\)\\)\")",
-      "Bash(node -e \"require\\('C:/Users/jorge/CLAUDE/node_modules/sharp'\\)\\('C:/Users/jorge/CLAUDE/public/trabajos/quinta-carmen.jpg'\\).metadata\\(\\).then\\(m=>console.log\\(JSON.stringify\\(m\\)\\)\\)\")"
+      "Bash(node -e \"require\\('C:/Users/jorge/CLAUDE/node_modules/sharp'\\)\\('C:/Users/jorge/CLAUDE/public/trabajos/quinta-carmen.jpg'\\).metadata\\(\\).then\\(m=>console.log\\(JSON.stringify\\(m\\)\\)\\)\")",
+      "Bash(curl -sL \"https://d8j0ntlcm91z4.cloudfront.net/user_3Hgr5t4H8Ybh5M4IOI4jYfNBmqj/hf_20260819_023420_faa41d07-856e-4f37-9342-a562898304d2.mp4\" -o quinta-carmen-3d.mp4)",
+      "Bash(curl -sL \"https://d8j0ntlcm91z4.cloudfront.net/user_3Hgr5t4H8Ybh5M4IOI4jYfNBmqj/hf_20260819_024232_4ffc576b-25a4-4fef-b710-a7b7b2a27db8.mp4\" -o quinta-carmen-3d-v2.mp4)",
+      "mcp__4d31d033-80fd-42b2-bd0c-2815b66c4883__remove_background",
+      "Bash(curl -sL \"https://d8j0ntlcm91z4.cloudfront.net/user_3Hgr5t4H8Ybh5M4IOI4jYfNBmqj/hf_20260819_025237_a2f45b54-4ecb-4a10-b6fd-41307caf68c2.png\" -o quinta-carmen-nobg.png)",
+      "Bash(node -e \"require\\('C:/Users/jorge/CLAUDE/node_modules/sharp'\\)\\('quinta-carmen-nobg.png'\\).metadata\\(\\).then\\(m=>console.log\\(JSON.stringify\\(m\\)\\)\\)\")"
     ]
   }
 }

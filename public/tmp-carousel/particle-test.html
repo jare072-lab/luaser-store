@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Particle test — Quinta Carmen</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0B0C0E; height: 100%; overflow: hidden; }
+  #wrap { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; }
+  #hint { position: fixed; top: 16px; left: 16px; color: #7A776F; font: 13px -apple-system, sans-serif; }
+  #progress { position: fixed; bottom: 16px; left: 16px; color: #E8927A; font: 13px ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="hint">Mueve el cursor abajo = desarma · arriba = arma</div>
+<div id="progress"></div>
+<script>
+const img = new Image();
+img.src = "quinta-carmen-nobg.png";
+img.onload = () => {
+  const CANVAS_SIZE = 780;
+  const STRIDE = 4; // sample every N px of the source image — lower = more particles, slower
+
+  // Draw the sign at 62% scale, centered, so there's real margin around it for
+  // particles to scatter into without being clipped by the canvas edge — the
+  // previous version scattered particles straight off-frame (bar.md #5 fail).
+  const DRAW_SCALE = 0.62;
+  const drawSize = CANVAS_SIZE * DRAW_SCALE;
+  const offset = (CANVAS_SIZE - drawSize) / 2;
+
+  const sampleCanvas = document.createElement('canvas');
+  sampleCanvas.width = CANVAS_SIZE;
+  sampleCanvas.height = CANVAS_SIZE;
+  const sctx = sampleCanvas.getContext('2d');
+  sctx.drawImage(img, offset, offset, drawSize, drawSize);
+  const imgData = sctx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE).data;
+
+  const particles = [];
+  let sumX = 0, sumY = 0, count = 0;
+  for (let y = 0; y < CANVAS_SIZE; y += STRIDE) {
+    for (let x = 0; x < CANVAS_SIZE; x += STRIDE) {
+      const idx = (y * CANVAS_SIZE + x) * 4;
+      const a = imgData[idx + 3];
+      if (a < 40) continue; // skip transparent pixels (lower threshold = fewer edge gaps)
+      sumX += x; sumY += y; count++;
+      particles.push({
+        tx: x, ty: y, // target (assembled) position
+        r: imgData[idx], g: imgData[idx + 1], b: imgData[idx + 2], a: a / 255,
+        x, y, // current position (starts assembled)
+      });
+    }
+  }
+  const cx = sumX / count, cy = sumY / count;
+
+  // Scatter vector: outward from the shape's own centroid, so the exploded
+  // cloud still reads as "this shape came apart" (bar.md mechanism 5) rather
+  // than random noise. Scaled small AND hard-clamped to the canvas so nothing
+  // ever gets clipped at full dispersion.
+  const SCATTER_SCALE = 0.42;
+  const MARGIN = 6;
+  particles.forEach(p => {
+    const dx = p.tx - cx, dy = p.ty - cy;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const jitter = 0.7 + Math.random() * 0.6;
+    let sx = p.tx + (dx / dist) * (dist * SCATTER_SCALE) * jitter + (Math.random() - 0.5) * 10;
+    let sy = p.ty + (dy / dist) * (dist * SCATTER_SCALE) * jitter + (Math.random() - 0.5) * 10;
+    p.sx = Math.min(CANVAS_SIZE - MARGIN, Math.max(MARGIN, sx));
+    p.sy = Math.min(CANVAS_SIZE - MARGIN, Math.max(MARGIN, sy));
+  });
+
+  const canvas = document.getElementById('c');
+  canvas.width = CANVAS_SIZE;
+  canvas.height = CANVAS_SIZE;
+  const ctx = canvas.getContext('2d');
+
+  let targetProgress = 0; // 0 = fully assembled, 1 = fully scattered
+  let currentProgress = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    // Normalize cursor Y within the viewport: top = assembled (0), bottom = scattered (1)
+    targetProgress = Math.min(1, Math.max(0, e.clientY / window.innerHeight));
+  });
+  window.addEventListener('pointermove', (e) => {
+    targetProgress = Math.min(1, Math.max(0, e.clientY / window.innerHeight));
+  });
+  // Debug/test hook for automated verification without real mouse input.
+  window.__setProgress = (v) => { targetProgress = Math.min(1, Math.max(0, v)); };
+
+  function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+  function render() {
+    currentProgress += (targetProgress - currentProgress) * 0.08; // smooth follow, mechanism 4
+    const p = ease(currentProgress);
+    document.getElementById('progress').textContent = 'progress: ' + p.toFixed(2);
+
+    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+    // At rest (p≈0) the real photo renders directly, so the idle state is
+    // pixel-perfect instead of a dotted particle approximation (bar.md #1).
+    // It fades out as p increases so the transition still reads as one thing
+    // coming apart, not a hard swap between two renderers.
+    if (p < 0.97) {
+      ctx.globalAlpha = Math.min(1, (1 - p) * 1.6);
+      ctx.drawImage(img, offset, offset, drawSize, drawSize);
+      ctx.globalAlpha = 1;
+    }
+
+    // Particles fade in as the real photo fades out — near p=0 they'd otherwise
+    // sit fully opaque right on top of the smooth photo and recreate the same
+    // blocky look this overlay was added to avoid.
+    const particleAlphaMul = Math.min(1, p * 2.2);
+    if (particleAlphaMul > 0.01) {
+      for (let i = 0; i < particles.length; i++) {
+        const pt = particles[i];
+        const x = pt.tx + (pt.sx - pt.tx) * p;
+        const y = pt.ty + (pt.sy - pt.ty) * p;
+        ctx.fillStyle = `rgba(${pt.r},${pt.g},${pt.b},${pt.a * particleAlphaMul})`;
+        ctx.fillRect(x, y, STRIDE + 1, STRIDE + 1); // slight overlap closes edge stipple gaps
+      }
+    }
+    requestAnimationFrame(render);
+  }
+  render();
+  // Test-only: step N frames synchronously, bypassing rAF, for headless
+  // verification environments where rAF is paused on hidden/background tabs.
+  window.__stepFrames = (n) => { for (let i = 0; i < n; i++) render(); };
+};
+</script>
+</body>
+</html>
