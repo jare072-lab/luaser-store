@@ -41,7 +41,7 @@ export function ProductDetail({ product }: { product: ProductDetailType }) {
         </div>
         <ProductAccordion
           items={[
-            { title: "Descripción", content: product.description },
+            { title: "Descripción", html: product.descriptionHtml },
             {
               title: "Envío y producción",
               content:
