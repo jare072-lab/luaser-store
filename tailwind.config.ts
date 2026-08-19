@@ -50,6 +50,35 @@ const config: Config = {
       maxWidth: {
         content: "1280px",
       },
+      keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        "pulse-dot": {
+          "0%, 100%": { opacity: "1", transform: "scale(1)" },
+          "50%": { opacity: "0.5", transform: "scale(1.3)" },
+        },
+        shine: {
+          "0%": { transform: "translateX(-120%) skewX(-15deg)" },
+          "100%": { transform: "translateX(220%) skewX(-15deg)" },
+        },
+        "spin-slow": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
+        "spin-slow-reverse": {
+          "0%": { transform: "rotate(360deg)" },
+          "100%": { transform: "rotate(0deg)" },
+        },
+      },
+      animation: {
+        marquee: "marquee 22s linear infinite",
+        "pulse-dot": "pulse-dot 1.8s ease-in-out infinite",
+        shine: "shine 3s ease-in-out infinite",
+        "spin-slow": "spin-slow 16s linear infinite",
+        "spin-slow-reverse": "spin-slow-reverse 12s linear infinite",
+      },
     },
   },
   plugins: [],

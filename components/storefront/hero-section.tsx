@@ -43,8 +43,16 @@ export function HeroSection({ product }: { product: ShopifyProduct | null }) {
             y te cotizamos.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <ButtonLink href={product ? `/producto/${product.handle}` : "/coleccion/frontpage"} size="lg">
+            <ButtonLink
+              href={product ? `/producto/${product.handle}` : "/coleccion/frontpage"}
+              size="lg"
+              className="relative overflow-hidden"
+            >
               Cotiza el tuyo
+              <span
+                className="pointer-events-none absolute inset-0 w-1/3 -skew-x-[15deg] bg-gradient-to-r from-transparent via-white/50 to-transparent animate-shine motion-reduce:hidden"
+                aria-hidden="true"
+              />
             </ButtonLink>
             {product && (
               <span className="font-display text-2xl text-bone">

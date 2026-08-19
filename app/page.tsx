@@ -10,6 +10,7 @@ import { SocialSection } from "@/components/storefront/social-section";
 import { TestimonialsSection } from "@/components/storefront/testimonials-section";
 import { B2BSection } from "@/components/storefront/b2b-section";
 import { ContactSection } from "@/components/storefront/contact-section";
+import { Reveal } from "@/components/storefront/reveal";
 
 export const revalidate = 3600;
 
@@ -23,14 +24,30 @@ export default async function HomePage() {
         products={bestsellers?.products ?? []}
       />
       <HeroSection product={heroProduct} />
-      <TrustBar />
-      <TrabajosSection />
-      <BrandBannerSection />
-      <StorytellingSection />
-      <MaterialsSection />
-      <SocialSection />
-      <TestimonialsSection />
-      <B2BSection />
+      <Reveal>
+        <TrustBar />
+      </Reveal>
+      <Reveal>
+        <TrabajosSection />
+      </Reveal>
+      <Reveal>
+        <BrandBannerSection />
+      </Reveal>
+      <Reveal>
+        <StorytellingSection />
+      </Reveal>
+      <Reveal>
+        <MaterialsSection />
+      </Reveal>
+      <Reveal>
+        <SocialSection />
+      </Reveal>
+      <Reveal>
+        <TestimonialsSection />
+      </Reveal>
+      <Reveal>
+        <B2BSection />
+      </Reveal>
       <ContactSection />
     </>
   );

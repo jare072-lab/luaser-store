@@ -11,7 +11,7 @@ export function LogoMark({ className }: { className?: string }) {
       fill="none"
       aria-hidden="true"
     >
-      {/* Retícula — anillo exterior segmentado */}
+      {/* Retícula — anillo exterior segmentado, gira lento en sentido horario */}
       <circle
         cx="50"
         cy="52"
@@ -19,8 +19,9 @@ export function LogoMark({ className }: { className?: string }) {
         stroke="currentColor"
         strokeWidth="2"
         strokeDasharray="14 7"
+        className="origin-[50px_52px] animate-spin-slow motion-reduce:animate-none"
       />
-      {/* Retícula — anillo interior segmentado */}
+      {/* Retícula — anillo interior segmentado, gira lento en sentido contrario */}
       <circle
         cx="50"
         cy="52"
@@ -28,6 +29,7 @@ export function LogoMark({ className }: { className?: string }) {
         stroke="currentColor"
         strokeWidth="1.5"
         strokeDasharray="9 6"
+        className="origin-[50px_52px] animate-spin-slow-reverse motion-reduce:animate-none"
       />
       {/* Cruz diagonal */}
       <line x1="21" y1="23" x2="79" y2="81" stroke="currentColor" strokeWidth="2" />

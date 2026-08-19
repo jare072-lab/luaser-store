@@ -2,43 +2,37 @@ import Link from "next/link";
 import { Search, ArrowRight } from "lucide-react";
 import { CartButton } from "@/components/storefront/cart-button";
 import { Logo } from "@/components/storefront/logo";
-import { socialLinks } from "@/lib/social-links";
 
 const PHONE = "528131092383";
 const CHAT_MESSAGE = "Hola, tengo una duda sobre sus productos";
 
 const chatHref = `https://wa.me/${PHONE}?text=${encodeURIComponent(CHAT_MESSAGE)}`;
 
+const ANNOUNCEMENTS = [
+  "Ofertas de temporada en letreros y piezas de acrílico",
+  "Envíos a todo México",
+  "Cotización por WhatsApp en 30 minutos",
+  "Maquilamos cualquier pieza a la medida",
+];
+
 export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
   return (
     <header className="sticky top-0 z-50 bg-ink/95 backdrop-blur border-b border-ink-border">
-      <div className="bg-gradient-to-r from-pitch via-pitch-light to-pitch text-bone text-xs sm:text-sm font-body">
-        <div className="mx-auto max-w-content px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-center sm:justify-between gap-x-3 gap-y-1.5">
-          <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-center sm:text-left">
-            <span className="inline-flex items-center gap-1.5 font-semibold tracking-wide">
-              <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" aria-hidden="true" />
-              🔥 Descuentos de hasta 50%
-            </span>
-            <span className="hidden sm:inline text-bone/40">·</span>
-            <span className="text-bone/90">📦 Envíos a todo México</span>
-            <span className="inline-flex items-center gap-1 rounded-full bg-terracotta px-2.5 py-0.5 text-[11px] sm:text-xs font-semibold text-bone">
-              ⏳ Solo hasta el 20 de agosto
-            </span>
-          </div>
-          <div className="hidden sm:flex items-center gap-2 shrink-0">
-            {socialLinks.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={social.label}
-                className="flex h-6 w-6 items-center justify-center rounded-full text-bone/90 transition-colors hover:text-ink hover:bg-bone"
-              >
-                {social.icon}
-              </a>
-            ))}
-          </div>
+      <div className="relative overflow-hidden bg-gradient-to-r from-pitch via-pitch-light to-pitch text-bone text-xs sm:text-sm font-body py-2.5">
+        <div className="flex w-max animate-marquee motion-reduce:animate-none">
+          {[0, 1].map((rep) => (
+            <div key={rep} className="flex shrink-0 items-center gap-8 pr-8" aria-hidden={rep === 1}>
+              {ANNOUNCEMENTS.map((text, i) => (
+                <span key={i} className="inline-flex items-center gap-1.5 whitespace-nowrap font-medium">
+                  <span
+                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-gold animate-pulse-dot motion-reduce:animate-none"
+                    aria-hidden="true"
+                  />
+                  {text}
+                </span>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
       <div className="mx-auto max-w-content px-4 sm:px-6 flex items-center justify-between h-16">
@@ -71,11 +65,15 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
           </a>
           <Link
             href="/cotiza"
-            className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3 sm:px-4 py-2 font-body text-sm font-semibold text-ink transition-colors hover:bg-gold-bright"
+            className="relative inline-flex items-center gap-1.5 overflow-hidden rounded-full bg-gold px-3 sm:px-4 py-2 font-body text-sm font-semibold text-ink transition-colors hover:bg-gold-bright"
           >
             <span className="sm:hidden">Cotizar</span>
             <span className="hidden sm:inline">Solicitar cotización</span>
             <ArrowRight className="h-4 w-4" />
+            <span
+              className="pointer-events-none absolute inset-0 w-2/5 -skew-x-[15deg] bg-gradient-to-r from-transparent via-white/55 to-transparent animate-shine motion-reduce:hidden"
+              aria-hidden="true"
+            />
           </Link>
           <button aria-label="Buscar" className="hover:text-gold transition-colors">
             <Search className="h-5 w-5" />
