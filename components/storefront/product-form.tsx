@@ -54,9 +54,15 @@ export function ProductForm({
   const missingRequired = getMissingRequired(personalizationFields, personalization);
   const hasPersonalization = personalizationFields.length > 0;
 
-  const hasLogoUpload = product.tags.includes("logo");
+  // Piezas que se fabrican a partir de un archivo del cliente. La palabra cambia
+  // porque no es lo mismo pedirle el logo a un negocio que la foto a quien
+  // compra un regalo, y el mismo bloque sirve para los dos casos.
+  const artwork = product.tags.includes("foto")
+    ? { noun: "foto", question: "¿Ya tienes tu foto lista?" }
+    : { noun: "logo", question: "¿Ya tienes tu logo listo?" };
+  const hasLogoUpload = product.tags.includes("logo") || product.tags.includes("foto");
   const logoWhatsappHref = `https://wa.me/528131092383?text=${encodeURIComponent(
-    `Hola, acabo de comprar "${product.title}" y quiero enviarles mi logo.`
+    `Hola, acabo de comprar "${product.title}" y quiero enviarles mi ${artwork.noun}.`
   )}`;
 
   function handleAddToCart() {
@@ -154,10 +160,10 @@ export function ProductForm({
       {hasLogoUpload && (
         <div className="mt-6 rounded-xl border border-ink-border bg-ink-soft px-4 py-3">
           <p className="text-xs font-body font-semibold uppercase tracking-wide text-graystone-100 mb-1">
-            ¿Ya tienes tu logo listo?
+            {artwork.question}
           </p>
           <p className="text-sm font-body text-graystone-100 mb-3">
-            Compra ahora y mándanos tu logo por WhatsApp — te damos atención personalizada para
+            Compra ahora y mándanos tu {artwork.noun} por WhatsApp — te damos atención personalizada para
             que quede exactamente como lo imaginas.
           </p>
           <a
@@ -166,7 +172,7 @@ export function ProductForm({
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full border border-pitch/50 bg-pitch/10 px-4 py-2 text-sm font-body font-semibold text-pitch-light transition-colors hover:bg-pitch/20"
           >
-            Enviar mi logo por WhatsApp
+            Enviar mi {artwork.noun} por WhatsApp
           </a>
         </div>
       )}
