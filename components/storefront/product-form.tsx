@@ -57,10 +57,17 @@ export function ProductForm({
   // Piezas que se fabrican a partir de un archivo del cliente. La palabra cambia
   // porque no es lo mismo pedirle el logo a un negocio que la foto a quien
   // compra un regalo, y el mismo bloque sirve para los dos casos.
-  const artwork = product.tags.includes("foto")
+  // Las etiquetas se normalizan igual que en getPersonalizationFields: si en
+  // Shopify alguien escribe "Foto" o " logo", el bloque debe seguir saliendo en
+  // vez de desaparecer sin aviso.
+  const etiquetas = useMemo(
+    () => product.tags.map((tag) => tag.toLowerCase().trim()),
+    [product.tags]
+  );
+  const artwork = etiquetas.includes("foto")
     ? { noun: "foto", question: "¿Ya tienes tu foto lista?" }
     : { noun: "logo", question: "¿Ya tienes tu logo listo?" };
-  const hasLogoUpload = product.tags.includes("logo") || product.tags.includes("foto");
+  const hasLogoUpload = etiquetas.includes("logo") || etiquetas.includes("foto");
   const logoWhatsappHref = `https://wa.me/528131092383?text=${encodeURIComponent(
     `Hola, acabo de comprar "${product.title}" y quiero enviarles mi ${artwork.noun}.`
   )}`;

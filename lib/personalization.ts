@@ -61,6 +61,32 @@ const CAMPOS_BUZON: PersonalizationField[] = [
   CAMPO_NOTAS,
 ];
 
+// Recuerdos de bautizo: la pieza lleva grabados el nombre y la fecha del evento.
+// Sin la fecha el taller no puede fabricarla, así que va obligatoria igual que el
+// nombre; antes caía en CAMPOS_GRABADO, que solo pide un texto, y el pedido habría
+// entrado sin fecha.
+const CAMPOS_BAUTIZO: PersonalizationField[] = [
+  {
+    key: "Nombre a grabar",
+    label: "Nombre del bebé",
+    type: "text",
+    required: true,
+    maxLength: 15,
+    placeholder: "Santiago",
+    help: "Como quieres que aparezca grabado, con acentos si aplica.",
+  },
+  {
+    key: "Fecha",
+    label: "Fecha del bautizo",
+    type: "text",
+    required: true,
+    maxLength: 10,
+    placeholder: "12.10.25",
+    help: "Se graba tal cual la escribas. Ej: 12.10.25",
+  },
+  CAMPO_NOTAS,
+];
+
 // Resto del catálogo personalizable: placa o grabado con un solo texto.
 const CAMPOS_GRABADO: PersonalizationField[] = [
   {
@@ -80,6 +106,7 @@ export function getPersonalizationFields(tags: string[]): PersonalizationField[]
 
   if (!normalizadas.includes("personalizado")) return [];
   if (normalizadas.includes("buzon") || normalizadas.includes("buzón")) return CAMPOS_BUZON;
+  if (normalizadas.includes("bautizo")) return CAMPOS_BAUTIZO;
 
   return CAMPOS_GRABADO;
 }
