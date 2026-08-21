@@ -37,12 +37,15 @@ export interface CartLineInput {
   attributes?: { key: string; value: string }[];
 }
 
-export async function createCart(lines?: CartLineInput[]): Promise<Cart> {
+export async function createCart(
+  lines?: CartLineInput[],
+  attributes?: { key: string; value: string }[]
+): Promise<Cart> {
   const data = await shopifyFetch<{
     cartCreate: { cart: RawCart; userErrors: { message: string }[] };
   }>({
     query: CART_CREATE_MUTATION,
-    variables: { lines },
+    variables: { lines, attributes },
     cache: "no-store",
   });
 

@@ -7,6 +7,7 @@ import { CartDrawer } from "@/components/storefront/cart-drawer";
 import { WhatsAppButton } from "@/components/storefront/whatsapp-button";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
+import { Attribution } from "@/components/analytics/attribution";
 import { getCurrentCart } from "@/app/actions/cart";
 import "./globals.css";
 
@@ -62,6 +63,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="font-body">
         {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
         {META_PIXEL_ID && <MetaPixel pixelId={META_PIXEL_ID} />}
+        <Attribution />
         <CartUIProvider>
           <SiteHeader cartQuantity={cart?.totalQuantity ?? 0} />
           <main>{children}</main>
