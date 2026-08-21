@@ -101,6 +101,10 @@ const config: Config = {
             textShadow: "0 0 20px rgba(232,146,122,0.5)",
           },
         },
+        "promo-float": {
+          "0%, 100%": { transform: "translateY(0)", opacity: "0.25" },
+          "50%": { transform: "translateY(-26px)", opacity: "0.7" },
+        },
         "promo-drift": {
           "0%, 100%": { transform: "translate(0,0)" },
           "50%": { transform: "translate(18px,-6px)" },
@@ -124,6 +128,7 @@ const config: Config = {
         // mantenga oculto durante su retraso en vez de parpadear visible antes.
         "promo-in": "promo-in 0.5s cubic-bezier(0.215,0.61,0.355,1) backwards",
         "promo-pop": "promo-pop 0.7s cubic-bezier(0.34,1.56,0.64,1) backwards",
+        "promo-float": "promo-float 12s ease-in-out infinite",
         "promo-drift": "promo-drift 9s ease-in-out infinite",
         "badge-float": "badge-float 5s ease-in-out infinite",
       },

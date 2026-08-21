@@ -1,6 +1,7 @@
 import { getHomeData } from "@/lib/shopify/home";
 import { maxDescuento } from "@/lib/promociones";
 import { MaquilaHeroSection } from "@/components/storefront/maquila-hero-section";
+import { PromoBanner } from "@/components/storefront/promo-banner";
 import { HeroSection } from "@/components/storefront/hero-section";
 import { TrustBar } from "@/components/storefront/trust-bar";
 import { TrabajosSection } from "@/components/storefront/trabajos-section";
@@ -22,8 +23,9 @@ export default async function HomePage() {
 
   return (
     <>
+      {descuentoMax > 0 && <PromoBanner maxDescuento={descuentoMax} />}
       <Reveal>
-        <MaquilaHeroSection maxDescuento={descuentoMax} />
+        <MaquilaHeroSection />
       </Reveal>
       <BestsellersSection
         title={bestsellers?.title ?? "Página de inicio"}

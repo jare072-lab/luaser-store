@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
-import { PromoBanner } from "@/components/storefront/promo-banner";
 
 const PHONE = "528131092383";
 const QUOTE_MESSAGE = "Hola, quiero cotizar un proyecto de maquila / mayoreo";
@@ -8,11 +7,10 @@ const quoteHref = `https://wa.me/${PHONE}?text=${encodeURIComponent(QUOTE_MESSAG
 
 // Bento-style B2B teaser above the fold: a big "maquila a la medida" pitch plus
 // three quick-link tiles (materials, social proof stat, real client work).
-export function MaquilaHeroSection({ maxDescuento = 0 }: { maxDescuento?: number }) {
+export function MaquilaHeroSection() {
   return (
     <section className="mx-auto max-w-content px-4 sm:px-6 pt-10 pb-2">
       <div className="relative overflow-hidden rounded-[28px] border border-ink-border [background:radial-gradient(circle_at_30%_20%,#1C2F4D,#0B0C0E_60%)]">
-        {maxDescuento > 0 && <PromoBanner maxDescuento={maxDescuento} />}
         {/* Decorative glow blobs — purely atmospheric, aria-hidden */}
         <span
           aria-hidden="true"
