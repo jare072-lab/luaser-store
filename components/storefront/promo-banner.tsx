@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { NumeroQueSube, CuentaRegresiva } from "@/components/storefront/promo-contador";
 
 const PHONE = "528131092383";
 const WA_MESSAGE = "Hola, quiero conocer los productos con descuento";
@@ -31,7 +32,15 @@ const PARTICULAS = [
  * `motion-reduce`, y como usan `backwards`, quien pide menos movimiento ve el
  * banner completo y quieto en vez de un bloque invisible.
  */
-export function PromoBanner({ maxDescuento }: { maxDescuento: number }) {
+export function PromoBanner({
+  maxDescuento,
+  finPromo,
+}: {
+  maxDescuento: number;
+  /** Fecha ISO de fin. Sin ella no se muestra contador: un plazo inventado
+   *  que se reinicia solo cuesta más credibilidad de la que gana en urgencia. */
+  finPromo?: string;
+}) {
   return (
     <section className="relative isolate overflow-hidden bg-ink">
       {/* Atmósfera: dos manchas de color que derivan lento, aria-hidden */}
@@ -81,7 +90,7 @@ export function PromoBanner({ maxDescuento }: { maxDescuento: number }) {
             className="inline-block bg-gradient-to-b from-gold-bright via-gold to-gold-dark bg-clip-text text-transparent animate-promo-pop motion-reduce:animate-none"
             style={{ animationDelay: "0.15s", filter: "drop-shadow(0 0 28px rgba(232,146,122,0.35))" }}
           >
-            {maxDescuento}%
+            <NumeroQueSube objetivo={maxDescuento} />
           </span>
           <span className="block">de descuento</span>
         </h2>
@@ -94,9 +103,18 @@ export function PromoBanner({ maxDescuento }: { maxDescuento: number }) {
           taller de Monterrey.
         </p>
 
+        {finPromo && (
+          <div
+            className="mt-7 animate-promo-in motion-reduce:animate-none"
+            style={{ animationDelay: "1s" }}
+          >
+            <CuentaRegresiva hasta={finPromo} />
+          </div>
+        )}
+
         <div
           className="mt-9 flex flex-col items-center gap-3 sm:flex-row animate-promo-in motion-reduce:animate-none"
-          style={{ animationDelay: "1.1s" }}
+          style={{ animationDelay: "1.25s" }}
         >
           <Link
             href="/coleccion/frontpage"
