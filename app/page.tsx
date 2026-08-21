@@ -1,4 +1,5 @@
 import { getHomeData } from "@/lib/shopify/home";
+import { maxDescuento } from "@/lib/promociones";
 import { MaquilaHeroSection } from "@/components/storefront/maquila-hero-section";
 import { HeroSection } from "@/components/storefront/hero-section";
 import { TrustBar } from "@/components/storefront/trust-bar";
@@ -17,11 +18,12 @@ export const revalidate = 3600;
 
 export default async function HomePage() {
   const { heroProduct, bestsellers } = await getHomeData();
+  const descuentoMax = maxDescuento(bestsellers?.products ?? []);
 
   return (
     <>
       <Reveal>
-        <MaquilaHeroSection />
+        <MaquilaHeroSection maxDescuento={descuentoMax} />
       </Reveal>
       <BestsellersSection
         title={bestsellers?.title ?? "Página de inicio"}

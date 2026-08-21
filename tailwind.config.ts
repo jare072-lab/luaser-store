@@ -85,6 +85,26 @@ const config: Config = {
           "92%": { opacity: "1" },
           "100%": { transform: "translateX(110%)", opacity: "0" },
         },
+        "promo-in": {
+          "0%": { opacity: "0", transform: "translateY(14px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "promo-pop": {
+          "0%": {
+            opacity: "0",
+            transform: "perspective(600px) rotateX(50deg) scale(0.4)",
+            textShadow: "0 0 80px rgba(232,146,122,0)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "perspective(600px) rotateX(0deg) scale(1)",
+            textShadow: "0 0 20px rgba(232,146,122,0.5)",
+          },
+        },
+        "promo-drift": {
+          "0%, 100%": { transform: "translate(0,0)" },
+          "50%": { transform: "translate(18px,-6px)" },
+        },
         "badge-float": {
           "0%, 100%": { transform: "translateY(0px) rotate(-2deg)" },
           "50%": { transform: "translateY(-8px) rotate(2deg)" },
@@ -99,6 +119,12 @@ const config: Config = {
         blob1: "blob1 9s ease-in-out infinite",
         blob2: "blob2 11s ease-in-out infinite",
         beam: "beam 4s ease-in-out infinite",
+        // La curva de entrada es easeOutCubic; el titular usa easeOutBack, que
+        // rebasa el destino y regresa. "backwards" hace que el elemento se
+        // mantenga oculto durante su retraso en vez de parpadear visible antes.
+        "promo-in": "promo-in 0.5s cubic-bezier(0.215,0.61,0.355,1) backwards",
+        "promo-pop": "promo-pop 0.7s cubic-bezier(0.34,1.56,0.64,1) backwards",
+        "promo-drift": "promo-drift 9s ease-in-out infinite",
         "badge-float": "badge-float 5s ease-in-out infinite",
       },
     },

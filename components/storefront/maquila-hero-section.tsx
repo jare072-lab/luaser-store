@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
+import { PromoBanner } from "@/components/storefront/promo-banner";
 
 const PHONE = "528131092383";
 const QUOTE_MESSAGE = "Hola, quiero cotizar un proyecto de maquila / mayoreo";
@@ -7,10 +8,11 @@ const quoteHref = `https://wa.me/${PHONE}?text=${encodeURIComponent(QUOTE_MESSAG
 
 // Bento-style B2B teaser above the fold: a big "maquila a la medida" pitch plus
 // three quick-link tiles (materials, social proof stat, real client work).
-export function MaquilaHeroSection() {
+export function MaquilaHeroSection({ maxDescuento = 0 }: { maxDescuento?: number }) {
   return (
     <section className="mx-auto max-w-content px-4 sm:px-6 pt-10 pb-2">
       <div className="relative overflow-hidden rounded-[28px] border border-ink-border [background:radial-gradient(circle_at_30%_20%,#1C2F4D,#0B0C0E_60%)]">
+        {maxDescuento > 0 && <PromoBanner maxDescuento={maxDescuento} />}
         {/* Decorative glow blobs — purely atmospheric, aria-hidden */}
         <span
           aria-hidden="true"
@@ -29,6 +31,7 @@ export function MaquilaHeroSection() {
           className="pointer-events-none absolute left-0 bottom-[30%] h-0.5 w-[40%] bg-gradient-to-r from-transparent via-pitch-light to-transparent blur-[0.5px] animate-beam motion-reduce:hidden [animation-delay:2s]"
         />
 
+        <div className="relative">
         {/* Corner badge */}
         <span
           className="absolute right-7 top-6 inline-flex items-center gap-1.5 rounded-full border border-gold/35 bg-ink/55 px-3.5 py-1.5 font-body text-[11px] font-semibold text-bone backdrop-blur-md animate-badge-float motion-reduce:animate-none"
@@ -63,6 +66,8 @@ export function MaquilaHeroSection() {
               aria-hidden="true"
             />
           </a>
+        </div>
+
         </div>
 
         {/* Quick-link tiles */}
