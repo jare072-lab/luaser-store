@@ -421,7 +421,115 @@ async function productHero({
     .toFile(outPath);
 }
 
-const TEMPLATES = { fullBleed, bottomBand, sidePanel, polaroid, quoteCard, productHero };
+
+/**
+ * Producto centrado sobre un campo de color plano, estilo anuncio de bebida.
+ *
+ * El truco de este layout es que el producto NO contrasta contra el fondo: emerge
+ * de el. Como no hay recorte real disponible (segmentar un vaso sobre una mesa
+ * llena de gente no se puede hacer con compositing), la foto se disuelve con una
+ * mascara radial hasta el color del fondo. Eso deja el vaso iluminado al centro y
+ * manda el fondo movido de la foto original al mismo campo plano, sin necesidad
+ * de generar nada.
+ */
+async function splashHero({
+  size = 1080,
+  brand, accentColor,
+  bgColor, bgImagePath,
+  heroPhotoPath, heroScale = 0.62, heroFocus = 0.45, heroIsCutout = false, heroTopPct,
+  eyebrow, headline, subhead, priceLine, ctaLabel,
+  logoPath,
+  outPath,
+}) {
+  const accent = accentColor || brand.accent;
+  const fondo = bgColor || brand.navy;
+
+  const heroW = Math.round(size * heroScale);
+  const heroH = Math.round(heroW * 1.35);
+
+  // Mascara radial: opaca en el centro, transparente en el borde. Es lo que
+  // funde la foto con el fondo plano sin recortar el producto.
+  const mascara = Buffer.from(`<svg width="${heroW}" height="${heroH}" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="m" cx="50%" cy="${Math.round(heroFocus * 100)}%" r="50%">
+      <stop offset="0" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="0.34" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient></defs>
+    <rect width="${heroW}" height="${heroH}" fill="url(#m)"/></svg>`);
+
+  const hero = heroIsCutout
+    ? await sharp(heroPhotoPath).resize(heroW, heroH, { fit: "inside" }).png().toBuffer()
+    : await sharp(heroPhotoPath)
+        .resize(heroW, heroH, { fit: "cover" })
+        .composite([{ input: mascara, blend: "dest-in" }])
+        .png().toBuffer();
+
+  // Reflejo: el mismo héroe volteado y desvanecido. Da el piso liquido de la
+  // referencia sin tener que inventar un charco.
+  const heroMeta = await sharp(hero).metadata();
+  const hW = heroMeta.width, hH = heroMeta.height;
+  const refH = Math.round(hH * 0.30);
+  const desvanece = Buffer.from(`<svg width="${hW}" height="${refH}" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient></defs>
+    <rect width="${hW}" height="${refH}" fill="url(#f)"/></svg>`);
+
+  const reflejo = await sharp(hero).flip()
+    .extract({ left: 0, top: 0, width: hW, height: refH })
+    .composite([{ input: desvanece, blend: "dest-in" }])
+    .blur(3).png().toBuffer();
+
+  const heroLeft = Math.round((size - hW) / 2);
+  const heroTop = Math.round(size * (heroTopPct || 0.24));
+  const refTop = heroTop + hH - Math.round(hH * 0.10);
+
+  const logo = logoPath ? await circleLogo(logoPath, 96) : null;
+  const anillo = logoPath ? ringSvg(96) : null;
+
+  const T = size, cx = T / 2;
+  const velo = Buffer.from(`<svg width="${T}" height="${T}" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="v" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${fondo}" stop-opacity="0"/>
+      <stop offset="1" stop-color="${fondo}" stop-opacity="0.97"/>
+    </linearGradient></defs>
+    <rect y="${Math.round(T * 0.60)}" width="${T}" height="${Math.round(T * 0.40)}" fill="url(#v)"/></svg>`);
+  const texto = Buffer.from(`<svg width="${T}" height="${T}" xmlns="http://www.w3.org/2000/svg">
+    <text x="${cx}" y="86" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700"
+      font-size="26" letter-spacing="7" fill="${accent}">${escapeXml(stripEmoji(eyebrow || ""))}</text>
+    <text x="${cx}" y="152" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900"
+      font-size="64" fill="#ffffff">${escapeXml(stripEmoji(headline || ""))}</text>
+    <text x="${cx}" y="196" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700"
+      font-size="30" fill="#ffffff" opacity="0.88">${escapeXml(stripEmoji(subhead || ""))}</text>
+
+    <rect x="${cx - 300}" y="${T - 182}" width="600" height="44" rx="22" fill="${fondo}" opacity="0.82"/>
+    <text x="${cx}" y="${T - 152}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700"
+      font-size="26" fill="${accent}">${escapeXml(stripEmoji(priceLine || ""))}</text>
+    <rect x="${cx - 175}" y="${T - 122}" width="350" height="74" rx="37" fill="#ffffff"/>
+    <text x="${cx}" y="${T - 74}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800"
+      font-size="30" letter-spacing="2" fill="${fondo}">${escapeXml(stripEmoji(ctaLabel || ""))}</text>
+  </svg>`);
+
+  const capas = [
+    { input: reflejo, left: heroLeft, top: refTop },
+    { input: hero, left: heroLeft, top: heroTop },
+    ...(heroIsCutout ? [] : [{ input: velo, left: 0, top: 0 }]),
+    { input: texto, left: 0, top: 0 },
+  ];
+  if (logo) {
+    capas.push({ input: logo, left: size - 96 - 40, top: 40 });
+    capas.push({ input: Buffer.from(anillo), left: size - 96 - 40, top: 40 });
+  }
+
+  const base = bgImagePath
+    ? sharp(await sharp(bgImagePath).resize(size, size, { fit: "cover" }).toBuffer())
+    : sharp({ create: { width: size, height: size, channels: 3, background: fondo } });
+  await base.composite(capas).png().toFile(outPath);
+  return outPath;
+}
+
+const TEMPLATES = { fullBleed, bottomBand, sidePanel, polaroid, quoteCard, productHero, splashHero };
 
 // ---- CLI entry point ----
 
@@ -450,4 +558,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { fullBleed, bottomBand, sidePanel, polaroid, quoteCard, productHero, BRANDS, stripEmoji, wrapText };
+module.exports = { fullBleed, bottomBand, sidePanel, polaroid, quoteCard, productHero, splashHero, BRANDS, stripEmoji, wrapText };
