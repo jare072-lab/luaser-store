@@ -30,7 +30,16 @@ export function NumeroQueSube({ objetivo, duracion = 1100 }: { objetivo: number;
       if (p < 1) raf = requestAnimationFrame(paso);
     };
     raf = requestAnimationFrame(paso);
-    return () => cancelAnimationFrame(raf);
+
+    // Red de seguridad: el navegador PAUSA requestAnimationFrame mientras la
+    // pestaña no está visible. Sin esto, quien abre la tienda en una pestaña de
+    // fondo y cambia a ella después se queda viendo "Hasta 0% de descuento".
+    const red = setTimeout(() => setValor(objetivo), duracion + 250);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(red);
+    };
   }, [objetivo, duracion]);
 
   // El ancho no cambia mientras sube: sin esto el titular brinca de posición

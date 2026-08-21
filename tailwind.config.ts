@@ -101,6 +101,18 @@ const config: Config = {
             textShadow: "0 0 20px rgba(232,146,122,0.5)",
           },
         },
+        "promo-card": {
+          "0%": { opacity: "0", transform: "translateZ(-80px) rotateY(-85deg) scale(0.9)" },
+          "100%": { opacity: "1", transform: "translateZ(0) rotateY(0deg) scale(1)" },
+        },
+        "promo-badge": {
+          "0%": { opacity: "0", transform: "scale(0.5) rotate(-12deg)" },
+          "100%": { opacity: "1", transform: "scale(1) rotate(0deg)" },
+        },
+        "promo-shine-text": {
+          "0%": { backgroundPosition: "-100% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
         "promo-float": {
           "0%, 100%": { transform: "translateY(0)", opacity: "0.25" },
           "50%": { transform: "translateY(-26px)", opacity: "0.7" },
@@ -128,6 +140,9 @@ const config: Config = {
         // mantenga oculto durante su retraso en vez de parpadear visible antes.
         "promo-in": "promo-in 0.5s cubic-bezier(0.215,0.61,0.355,1) backwards",
         "promo-pop": "promo-pop 0.7s cubic-bezier(0.34,1.56,0.64,1) backwards",
+        "promo-card": "promo-card 0.7s cubic-bezier(0.215,0.61,0.355,1) backwards",
+        "promo-badge": "promo-badge 0.5s cubic-bezier(0.34,1.56,0.64,1) backwards",
+        "promo-shine-text": "promo-shine-text 7.5s linear infinite",
         "promo-float": "promo-float 12s ease-in-out infinite",
         "promo-drift": "promo-drift 9s ease-in-out infinite",
         "badge-float": "badge-float 5s ease-in-out infinite",

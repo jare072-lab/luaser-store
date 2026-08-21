@@ -23,7 +23,9 @@ export default async function HomePage() {
 
   return (
     <>
-      {descuentoMax > 0 && <PromoBanner maxDescuento={descuentoMax} />}
+      {descuentoMax > 0 && (
+        <PromoBanner maxDescuento={descuentoMax} productos={bestsellers?.products ?? []} />
+      )}
       <Reveal>
         <MaquilaHeroSection />
       </Reveal>
