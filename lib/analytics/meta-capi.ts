@@ -6,15 +6,26 @@ interface MetaCapiEvent {
   eventName: string;
   eventId: string;
   customData: Record<string, unknown>;
+  // Página donde ocurrió el evento. Meta la usa para atribuirlo y para casarlo
+  // con el evento de navegador que trae el mismo eventId.
+  eventSourceUrl?: string;
   // Hashes SHA-256 (em/ph) para Advanced Matching — mejora el Event Match
   // Quality en eventos server-side donde no hay cookie de navegador.
-  userData?: Record<string, string[] | undefined>;
+  // fbp/fbc/client_user_agent/client_ip_address viajan en claro: son la huella
+  // que el pixel ya dejó en el navegador, y es lo que mejor casa ambos lados.
+  userData?: Record<string, string | string[] | undefined>;
 }
 
 // Espejo server-side del evento de Meta Pixel: sobrevive a bloqueadores de
 // anuncios y a Safari/ITP. Nunca debe romper el flujo de compra, por eso
 // atrapa cualquier error en silencio.
-export async function sendMetaCapiEvent({ eventName, eventId, customData, userData }: MetaCapiEvent) {
+export async function sendMetaCapiEvent({
+  eventName,
+  eventId,
+  customData,
+  eventSourceUrl,
+  userData,
+}: MetaCapiEvent) {
   if (!PIXEL_ID || !ACCESS_TOKEN) return;
 
   try {
@@ -30,6 +41,7 @@ export async function sendMetaCapiEvent({ eventName, eventId, customData, userDa
               event_time: Math.floor(Date.now() / 1000),
               event_id: eventId,
               action_source: "website",
+              event_source_url: eventSourceUrl,
               custom_data: customData,
               user_data: userData,
             },

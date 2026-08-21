@@ -10,6 +10,7 @@ import {
   type CartLineInput,
 } from "@/lib/shopify/cart";
 import { sendMetaCapiEvent } from "@/lib/analytics/meta-capi";
+import { getBrowserUserData } from "@/lib/analytics/browser-identity";
 
 const CART_COOKIE = "luaser_cart_id";
 const ATTRIB_COOKIE = "luaser_attrib";
@@ -68,6 +69,7 @@ interface AddToCartAnalytics {
   contentName: string;
   value: number;
   currency: string;
+  sourceUrl?: string;
 }
 
 export async function addToCartAction(input: CartLineInput, analytics?: AddToCartAnalytics) {
@@ -78,12 +80,14 @@ export async function addToCartAction(input: CartLineInput, analytics?: AddToCar
     await sendMetaCapiEvent({
       eventName: "AddToCart",
       eventId: analytics.eventId,
+      eventSourceUrl: analytics.sourceUrl,
       customData: {
         content_ids: [analytics.contentId],
         content_name: analytics.contentName,
         value: analytics.value,
         currency: analytics.currency,
       },
+      userData: getBrowserUserData(),
     });
   }
 

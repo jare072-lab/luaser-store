@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ProductGallery } from "@/components/storefront/product-gallery";
 import { ProductForm } from "@/components/storefront/product-form";
 import { ProductAccordion } from "@/components/storefront/product-accordion";
+import { ViewContentTracker } from "@/components/analytics/view-content-tracker";
 import type { ProductDetail as ProductDetailType, ProductVariant } from "@/lib/shopify/types";
 
 function findVariant(variants: ProductVariant[], selected: Record<string, string>) {
@@ -20,8 +21,19 @@ export function ProductDetail({ product }: { product: ProductDetailType }) {
 
   const selectedVariant = findVariant(product.variants, selected) ?? product.variants[0];
 
+  // ViewContent se manda con la variante por defecto, no con la seleccionada:
+  // el evento cuenta productos vistos, y cambiar de color o de medida no es
+  // una vista nueva.
+  const defaultVariant = product.variants[0];
+
   return (
     <>
+      <ViewContentTracker
+        contentId={defaultVariant.id}
+        contentName={product.title}
+        price={Number(defaultVariant.price.amount)}
+        currency={defaultVariant.price.currencyCode}
+      />
       <ProductGallery
         images={product.images}
         videos={product.videos}

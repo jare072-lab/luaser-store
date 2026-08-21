@@ -103,6 +103,7 @@ export function ProductForm({
           contentName: product.title,
           value: price * quantity,
           currency,
+          sourceUrl: window.location.href,
         }
       );
 

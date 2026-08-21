@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { X, Minus, Plus, Loader2 } from "lucide-react";
 import { useCartUI } from "@/components/storefront/cart-ui-context";
 import { updateCartLineAction, removeCartLineAction } from "@/app/actions/cart";
+import { reportInitiateCheckoutAction } from "@/app/actions/analytics";
+import { trackInitiateCheckout } from "@/lib/analytics/track";
 import { formatMXN, cn } from "@/lib/utils";
 import type { Cart, CartLine } from "@/lib/shopify/types";
 
@@ -88,9 +90,54 @@ function CartLineRow({ line }: { line: CartLine }) {
   );
 }
 
+// Margen que le damos al espejo server-side antes de mandar a la persona al
+// checkout. Nadie debe esperar por analítica, pero sin ningún margen la
+// petición se cancela al navegar y el InitiateCheckout se pierde justo en el
+// paso que más importa.
+const MIRROR_GRACE_MS = 600;
+
 export function CartDrawer({ cart }: { cart: Cart | null }) {
   const { isOpen, close } = useCartUI();
+  const [isLeaving, setIsLeaving] = useState(false);
   const lines = cart?.lines ?? [];
+
+  function handleCheckout(event: React.MouseEvent<HTMLAnchorElement>) {
+    if (!cart) return;
+
+    // El checkout vive en el dominio de Shopify: en cuanto navegamos se corta
+    // todo lo que quedó en vuelo, así que tomamos el control de la navegación.
+    event.preventDefault();
+    setIsLeaving(true);
+
+    const eventId = crypto.randomUUID();
+    const currency = cart.cost.subtotalAmount.currencyCode;
+    const value = Number(cart.cost.subtotalAmount.amount);
+    const items = cart.lines.map((line) => ({
+      id: line.merchandise.id,
+      name: line.merchandise.product.title,
+      price: Number(line.merchandise.price.amount),
+      quantity: line.quantity,
+    }));
+
+    trackInitiateCheckout({ items, value, currency }, eventId);
+
+    const mirror = reportInitiateCheckoutAction({
+      eventId,
+      contentIds: items.map((item) => item.id),
+      numItems: items.reduce((sum, item) => sum + item.quantity, 0),
+      value,
+      currency,
+      sourceUrl: window.location.href,
+    }).catch(() => {
+      // Un fallo de analítica jamás debe dejar a alguien atorado en el carrito.
+    });
+
+    const grace = new Promise((resolve) => setTimeout(resolve, MIRROR_GRACE_MS));
+
+    void Promise.race([mirror, grace]).then(() => {
+      window.location.href = cart.checkoutUrl;
+    });
+  }
 
   return (
     <div
@@ -140,9 +187,14 @@ export function CartDrawer({ cart }: { cart: Cart | null }) {
               </div>
               <a
                 href={cart?.checkoutUrl}
-                className="block w-full text-center rounded-full bg-gold text-ink font-body font-semibold h-12 leading-[3rem] hover:bg-gold-bright transition-colors"
+                onClick={handleCheckout}
+                aria-disabled={isLeaving}
+                className={cn(
+                  "block w-full text-center rounded-full bg-gold text-ink font-body font-semibold h-12 leading-[3rem] transition-colors",
+                  isLeaving ? "pointer-events-none opacity-70" : "hover:bg-gold-bright"
+                )}
               >
-                Finalizar compra
+                {isLeaving ? "Llevándote al pago..." : "Finalizar compra"}
               </a>
             </div>
           </>
