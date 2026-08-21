@@ -16,21 +16,41 @@ function bestVideoSource(video: ShopifyVideo) {
   return mp4Sources.sort((a, b) => b.height - a.height)[0] ?? video.sources[0];
 }
 
+
+/** Sin acentos y en minusculas, para que "Sagrado Corazón" case con el alt. */
+function normaliza(texto: string) {
+  return texto.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
+
 export function ProductGallery({
   images,
   videos = [],
   title,
   variantImage,
+  etiquetas = [],
 }: {
   images: ShopifyImage[];
   videos?: ShopifyVideo[];
   title: string;
   variantImage?: ShopifyImage | null;
+  /** Valores de la opcion elegida, p. ej. "Virgen de Guadalupe". */
+  etiquetas?: string[];
 }) {
   const gallery = useMemo<GallerySlide[]>(() => {
+    // Si ninguna imagen trae la etiqueta del valor elegido, no se filtra nada:
+    // los productos que no siguen esta convencion siguen mostrando todo.
+    const delDiseno = (() => {
+      const claves = etiquetas.map(normaliza).filter((e) => e.length > 3);
+      if (claves.length === 0) return images;
+      const coinciden = images.filter((image) =>
+        claves.some((clave) => normaliza(image.altText ?? "").includes(clave))
+      );
+      return coinciden.length > 0 ? coinciden : images;
+    })();
+
     const imgs = (() => {
-      if (!variantImage) return images;
-      const rest = images.filter((image) => image.url !== variantImage.url);
+      if (!variantImage) return delDiseno;
+      const rest = delDiseno.filter((image) => image.url !== variantImage.url);
       return [variantImage, ...rest];
     })();
     // Video goes second (right after the hero product shot) so it reads as
@@ -40,7 +60,7 @@ export function ProductGallery({
     return imageSlides.length > 0
       ? [imageSlides[0], ...videoSlides, ...imageSlides.slice(1)]
       : videoSlides;
-  }, [images, videos, variantImage]);
+  }, [images, videos, variantImage, etiquetas]);
 
   const [active, setActive] = useState(0);
 

@@ -27,6 +27,7 @@ export function ProductDetail({ product }: { product: ProductDetailType }) {
         videos={product.videos}
         title={product.title}
         variantImage={selectedVariant.image}
+        etiquetas={Object.values(selected)}
       />
       <div>
         <h1 className="font-display text-3xl sm:text-4xl text-bone">{product.title}</h1>
