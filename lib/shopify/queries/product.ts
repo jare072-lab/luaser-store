@@ -12,7 +12,7 @@ export const PRODUCT_QUERY = /* GraphQL */ `
         name
         values
       }
-      images(first: 8) {
+      images(first: 50) {
         edges {
           node {
             url
@@ -22,7 +22,7 @@ export const PRODUCT_QUERY = /* GraphQL */ `
           }
         }
       }
-      media(first: 10) {
+      media(first: 50) {
         edges {
           node {
             __typename

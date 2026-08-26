@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import type { ShopifyImage, ShopifyVideo } from "@/lib/shopify/types";
+import type { ProductOption, ShopifyImage, ShopifyVideo } from "@/lib/shopify/types";
 
 type GallerySlide =
   | { type: "image"; image: ShopifyImage }
@@ -27,24 +27,55 @@ export function ProductGallery({
   videos = [],
   title,
   variantImage,
-  etiquetas = [],
+  opciones = [],
+  seleccion = {},
 }: {
   images: ShopifyImage[];
   videos?: ShopifyVideo[];
   title: string;
   variantImage?: ShopifyImage | null;
-  /** Valores de la opcion elegida, p. ej. "Virgen de Guadalupe". */
-  etiquetas?: string[];
+  /** Todas las opciones del producto, con todos sus valores posibles. */
+  opciones?: ProductOption[];
+  /** Valor elegido por opcion, p. ej. { Diseno: "Virgen de Guadalupe" }. */
+  seleccion?: Record<string, string>;
 }) {
   const gallery = useMemo<GallerySlide[]>(() => {
-    // Si ninguna imagen trae la etiqueta del valor elegido, no se filtra nada:
-    // los productos que no siguen esta convencion siguen mostrando todo.
+    // Una opcion solo sirve para filtrar la galeria si DE VERDAD la parte: al
+    // menos dos de sus valores tienen que aparecer en el alt de alguna imagen.
+    // Con un solo valor presente es coincidencia, no etiquetado: una vitrina
+    // fotografiada solo en dorado tiene "dorada" en algunos alt y en otros no,
+    // y filtrar por ahi escondia las fotos restantes.
     const delDiseno = (() => {
-      const claves = etiquetas.map(normaliza).filter((e) => e.length > 3);
-      if (claves.length === 0) return images;
-      const coinciden = images.filter((image) =>
-        claves.some((clave) => normaliza(image.altText ?? "").includes(clave))
-      );
+      const discrimina = opciones.filter((opcion) => {
+        const valoresConFoto = opcion.values.filter((valor) => {
+          const clave = normaliza(valor);
+          return (
+            clave.length > 3 &&
+            images.some((image) => normaliza(image.altText ?? "").includes(clave))
+          );
+        });
+        return valoresConFoto.length >= 2;
+      });
+      if (discrimina.length === 0) return images;
+
+      const elegidas = discrimina
+        .map((opcion) => normaliza(seleccion[opcion.name] ?? ""))
+        .filter((clave) => clave.length > 3);
+      if (elegidas.length === 0) return images;
+
+      // Todos los valores que alguna imagen podria llevar en el alt. Sirve para
+      // separar "foto de OTRO diseno" de "foto generica": las de ambiente, de
+      // escala o de detalle no nombran ningun diseno y valen para todos, asi
+      // que esconderlas al elegir un color dejaba la ficha coja.
+      const etiquetables = discrimina
+        .flatMap((opcion) => opcion.values.map(normaliza))
+        .filter((clave) => clave.length > 3);
+
+      const coinciden = images.filter((image) => {
+        const alt = normaliza(image.altText ?? "");
+        if (elegidas.some((clave) => alt.includes(clave))) return true;
+        return !etiquetables.some((clave) => alt.includes(clave));
+      });
       return coinciden.length > 0 ? coinciden : images;
     })();
 
@@ -60,7 +91,7 @@ export function ProductGallery({
     return imageSlides.length > 0
       ? [imageSlides[0], ...videoSlides, ...imageSlides.slice(1)]
       : videoSlides;
-  }, [images, videos, variantImage, etiquetas]);
+  }, [images, videos, variantImage, opciones, seleccion]);
 
   const [active, setActive] = useState(0);
 
