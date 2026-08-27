@@ -37,6 +37,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const product = await getProductByHandle(params.handle);
   if (!product) notFound();
 
+  const productId = shopifyLegacyId(product.id);
+
   const collection = await getCollectionByHandle(product.primaryCollection?.handle ?? "frontpage");
   const related = (collection?.products ?? [])
     .filter((p) => p.handle !== product.handle)
@@ -60,10 +62,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <ProductDetail product={product} />
         </div>
         <div className="mt-16 md:mt-20">
-          <JudgeMeReviewWidget
-            productId={shopifyLegacyId(product.id)}
-            productTitle={product.title}
-          />
+          <JudgeMeReviewWidget productId={productId} productTitle={product.title} />
         </div>
         <RelatedProducts products={related} />
       </div>

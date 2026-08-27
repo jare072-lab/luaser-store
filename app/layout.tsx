@@ -8,6 +8,7 @@ import { WhatsAppButton } from "@/components/storefront/whatsapp-button";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MetaPixel } from "@/components/analytics/meta-pixel";
 import { JudgeMeScripts } from "@/components/analytics/judge-me";
+import { getJudgeMeShopAssets } from "@/lib/judgeme";
 import { Attribution } from "@/components/analytics/attribution";
 import { getCurrentCart } from "@/app/actions/cart";
 import "./globals.css";
@@ -60,6 +61,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cart = await getCurrentCart();
+  const judgeMeAssets = await getJudgeMeShopAssets();
 
   return (
     <html lang="es-MX" className={`${display.variable} ${body.variable}`}>
@@ -67,7 +69,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
         {META_PIXEL_ID && <MetaPixel pixelId={META_PIXEL_ID} />}
         {JUDGEME_SHOP_DOMAIN && JUDGEME_PUBLIC_TOKEN && (
-          <JudgeMeScripts shopDomain={JUDGEME_SHOP_DOMAIN} publicToken={JUDGEME_PUBLIC_TOKEN} />
+          <JudgeMeScripts
+            shopDomain={JUDGEME_SHOP_DOMAIN}
+            publicToken={JUDGEME_PUBLIC_TOKEN}
+            assets={judgeMeAssets}
+          />
         )}
         <Attribution />
         <CartUIProvider>
