@@ -20,7 +20,6 @@ export function JudgeMeScripts({
           window.jdgm.SHOP_DOMAIN = '${shopDomain}';
           window.jdgm.PLATFORM = 'shopify';
           window.jdgm.PUBLIC_TOKEN = '${publicToken}';
-          window.jdgmSettings = window.jdgmSettings || {};
         `}
       </Script>
       <Script
