@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { getProductByHandle, getAllProductHandles } from "@/lib/shopify/product";
 import { getCollectionByHandle } from "@/lib/shopify/collection";
 import { ProductDetail } from "@/components/storefront/product-detail";
+import { JudgeMeReviewWidget } from "@/components/storefront/judge-me-widgets";
+import { shopifyLegacyId } from "@/lib/utils";
 import { RelatedProducts } from "@/components/storefront/related-products";
 import { ProductJsonLd } from "@/components/storefront/product-json-ld";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/storefront/breadcrumbs";
@@ -56,6 +58,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <Breadcrumbs items={breadcrumbItems} />
         <div className="mt-6 grid md:grid-cols-2 gap-10 md:gap-16">
           <ProductDetail product={product} />
+        </div>
+        <div className="mt-16 md:mt-20">
+          <JudgeMeReviewWidget
+            productId={shopifyLegacyId(product.id)}
+            productTitle={product.title}
+          />
         </div>
         <RelatedProducts products={related} />
       </div>

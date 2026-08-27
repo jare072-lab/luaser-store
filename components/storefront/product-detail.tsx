@@ -5,6 +5,8 @@ import { ProductGallery } from "@/components/storefront/product-gallery";
 import { ProductForm } from "@/components/storefront/product-form";
 import { ProductAccordion } from "@/components/storefront/product-accordion";
 import { ViewContentTracker } from "@/components/analytics/view-content-tracker";
+import { JudgeMeRatingBadge } from "@/components/storefront/judge-me-widgets";
+import { shopifyLegacyId } from "@/lib/utils";
 import type { ProductDetail as ProductDetailType, ProductVariant } from "@/lib/shopify/types";
 
 function findVariant(variants: ProductVariant[], selected: Record<string, string>) {
@@ -44,6 +46,9 @@ export function ProductDetail({ product }: { product: ProductDetailType }) {
       />
       <div>
         <h1 className="font-display text-3xl sm:text-4xl text-bone">{product.title}</h1>
+        <div className="mt-2">
+          <JudgeMeRatingBadge productId={shopifyLegacyId(product.id)} />
+        </div>
         <div className="mt-6">
           <ProductForm
             product={product}
