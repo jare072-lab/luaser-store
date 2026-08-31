@@ -46,6 +46,9 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
           <Link href="/coleccion/frontpage" className="hover:text-gold transition-colors">
             Productos
           </Link>
+          <Link href="/coleccion/placas-de-acrilico" className="hover:text-gold transition-colors">
+            Placas de acrílico
+          </Link>
           <Link href="/#historia" className="hover:text-gold transition-colors">
             Nuestro proceso
           </Link>
