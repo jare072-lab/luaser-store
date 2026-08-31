@@ -50,12 +50,23 @@ const Y_TITULAR = 620; // línea base de ENVIO GRATIS
 const Y_BAJADA = 670; // línea base de A TODO MEXICO
 
 // Las dos líneas se dibujan SIN acentos a propósito: los acentos los ponen los
-// dos puntos que vienen orbitando. Bórralos y queda "ENVIO" y "MEXICO", que
+// dos puntos que vienen orbitando. Bórralos y queda "MAS" y "CATALOGO", que
 // en español está mal escrito — que es justo la prueba que pide el mecanismo 3.
-const TITULAR = "ENVIO GRATIS";
-const BAJADA = "A TODO MEXICO";
-const I_ACENTO_TITULAR = 3; // la I de ENVIO
-const I_ACENTO_BAJADA = 8; // la E de MEXICO
+//
+// El mensaje dejó de ser el envío gratis (que ya no existe: ahora se cobra) y
+// pasó a ser el descuento máximo del catálogo. El porcentaje NO se escribe a
+// mano: entra por `cfg.maxDescuento`, calculado desde Shopify, para que la
+// portada no pueda prometer un descuento que la tienda ya no tiene.
+//
+// La frase se partió buscando que cada línea conserve un acento, porque de eso
+// depende que los dos puntos tengan dónde aterrizar: "MÁS" arriba y "CATÁLOGO"
+// abajo. Cambiar el copy sin respetar esa condición deja los puntos huérfanos.
+const titularDe = (pct: number) => `HASTA ${pct}% MAS`;
+const BAJADA = "BARATO EN EL CATALOGO";
+/** Índice de la letra que lleva la tilde. Se busca, no se cuenta a mano: el
+ *  porcentaje cambia de ancho (58 vs 7 vs 100) y correría la posición. */
+const iAcentoTitular = (texto: string) => texto.lastIndexOf("MAS") + 1; // la A de MAS
+const I_ACENTO_BAJADA = BAJADA.lastIndexOf("CATALOGO") + 3; // la 2a A de CATALOGO
 
 // Recorte del wordmark dentro de logo-luaser.jpg (768x768), medido sobre el
 // archivo, no estimado.
@@ -185,6 +196,10 @@ const T = {
   marca: [1.25, 1.85],
   titular: [1.45, 2.15],
   bajada: [1.72, 2.3],
+  // Los rieles entran DESPUÉS del corte de fondo y antes que el texto: son el
+  // margen del encuadre, así que tienen que estar puestos cuando llega el
+  // mensaje, no llegar con él y disputarle la entrada.
+  rieles: [0.75, 1.9],
 } as const;
 
 /* ----------------------------------------------------------------- curvas */
@@ -444,6 +459,14 @@ function boquilla(ctx: CanvasRenderingContext2D, avance: number) {
 type Ctx = {
   familia: string;
   reducido: boolean;
+  /**
+   * Descuento máximo vigente del catálogo, en porcentaje entero.
+   *
+   * Viaja hasta aquí desde Shopify (ver `PromoBanner`) en vez de estar escrito
+   * en el lienzo: si mañana se acaba la oferta de la caja, la portada baja el
+   * número sola en vez de seguir prometiéndolo.
+   */
+  maxDescuento: number;
   /** Wordmark real de la marca, ya recortado y teñido. null si no cargó. */
   wordmark?: HTMLCanvasElement | null;
   /**
@@ -500,6 +523,97 @@ async function preparaWordmark(): Promise<HTMLCanvasElement | null> {
   }
 }
 
+/**
+ * Rieles laterales: la regla de la mesa de corte.
+ *
+ * El vacío de los costados era deliberado —la vara medida resuelve en un cuadro
+ * casi sin tinta— pero en una portada de 1900 px de ancho ese vacío deja dos
+ * tercios del encuadre sin nada que mirar. La salida no es rellenar con adorno,
+ * que rompería el mecanismo 1, sino traer un objeto que la marca ya tiene: la
+ * regla graduada de la mesa de corte láser. Es estructura, no decoración, y
+ * dice lo mismo que el resto de la portada —precisión— sin sumar una idea nueva.
+ *
+ * Se dibuja a trazo capilar y a un 40 % de alfa: tiene que leerse como el margen
+ * del encuadre, nunca competir con el bloque central.
+ *
+ * En pantallas angostas NO se dibuja: con `anchoDiseno` en 460 el riel caería
+ * justo encima del wordmark, que mide ~340 de ancho.
+ */
+function rieles(
+  ctx: CanvasRenderingContext2D,
+  u: number,
+  ancho: number,
+  trazo: string,
+  familia: string,
+  etiquetas: [string, string]
+) {
+  if (u <= 0.001 || ancho < 700) return;
+
+  const x = ancho / 2 - 56;
+  const yA = 118;
+  const yB = ALTO - 118;
+  const paso = 17;
+  const total = Math.floor((yB - yA) / paso);
+
+  ctx.save();
+  ctx.setLineDash([]);
+  ctx.lineCap = "butt";
+  ctx.strokeStyle = trazo;
+  ctx.fillStyle = trazo;
+
+  for (const s of [-1, 1] as const) {
+    // Cada riel crece desde su centro hacia los dos extremos: entra como algo
+    // que se despliega, no como algo que aparece.
+    const centro = (yA + yB) / 2;
+    ctx.globalAlpha = 0.4 * u;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(s * x, mezcla(centro, yA, salida(u)));
+    ctx.lineTo(s * x, mezcla(centro, yB, salida(u)));
+    ctx.stroke();
+
+    for (let i = 0; i <= total; i++) {
+      const y = yA + i * paso;
+      // El avance del trazo va de dentro hacia fuera, igual que el riel.
+      const d = Math.abs(y - centro) / ((yB - yA) / 2);
+      const ui = recorta((salida(u) - d * 0.55) / 0.45);
+      if (ui <= 0.001) continue;
+      const mayor = i % 5 === 0;
+      ctx.globalAlpha = (mayor ? 0.5 : 0.26) * ui;
+      ctx.lineWidth = mayor ? 1.6 : 1;
+      ctx.beginPath();
+      ctx.moveTo(s * x, y);
+      ctx.lineTo(s * (x - (mayor ? 13 : 7)), y);
+      ctx.stroke();
+    }
+
+    // La etiqueta corre a lo largo del riel, leyéndose de abajo hacia arriba en
+    // el izquierdo y de arriba hacia abajo en el derecho: los dos textos "salen"
+    // del centro del cuadro, que es donde está el ojo.
+    const texto = s === -1 ? etiquetas[0] : etiquetas[1];
+    ctx.save();
+    ctx.globalAlpha = 0.42 * recorta((salida(u) - 0.5) / 0.5);
+    ctx.translate(s * (x + 19), centro);
+    ctx.rotate(s === -1 ? -Math.PI / 2 : Math.PI / 2);
+    ctx.font = `600 12px ${familia}`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    // El tracking se hace a mano: canvas no tiene letter-spacing fiable en
+    // Safari, y sin él la línea capitular se lee apretada.
+    const letras = [...texto];
+    const anchoTotal = letras.reduce((acc, l) => acc + ctx.measureText(l).width + 3.4, -3.4);
+    let cx = -anchoTotal / 2;
+    for (const l of letras) {
+      const lw = ctx.measureText(l).width;
+      ctx.fillText(l, cx + lw / 2, 0);
+      cx += lw + 3.4;
+    }
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
 export function dibuja(ctx: CanvasRenderingContext2D, t: number, w: number, h: number, cfg: Ctx) {
   const tiempo = cfg.reducido ? DURACION : recorta(t / DURACION) * DURACION;
 
@@ -523,6 +637,12 @@ export function dibuja(ctx: CanvasRenderingContext2D, t: number, w: number, h: n
   ctx.fillStyle = trazo;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
+
+  /* -- los rieles del margen, debajo de todo lo demás -- */
+  rieles(ctx, tramo(tiempo, T.rieles), ancho, trazo, cfg.familia, [
+    "CORTE LASER · MONTERREY",
+    `ACRILICO · MDF · HASTA ${cfg.maxDescuento}% MENOS`,
+  ]);
 
   /* -- el pico: el cuadro se llena y después se recoge -- */
   ctx.save();
@@ -653,6 +773,7 @@ export function dibuja(ctx: CanvasRenderingContext2D, t: number, w: number, h: n
   // Las dos líneas se miden SIEMPRE, se dibujen o no: los acentos que vienen
   // volando necesitan saber su destino antes de llegar a él.
   const ti = tramo(tiempo, T.titular);
+  const TITULAR = titularDe(cfg.maxDescuento);
   ctx.font = `700 ${tamanoParaCap(ctx, cfg.familia, "700", CAP_GRANDE)}px ${cfg.familia}`;
   ctx.fillStyle = ORO;
   const cenTit = lineaTrackeada(
@@ -703,7 +824,7 @@ export function dibuja(ctx: CanvasRenderingContext2D, t: number, w: number, h: n
     {
       // Corrido a la derecha: el centro de avance de la I no coincide con el
       // centro de su asta, y la tilde caía descuadrada sobre la letra.
-      x: cenTit[I_ACENTO_TITULAR] + 5,
+      x: cenTit[iAcentoTitular(TITULAR)] + 5,
       y: Y_TITULAR - CAP_GRANDE - 11,
       largo: 16,
       grosor: 6,
@@ -746,7 +867,7 @@ export function dibuja(ctx: CanvasRenderingContext2D, t: number, w: number, h: n
 
 /* -------------------------------------------------------------- el lienzo */
 
-export function RevealLuaser({ className = "" }: { className?: string }) {
+export function RevealLuaser({ className = "", maxDescuento }: { className?: string; maxDescuento: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -791,7 +912,7 @@ export function RevealLuaser({ className = "" }: { className?: string }) {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const t = (ahora - inicio) / 1000;
-      dibuja(ctx, t, w, h, { familia, reducido, wordmark, dpr });
+      dibuja(ctx, t, w, h, { familia, reducido, wordmark, dpr, maxDescuento });
       if (t < DURACION) raf = requestAnimationFrame(cuadro);
       else terminado = true;
     };
@@ -799,7 +920,7 @@ export function RevealLuaser({ className = "" }: { className?: string }) {
     const resuelto = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      dibuja(ctx, DURACION, w, h, { familia, reducido: true, wordmark, dpr });
+      dibuja(ctx, DURACION, w, h, { familia, reducido: true, wordmark, dpr, maxDescuento });
       terminado = true;
     };
 
@@ -896,6 +1017,7 @@ export function RevealLuaser({ className = "" }: { className?: string }) {
         familia,
         reducido,
         wordmark,
+        maxDescuento,
         dpr,
       });
     });
@@ -908,7 +1030,7 @@ export function RevealLuaser({ className = "" }: { className?: string }) {
         mide();
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        dibuja(ctx, t, w, h, { familia, reducido: false, wordmark, dpr });
+        dibuja(ctx, t, w, h, { familia, reducido: false, wordmark, dpr, maxDescuento });
         return canvas.toDataURL("image/jpeg", 0.92);
       };
       (window as unknown as Record<string, unknown>).__lsDuracion = DURACION;

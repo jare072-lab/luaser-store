@@ -23,9 +23,9 @@ function descuento(p: ShopifyProduct) {
  *
  * Están separados a propósito. La referencia que sirve de vara resuelve en un
  * cuadro con 0.6 % de tinta, y ese vacío es justo lo que la hace funcionar:
- * meter logo, envío, descuentos y botones dentro del mismo encuadre rompería
+ * meter logo, oferta, descuentos y botones dentro del mismo encuadre rompería
  * lo único que valía la pena copiar. Así que la animación dice una sola cosa
- * —envío gratis— y los descuentos entran después, ya en su propio bloque.
+ * —el descuento máximo— y la rejilla de productos entra después, en su bloque.
  *
  * El lienzo es decorativo (`aria-hidden`): el mensaje va también como texto
  * real para lectores de pantalla y para quien tenga el canvas bloqueado.
@@ -46,9 +46,10 @@ export function PromoBanner({
     <section className="relative isolate overflow-hidden bg-ink">
       {/* El cuadro del revelado: nada se dibuja encima. */}
       <div className="relative h-[72svh] max-h-[720px] min-h-[460px] w-full">
-        <RevealLuaser className="absolute inset-0 block h-full w-full" />
+        <RevealLuaser className="absolute inset-0 block h-full w-full" maxDescuento={maxDescuento} />
         <h1 className="sr-only">
-          Luaser — envío gratis a todo México en piezas de acrílico y MDF cortadas a láser
+          Luaser — hasta {maxDescuento}% más barato en el catálogo de piezas de acrílico y MDF
+          cortadas a láser
         </h1>
       </div>
 
