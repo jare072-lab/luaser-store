@@ -559,3 +559,395 @@ if (require.main === module) {
 }
 
 module.exports = { fullBleed, bottomBand, sidePanel, polaroid, quoteCard, productHero, splashHero, BRANDS, stripEmoji, wrapText };
+
+
+
+/**
+ * Oferta Luaser: fondo claro, producto a sangre, barra de descuento bicolor.
+ *
+ * Sustituye a una version anterior de fondo negro con el porcentaje gigante.
+ * El cliente la rechazo con una referencia concreta en la mano, y sus
+ * mecanismos estan medidos en `public/tmp-carousel/bar-oferta-luaser.md`.
+ * Los tres cambios que definen la pieza:
+ *
+ *   - El producto manda, no el porcentaje. Sale por el borde derecho y por el
+ *     inferior, y es el objeto mas grande del cuadro.
+ *   - El titular NOMBRA el producto. La version anterior nunca decia que se
+ *     vendia, solo cuanto costaba.
+ *   - El descuento va en una barra bicolor que se sale por la izquierda, no
+ *     como numero suelto.
+ *
+ * Ni el precio ni el porcentaje se escriben aqui: entran desde fuera, leidos
+ * del catalogo, para que un flyer no pueda prometer un precio que la tienda
+ * ya no tiene. Ese error ya costo dinero una vez.
+ */
+async function offerSplit({
+  size = 1440,
+  crema = "#F7F1E7",
+  tinta = "#1A1A1A",
+  oro = "#C8A02E",
+  gris = "#9C978E",
+  marca = "LUASER",
+  titular = [], // hasta 3 lineas, ya en mayusculas
+  descuento, // "44%"
+  precio, // "$381"
+  precioAntes, // "$686"
+  etiquetaPrecio = "el set",
+  detalle = "", // linea chica en mayusculas espaciadas
+  cta = "PIDE EL TUYO",
+  heroPhotoPath,
+  outPath,
+}) {
+  const M = Math.round(size * 0.058); // margen izquierdo unico de TODO el texto
+  const colW = Math.round(size * 0.44); // ancho de la columna de texto
+
+  // -- foto: mitad derecha, a sangre por derecha y por abajo --
+  const fw = Math.round(size * 0.62);
+  const foto = await sharp(heroPhotoPath)
+    .resize(fw, size, { fit: "cover", position: sharp.strategy.attention })
+    .toBuffer();
+  // El flanco izquierdo se funde al crema para que no haya costura recta entre
+  // panel y foto: en la referencia el borde es suave, no una linea.
+  const mask = `<svg width="${fw}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="fx" x1="0" y1="0" x2="0.34" y2="0">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#fff" stop-opacity="1"/>
+    </linearGradient></defs>
+    <rect width="${fw}" height="${size}" fill="url(#fx)"/>
+  </svg>`;
+  const fotoCortada = await sharp(foto)
+    .composite([{ input: Buffer.from(mask), blend: "dest-in" }])
+    .png()
+    .toBuffer();
+
+  // -- retícula vertical del texto --
+  const yMarca = Math.round(size * 0.125);
+  const tTam = Math.round(size * 0.052);
+  const yTit = Math.round(size * 0.185);
+  const barH = Math.round(size * 0.108);
+  const yBar = Math.round(size * 0.375);
+  const yPrecio = Math.round(size * 0.575);
+  const pTam = Math.round(size * 0.088);
+  const yDet = Math.round(size * 0.635);
+  const yCta = Math.round(size * 0.695);
+  const ctaH = Math.round(size * 0.062);
+
+  const titSvg = titular
+    .map(
+      (l, i) =>
+        `<text x="${M}" y="${yTit + i * tTam * 1.12}" font-family="Arial Narrow, Arial, sans-serif" font-weight="700" font-size="${tTam}" letter-spacing="-0.5" fill="${tinta}">${escapeXml(stripEmoji(l))}</text>`
+    )
+    .join("\n");
+
+  // Barra bicolor: arranca FUERA del cuadro por la izquierda. Que se salga es
+  // el mecanismo 4, no un descuido de posicion.
+  const dTam = Math.round(barH * 0.58);
+  const oroW = Math.round(size * 0.29);
+  // La barra necesita ancho real para el "OFF": con 0.42 la palabra se salia
+  // del bloque negro y se derramaba sobre la foto.
+  const barW = Math.round(size * 0.47);
+  const sesgo = Math.round(barH * 0.42); // el corte entre oro y negro va inclinado
+
+  const anchoPrecio = precio.length * pTam * 0.60;
+  const xAntes = M + anchoPrecio + Math.round(size * 0.028);
+
+  const textoSvg = `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="oro" x1="0" y1="0" x2="1" y2="0.6">
+        <stop offset="0%" stop-color="#8C6A12"/>
+        <stop offset="28%" stop-color="#E8CE7B"/>
+        <stop offset="62%" stop-color="#B8892A"/>
+        <stop offset="100%" stop-color="#F0DC9A"/>
+      </linearGradient>
+    </defs>
+
+    <text x="${M}" y="${yMarca}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.023)}" letter-spacing="${size * 0.0055}" fill="${oro}">${escapeXml(marca)}</text>
+
+    ${titSvg}
+
+    <polygon points="0,${yBar} ${oroW + sesgo},${yBar} ${oroW},${yBar + barH} 0,${yBar + barH}" fill="url(#oro)"/>
+    <polygon points="${oroW + sesgo},${yBar} ${barW},${yBar} ${barW},${yBar + barH} ${oroW},${yBar + barH}" fill="${tinta}"/>
+    <text x="${M}" y="${yBar + barH * 0.73}" font-family="Arial, sans-serif" font-weight="900" font-size="${dTam}" fill="${tinta}">${escapeXml(descuento)}</text>
+    <text x="${(oroW + sesgo + barW) / 2}" y="${yBar + barH * 0.73}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="${Math.round(dTam * 0.92)}" fill="${crema}">OFF</text>
+
+    <text x="${M}" y="${yPrecio}" font-family="Arial, sans-serif" font-weight="900" font-size="${pTam}" fill="${tinta}">${escapeXml(precio)}</text>
+    <text x="${xAntes}" y="${yPrecio - pTam * 0.30}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(pTam * 0.44)}" fill="${gris}" text-decoration="line-through">${escapeXml(precioAntes)}</text>
+    <text x="${xAntes}" y="${yPrecio + pTam * 0.10}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(pTam * 0.30)}" fill="${tinta}">${escapeXml(etiquetaPrecio)}</text>
+
+    <text x="${M}" y="${yDet}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0215)}" letter-spacing="${size * 0.0022}" fill="${gris}">${escapeXml(stripEmoji(detalle))}</text>
+
+    <rect x="${M}" y="${yCta}" width="${Math.round(colW * 0.86)}" height="${ctaH}" fill="${tinta}"/>
+    <text x="${M + Math.round(colW * 0.43)}" y="${yCta + ctaH * 0.66}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0265)}" letter-spacing="${size * 0.0035}" fill="${crema}">${escapeXml(stripEmoji(cta))}</text>
+  </svg>`;
+
+  await sharp({ create: { width: size, height: size, channels: 3, background: crema } })
+    .composite([
+      { input: fotoCortada, top: 0, left: size - fw },
+      { input: Buffer.from(textoSvg), top: 0, left: 0 },
+    ])
+    .png()
+    .toFile(outPath);
+  return outPath;
+}
+
+module.exports.offerSplit = offerSplit;
+
+
+/**
+ * Servicio de corte laser: rejilla de productos + una sola llamada a WhatsApp.
+ *
+ * Hermana de `offerSplit` y comparte su sistema visual (crema, barra bicolor
+ * oro/negro, CTA de esquinas rectas, una sola alineacion izquierda), pero
+ * resuelve otro problema: aqui no se vende UN producto con UN precio, se vende
+ * la capacidad de cortar lo que sea. Por eso el heroe no es una foto sino la
+ * variedad, y por eso hay rejilla en vez de producto a sangre.
+ *
+ * Las fotos van en mosaico de esquinas rectas, sin marco ni sombra: el material
+ * ya tiene brillo propio y enmarcarlo lo abarata.
+ */
+async function serviceGrid({
+  size = 1440,
+  crema = "#F7F1E7",
+  tinta = "#1A1A1A",
+  oro = "#C8A02E",
+  gris = "#9C978E",
+  marca = "LUASER",
+  titular = [],
+  franja = "ENVÍO A TODO MÉXICO",
+  subtitulo = "",
+  bullets = [],
+  cta = "COTIZA POR WHATSAPP",
+  pie = "",
+  fotos = [], // 6 rutas
+  outPath,
+}) {
+  const M = Math.round(size * 0.058);
+  const R = size - M;
+
+  // -- rejilla 2x3 en la mitad derecha, a sangre por el borde derecho --
+  const gx = Math.round(size * 0.5);
+  const gw = size - gx;
+  const cols = 2;
+  const filas = 3;
+  const cw = Math.round(gw / cols);
+  const ch = Math.round(size / filas);
+  const tiles = [];
+  for (let i = 0; i < Math.min(fotos.length, cols * filas); i++) {
+    const buf = await sharp(fotos[i])
+      .resize(cw, ch, { fit: "cover", position: sharp.strategy.attention })
+      .toBuffer();
+    tiles.push({
+      input: buf,
+      left: gx + (i % cols) * cw,
+      top: Math.floor(i / cols) * ch,
+    });
+  }
+
+  // El borde izquierdo de la rejilla se funde al crema: sin eso el mosaico
+  // choca contra el panel de texto con una costura recta que parte el cuadro.
+  const velo = `<svg width="${Math.round(size * 0.09)}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="v" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="${crema}" stop-opacity="1"/>
+      <stop offset="100%" stop-color="${crema}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <rect width="${Math.round(size * 0.09)}" height="${size}" fill="url(#v)"/>
+  </svg>`;
+
+  const tTam = Math.round(size * 0.054);
+  const yMarca = Math.round(size * 0.115);
+  const yTit = Math.round(size * 0.175);
+  const yFranjaTop = yTit + titular.length * tTam * 1.1 + Math.round(size * 0.015);
+  const franjaH = Math.round(size * 0.072);
+  const ySub = yFranjaTop + franjaH + Math.round(size * 0.062);
+  const yBul = ySub + Math.round(size * 0.05);
+  const bTam = Math.round(size * 0.0235);
+  const yCta = yBul + bullets.length * Math.round(size * 0.038) + Math.round(size * 0.045);
+  const ctaH = Math.round(size * 0.068);
+  const ctaW = Math.round(size * 0.415);
+
+  const titSvg = titular
+    .map(
+      (l, i) =>
+        `<text x="${M}" y="${yTit + i * tTam * 1.1}" font-family="Arial Narrow, Arial, sans-serif" font-weight="700" font-size="${tTam}" letter-spacing="-0.5" fill="${tinta}">${escapeXml(stripEmoji(l))}</text>`
+    )
+    .join("\n");
+
+  const bulSvg = bullets
+    .map((b, i) => {
+      const y = yBul + i * Math.round(size * 0.038);
+      return `<circle cx="${M + 7}" cy="${y - bTam * 0.32}" r="4.5" fill="${oro}"/>
+        <text x="${M + 26}" y="${y}" font-family="Arial, sans-serif" font-weight="600" font-size="${bTam}" fill="${tinta}">${escapeXml(stripEmoji(b))}</text>`;
+    })
+    .join("\n");
+
+  const fw = Math.round(size * 0.44);
+  const sesgo = Math.round(franjaH * 0.4);
+
+  const textoSvg = `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+    <defs><linearGradient id="oroG" x1="0" y1="0" x2="1" y2="0.6">
+      <stop offset="0%" stop-color="#8C6A12"/><stop offset="30%" stop-color="#E8CE7B"/>
+      <stop offset="64%" stop-color="#B8892A"/><stop offset="100%" stop-color="#F0DC9A"/>
+    </linearGradient></defs>
+
+    <text x="${M}" y="${yMarca}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.023)}" letter-spacing="${size * 0.0055}" fill="${oro}">${escapeXml(marca)}</text>
+
+    ${titSvg}
+
+    <polygon points="0,${yFranjaTop} ${fw},${yFranjaTop} ${fw - sesgo},${yFranjaTop + franjaH} 0,${yFranjaTop + franjaH}" fill="url(#oroG)"/>
+    <text x="${M}" y="${yFranjaTop + franjaH * 0.68}" font-family="Arial, sans-serif" font-weight="900" font-size="${Math.round(franjaH * 0.42)}" letter-spacing="1" fill="${tinta}">${escapeXml(stripEmoji(franja))}</text>
+
+    <text x="${M}" y="${ySub}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.031)}" fill="${tinta}">${escapeXml(stripEmoji(subtitulo))}</text>
+
+    ${bulSvg}
+
+    <rect x="${M}" y="${yCta}" width="${ctaW}" height="${ctaH}" fill="${tinta}"/>
+    <text x="${M + ctaW / 2}" y="${yCta + ctaH * 0.63}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0245)}" letter-spacing="${size * 0.003}" fill="${crema}">${escapeXml(stripEmoji(cta))}</text>
+
+    ${pie ? `<text x="${M}" y="${yCta + ctaH + Math.round(size * 0.045)}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0205)}" letter-spacing="${size * 0.002}" fill="${gris}">${escapeXml(stripEmoji(pie))}</text>` : ""}
+  </svg>`;
+
+  await sharp({ create: { width: size, height: size, channels: 3, background: crema } })
+    .composite([
+      ...tiles,
+      { input: Buffer.from(velo), left: gx, top: 0 },
+      { input: Buffer.from(textoSvg), top: 0, left: 0 },
+    ])
+    .png()
+    .toFile(outPath);
+  return outPath;
+}
+
+module.exports.serviceGrid = serviceGrid;
+
+
+/** Aclara u oscurece un hex. f > 0 aclara, f < 0 oscurece. */
+function tinte(hex, f) {
+  const n = parseInt(hex.slice(1), 16);
+  const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) =>
+    Math.max(0, Math.min(255, Math.round(f > 0 ? v + (255 - v) * f : v * (1 + f))))
+  );
+  return "#" + c.map((v) => v.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Carta de material: la ficha de producto para una linea de acrilico.
+ *
+ * La primera version dibujaba rectangulos de color planos y el cliente la
+ * rechazo con la razon correcta: parecia carta de pintura, no acrilico. Un
+ * acrilico se reconoce por dos cosas que un rectangulo plano no tiene:
+ *
+ *   1. EL CANTO. El grosor del material se ve en el corte, y es literalmente
+ *      lo que el cliente esta comprando cuando elige 3, 6 o 25 mm. Por eso el
+ *      canto se dibuja a escala del espesor real, no siempre igual.
+ *   2. EL BRILLO. La superficie es especular: devuelve una franja de luz
+ *      diagonal. Sin ella el material lee como plastico mate.
+ *
+ * Los transparentes ademas llevan el canto encendido, que es el efecto por el
+ * que se compra acrilico cristal y no vidrio.
+ */
+async function materialChart({
+  size = 1440,
+  crema = "#F7F1E7",
+  tinta = "#1A1A1A",
+  oro = "#C8A02E",
+  gris = "#9C978E",
+  marca = "LUASER",
+  titular = [],
+  pie = "",
+  muestras = [], // [{nombre, hex, mm, brillo?, translucido?}]
+  outPath,
+}) {
+  const M = Math.round(size * 0.062);
+  const yMarca = Math.round(size * 0.086);
+  const tTam = Math.round(size * 0.047);
+  const yTit = Math.round(size * 0.138);
+
+  const n = muestras.length;
+  const cols = n <= 2 ? 2 : n <= 4 ? 2 : n <= 6 ? 3 : 5;
+  const filas = Math.ceil(n / cols);
+  const gridTop = yTit + titular.length * tTam * 1.1 + Math.round(size * 0.042);
+  const gap = Math.round(size * 0.022);
+  const cw = Math.floor((size - M * 2 - gap * (cols - 1)) / cols);
+  const fondo = Math.round(size * 0.885) - gridTop;
+  const alto = Math.max(
+    Math.round(size * 0.09),
+    Math.min(Math.round(size * 0.26), Math.floor(fondo / filas) - gap - 46)
+  );
+
+  let defs = "";
+  let cuerpo = "";
+
+  muestras.forEach((m, i) => {
+    const x = M + (i % cols) * (cw + gap);
+    const y = gridTop + Math.floor(i / cols) * (alto + gap + 46);
+    // El canto crece con el espesor real, con tope para que 25 mm no domine.
+    const d = Math.max(7, Math.min(26, Math.round((m.mm || 3) * 2.4)));
+    const claro = tinte(m.hex, 0.34);
+    const oscuro = tinte(m.hex, -0.34);
+    const cara = alto - d;
+
+    // Cara: color base + degradado propio si es metalizado
+    const relleno = m.brillo ? `url(#g${i})` : m.hex;
+    if (m.brillo) {
+      defs += `<linearGradient id="g${i}" x1="0" y1="0" x2="1" y2="0.85">
+        <stop offset="0%" stop-color="${m.brillo[0]}"/><stop offset="38%" stop-color="${m.brillo[1]}"/>
+        <stop offset="66%" stop-color="${m.brillo[0]}"/><stop offset="100%" stop-color="${m.brillo[1]}"/>
+      </linearGradient>`;
+    }
+    // Brillo especular: franja diagonal, no un velo uniforme.
+    defs += `<linearGradient id="s${i}" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0%" stop-color="#fff" stop-opacity="${m.translucido ? 0.30 : 0.20}"/>
+      <stop offset="26%" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="52%" stop-color="#fff" stop-opacity="${m.translucido ? 0.34 : 0.24}"/>
+      <stop offset="60%" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.07"/>
+    </linearGradient>`;
+    // Canto: de claro a oscuro, con la arista superior encendida.
+    defs += `<linearGradient id="c${i}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${tinte(m.hex, m.translucido ? 0.62 : 0.2)}"/>
+      <stop offset="100%" stop-color="${oscuro}"/>
+    </linearGradient>`;
+    // Sombra de contacto bajo el canto.
+    defs += `<linearGradient id="sh${i}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#000" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>`;
+
+    const sx = Math.round(d * 0.55); // el canto se corre a la derecha: da volumen
+
+    cuerpo += `
+      <rect x="${x + sx}" y="${y + alto}" width="${cw}" height="${Math.round(d * 1.5)}" fill="url(#sh${i})"/>
+      <polygon points="${x},${y + cara} ${x + cw},${y + cara} ${x + cw + sx},${y + alto} ${x + sx},${y + alto}" fill="url(#c${i})"/>
+      <line x1="${x}" y1="${y + cara}" x2="${x + cw}" y2="${y + cara}" stroke="${tinte(m.hex, 0.55)}" stroke-width="1.6" opacity=".9"/>
+      <rect x="${x}" y="${y}" width="${cw}" height="${cara}" fill="${relleno}"/>
+      <rect x="${x}" y="${y}" width="${cw}" height="${cara}" fill="url(#s${i})"/>
+      <rect x="${x}" y="${y}" width="${cw}" height="${cara}" fill="none" stroke="${claro}" stroke-width="1" opacity=".55"/>
+      <text x="${x}" y="${y + alto + 34}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0172)}" fill="${tinta}">${escapeXml(stripEmoji(m.nombre))}</text>`;
+  });
+
+  const titSvg = titular
+    .map(
+      (l, i) =>
+        `<text x="${M}" y="${yTit + i * tTam * 1.1}" font-family="Arial Narrow, Arial, sans-serif" font-weight="700" font-size="${tTam}" letter-spacing="-0.5" fill="${tinta}">${escapeXml(stripEmoji(l))}</text>`
+    )
+    .join("\n");
+
+  const svg = `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+    <defs>${defs}
+      <linearGradient id="bg" x1="0" y1="0" x2="0.6" y2="1">
+        <stop offset="0%" stop-color="${tinte(crema, 0.5)}"/><stop offset="100%" stop-color="${crema}"/>
+      </linearGradient>
+    </defs>
+    <rect width="${size}" height="${size}" fill="url(#bg)"/>
+    <text x="${M}" y="${yMarca}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.021)}" letter-spacing="${size * 0.005}" fill="${oro}">${escapeXml(marca)}</text>
+    ${titSvg}
+    ${cuerpo}
+    ${pie ? `<text x="${M}" y="${size - Math.round(size * 0.052)}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0198)}" letter-spacing="${size * 0.0018}" fill="${gris}">${escapeXml(stripEmoji(pie))}</text>` : ""}
+    <rect x="0" y="${size - Math.round(size * 0.019)}" width="${size}" height="${Math.round(size * 0.019)}" fill="${tinta}"/>
+  </svg>`;
+
+  await sharp(Buffer.from(svg)).png().toFile(outPath);
+  return outPath;
+}
+
+module.exports.materialChart = materialChart;
