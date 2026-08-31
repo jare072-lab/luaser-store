@@ -68,6 +68,17 @@ function sha256(value: string): string {
   return crypto.createHash("sha256").update(value.trim().toLowerCase()).digest("hex");
 }
 
+// Los atributos del carrito llegan al pedido como note_attributes. Ahí viajan
+// _fbc y _fbp, que el pixel dejó en luaser.mx y que este webhook jamás podría
+// leer por su cuenta: Shopify lo llama de servidor a servidor, sin el navegador
+// del comprador. Es el único puente entre el clic en el anuncio y la venta.
+function leerAtributoDePedido(
+  order: { note_attributes?: { name: string; value: string }[] },
+  nombre: string
+): string | undefined {
+  return order.note_attributes?.find((a) => a.name === nombre)?.value || undefined;
+}
+
 // Espejo server-side del evento de compra: Shopify solo llama este webhook
 // cuando el pago ya se confirmó (orders/paid), así el píxel nunca aprende de
 // pedidos pendientes o cancelados. Nunca debe romper el 200 de vuelta a
@@ -93,6 +104,8 @@ async function reportPurchaseToMeta(rawBody: string) {
       userData: {
         em: order.email ? [sha256(order.email)] : undefined,
         ph: order.phone ? [sha256(order.phone.replace(/\D/g, ""))] : undefined,
+        fbc: leerAtributoDePedido(order, "_fbc"),
+        fbp: leerAtributoDePedido(order, "_fbp"),
       },
     });
   } catch (error) {
