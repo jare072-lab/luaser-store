@@ -43,7 +43,7 @@ export const PRODUCT_QUERY = /* GraphQL */ `
           }
         }
       }
-      variants(first: 20) {
+      variants(first: 250) {
         edges {
           node {
             id
