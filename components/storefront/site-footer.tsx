@@ -7,9 +7,10 @@ const columns = [
     title: "Tienda",
     links: [
       { label: "Letreros personalizados", href: "/producto/letrero-de-acrilico-personalizado-para-negocio" },
+      { label: "Placas de acrílico", href: "/coleccion/placas-de-acrilico" },
       { label: "Más vendidos", href: "#bestsellers" },
-      { label: "Coleccionables", href: "#" },
-      { label: "Decoración MDF", href: "#" },
+      { label: "Coleccionables", href: "/coleccion/coleccionables" },
+      { label: "Decoración MDF", href: "/coleccion/decoracion-mdf" },
     ],
   },
   {
