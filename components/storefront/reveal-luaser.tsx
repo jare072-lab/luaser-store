@@ -542,14 +542,19 @@ async function preparaWordmark(): Promise<HTMLCanvasElement | null> {
 function rieles(
   ctx: CanvasRenderingContext2D,
   u: number,
-  ancho: number,
+  medioVisible: number,
   trazo: string,
   familia: string,
   etiquetas: [string, string]
 ) {
-  if (u <= 0.001 || ancho < 700) return;
+  // `medioVisible` es la mitad del encuadre REAL en unidades de diseño, no la
+  // mitad de `anchoDiseno`. No son lo mismo: en una pantalla ancha la escala la
+  // fija la altura, así que el espacio de diseño ocupa bastante menos que el
+  // ancho del lienzo y anclar los rieles a `ancho / 2` los dejaba flotando en
+  // el tercio central, con los costados igual de vacíos que antes.
+  if (u <= 0.001 || medioVisible < 320) return;
 
-  const x = ancho / 2 - 56;
+  const x = medioVisible - 72;
   const yA = 118;
   const yB = ALTO - 118;
   const paso = 17;
@@ -600,7 +605,7 @@ function rieles(
     ctx.textBaseline = "middle";
     // El tracking se hace a mano: canvas no tiene letter-spacing fiable en
     // Safari, y sin él la línea capitular se lee apretada.
-    const letras = [...texto];
+    const letras = texto.split("");
     const anchoTotal = letras.reduce((acc, l) => acc + ctx.measureText(l).width + 3.4, -3.4);
     let cx = -anchoTotal / 2;
     for (const l of letras) {
@@ -639,7 +644,10 @@ export function dibuja(ctx: CanvasRenderingContext2D, t: number, w: number, h: n
   ctx.lineJoin = "round";
 
   /* -- los rieles del margen, debajo de todo lo demás -- */
-  rieles(ctx, tramo(tiempo, T.rieles), ancho, trazo, cfg.familia, [
+  // Mitad del encuadre real expresada en unidades de diseño: el borde físico
+  // del lienzo cae en esta x una vez aplicada la transformación de arriba.
+  const medioVisible = w / 2 / Math.min(w / ancho, h / ALTO);
+  rieles(ctx, tramo(tiempo, T.rieles), medioVisible, trazo, cfg.familia, [
     "CORTE LASER · MONTERREY",
     `ACRILICO · MDF · HASTA ${cfg.maxDescuento}% MENOS`,
   ]);
