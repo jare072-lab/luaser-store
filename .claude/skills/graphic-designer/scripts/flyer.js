@@ -589,7 +589,12 @@ async function offerSplit({
   gris = "#9C978E",
   marca = "LUASER",
   titular = [], // hasta 3 lineas, ya en mayusculas
-  descuento, // "44%"
+  descuento, // "44%" — mitad dorada de la barra
+  // Mitad negra de la barra. Era "OFF" fijo, y eso obligaba a que la pieza
+  // hablara de descuento aunque no hubiera ninguno. Con precio por volumen el
+  // par correcto es "10" / "PIEZAS": el cliente no puede confundirlo con una
+  // promocion temporal que no existe.
+  barraDer = "OFF",
   precio, // "$381"
   precioAntes, // "$686"
   etiquetaPrecio = "el set",
@@ -622,13 +627,18 @@ async function offerSplit({
 
   // -- retícula vertical del texto --
   const yMarca = Math.round(size * 0.125);
-  const tTam = Math.round(size * 0.052);
+  // El titular tiene que ser el bloque de texto mas grande (mecanismo 3). Con
+  // 0.052 contra un precio de 0.088 la jerarquia salia invertida: el numero le
+  // ganaba al nombre del producto, y un flyer que no dice que vende falla
+  // aunque se vea bien.
+  const tTam = Math.round(size * 0.075);
   const yTit = Math.round(size * 0.185);
   const barH = Math.round(size * 0.108);
   const yBar = Math.round(size * 0.375);
   const yPrecio = Math.round(size * 0.575);
-  const pTam = Math.round(size * 0.088);
-  const yDet = Math.round(size * 0.635);
+  const pTam = Math.round(size * 0.072);
+  const yEtiq = Math.round(size * 0.618);
+  const yDet = Math.round(size * 0.662);
   const yCta = Math.round(size * 0.695);
   const ctaH = Math.round(size * 0.062);
 
@@ -641,15 +651,38 @@ async function offerSplit({
 
   // Barra bicolor: arranca FUERA del cuadro por la izquierda. Que se salga es
   // el mecanismo 4, no un descuido de posicion.
-  const dTam = Math.round(barH * 0.58);
+  // El dato de la barra es el numero, asi que tiene que llenar su campo: con
+  // 0.58 el "19" pesaba menos que la palabra que lo califica.
+  const dTam = Math.round(barH * 0.72);
   const oroW = Math.round(size * 0.29);
   // La barra necesita ancho real para el "OFF": con 0.42 la palabra se salia
   // del bloque negro y se derramaba sobre la foto.
-  const barW = Math.round(size * 0.47);
   const sesgo = Math.round(barH * 0.42); // el corte entre oro y negro va inclinado
+  // El bloque negro se estira al texto que lleve. Con ancho fijo, "OFF" cabia
+  // pero "PIEZAS" se derramaba por el borde derecho de la barra sobre la foto.
+  const dTamDer = Math.round(dTam * (barraDer.length > 3 ? 0.62 : 0.92));
+  const anchoDer = barraDer.length * dTamDer * 0.66;
+  const barW = Math.max(
+    Math.round(size * 0.47),
+    Math.round(oroW + sesgo + anchoDer + size * 0.05)
+  );
 
   const anchoPrecio = precio.length * pTam * 0.60;
   const xAntes = M + anchoPrecio + Math.round(size * 0.028);
+
+  // La caja del CTA se dimensiona al texto. Con ancho fijo, un CTA de mas de
+  // ~17 caracteres se derramaba por los dos lados de la caja negra: la "V" de
+  // "VER TODAS LAS PLACAS" quedaba cortada contra el borde. Se estima el ancho
+  // del texto (Arial bold ~0.60 em por caracter mas el interletrado) y la caja
+  // se ajusta, con un minimo para que un CTA corto no quede raquitico y un
+  // tope en la columna para que nunca invada la foto.
+  const ctaTam = Math.round(size * 0.0265);
+  const ctaLS = size * 0.0035;
+  const ctaTextoW = cta.length * (ctaTam * 0.60 + ctaLS);
+  const ctaW = Math.min(
+    colW,
+    Math.max(Math.round(colW * 0.62), Math.round(ctaTextoW + size * 0.055))
+  );
 
   const textoSvg = `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -668,16 +701,16 @@ async function offerSplit({
     <polygon points="0,${yBar} ${oroW + sesgo},${yBar} ${oroW},${yBar + barH} 0,${yBar + barH}" fill="url(#oro)"/>
     <polygon points="${oroW + sesgo},${yBar} ${barW},${yBar} ${barW},${yBar + barH} ${oroW},${yBar + barH}" fill="${tinta}"/>
     <text x="${M}" y="${yBar + barH * 0.73}" font-family="Arial, sans-serif" font-weight="900" font-size="${dTam}" fill="${tinta}">${escapeXml(descuento)}</text>
-    <text x="${(oroW + sesgo + barW) / 2}" y="${yBar + barH * 0.73}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="${Math.round(dTam * 0.92)}" fill="${crema}">OFF</text>
+    <text x="${(oroW + sesgo + barW) / 2}" y="${yBar + barH * 0.73}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="${dTamDer}" fill="${crema}">${escapeXml(stripEmoji(barraDer))}</text>
 
     <text x="${M}" y="${yPrecio}" font-family="Arial, sans-serif" font-weight="900" font-size="${pTam}" fill="${tinta}">${escapeXml(precio)}</text>
-    <text x="${xAntes}" y="${yPrecio - pTam * 0.30}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(pTam * 0.44)}" fill="${gris}" text-decoration="line-through">${escapeXml(precioAntes)}</text>
-    <text x="${xAntes}" y="${yPrecio + pTam * 0.10}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(pTam * 0.30)}" fill="${tinta}">${escapeXml(etiquetaPrecio)}</text>
+    <text x="${xAntes}" y="${yPrecio - pTam * 0.06}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(pTam * 0.44)}" fill="${gris}" text-decoration="line-through">${escapeXml(precioAntes)}</text>
+    <text x="${M}" y="${yEtiq}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(pTam * 0.30)}" fill="${tinta}">${escapeXml(etiquetaPrecio)}</text>
 
     <text x="${M}" y="${yDet}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0215)}" letter-spacing="${size * 0.0022}" fill="${gris}">${escapeXml(stripEmoji(detalle))}</text>
 
-    <rect x="${M}" y="${yCta}" width="${Math.round(colW * 0.86)}" height="${ctaH}" fill="${tinta}"/>
-    <text x="${M + Math.round(colW * 0.43)}" y="${yCta + ctaH * 0.66}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0265)}" letter-spacing="${size * 0.0035}" fill="${crema}">${escapeXml(stripEmoji(cta))}</text>
+    <rect x="${M}" y="${yCta}" width="${ctaW}" height="${ctaH}" fill="${tinta}"/>
+    <text x="${M + ctaW / 2}" y="${yCta + ctaH * 0.66}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${ctaTam}" letter-spacing="${ctaLS}" fill="${crema}">${escapeXml(stripEmoji(cta))}</text>
   </svg>`;
 
   await sharp({ create: { width: size, height: size, channels: 3, background: crema } })
