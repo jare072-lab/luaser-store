@@ -91,9 +91,11 @@ export function ProductForm({
     ? { noun: "foto", question: "¿Ya tienes tu foto lista?" }
     : { noun: "logo", question: "¿Ya tienes tu logo listo?" };
   const hasLogoUpload = etiquetas.includes("logo") || etiquetas.includes("foto");
-  const logoWhatsappHref = `https://wa.me/528131092383?text=${encodeURIComponent(
-    `Hola, acabo de comprar "${product.title}" y quiero enviarles mi ${artwork.noun}.`
-  )}`;
+  // Los archivos de personalizacion llegan por Messenger a la pagina de
+  // Facebook, no por WhatsApp: el cliente lo pidio asi porque ahi es donde
+  // atiende los personalizados. m.me abre la conversacion con la pagina
+  // Luaser (993065080551062) directo en la app de Messenger.
+  const logoMessengerHref = "https://m.me/993065080551062";
 
   function handleAddToCart() {
     // Una pieza personalizada sin texto es una pieza que no se puede fabricar:
@@ -203,16 +205,16 @@ export function ProductForm({
             {artwork.question}
           </p>
           <p className="text-sm font-body text-graystone-100 mb-3">
-            Compra ahora y mándanos tu {artwork.noun} por WhatsApp — te damos atención personalizada para
-            que quede exactamente como lo imaginas.
+            Compra ahora y mándanos tu {artwork.noun} por mensaje a nuestra página de Facebook —
+            te damos atención personalizada para que quede exactamente como lo imaginas.
           </p>
           <a
-            href={logoWhatsappHref}
+            href={logoMessengerHref}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full border border-pitch/50 bg-pitch/10 px-4 py-2 text-sm font-body font-semibold text-pitch-light transition-colors hover:bg-pitch/20"
           >
-            Enviar mi {artwork.noun} por WhatsApp
+            Enviar mi {artwork.noun} por Messenger
           </a>
         </div>
       )}
