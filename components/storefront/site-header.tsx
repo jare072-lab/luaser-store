@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Search, ArrowRight } from "lucide-react";
 import { CartButton } from "@/components/storefront/cart-button";
+import { MobileMenu } from "@/components/storefront/mobile-menu";
 import { Logo } from "@/components/storefront/logo";
 
 const PHONE = "528131092383";
@@ -18,7 +19,12 @@ const ANNOUNCEMENTS = [
 export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
   return (
     <header className="sticky top-0 z-50 bg-ink/95 backdrop-blur border-b border-ink-border">
-      <div className="relative overflow-hidden bg-gradient-to-r from-pitch via-pitch-light to-pitch text-bone text-xs sm:text-sm font-body py-2.5">
+      {/* La franja era un degradado azul electrico. Sobre el lenguaje de
+          galeria oscura gritaba mas que cualquier contenido, y los dos
+          criticos de craft la senalaron por separado como el choque mas
+          visible. Mismo negro del sitio, texto en gris, y el punto dorado
+          queda como unico color. */}
+      <div className="relative overflow-hidden border-b border-ink-border bg-ink text-graystone-100 text-xs sm:text-sm font-body py-2.5">
         <div className="flex w-max animate-marquee motion-reduce:animate-none">
           {[0, 1].map((rep) => (
             <div key={rep} className="flex shrink-0 items-center gap-8 pr-8" aria-hidden={rep === 1}>
@@ -66,22 +72,25 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
             </svg>
             WhatsApp
           </a>
+          {/* Era una pildora coral rellena con brillo animado: el elemento mas
+              ruidoso del sitio, y el que ambos criticos de craft nombraron
+              como choque contra el lenguaje de galeria. Ahora es contorno
+              dorado sin relleno ni brillo: sigue siendo el unico elemento
+              de color del encabezado, asi que no pierde jerarquia, pero deja
+              de gritar. */}
           <Link
             href="/cotiza"
-            className="relative inline-flex items-center gap-1.5 overflow-hidden rounded-full bg-gold px-3 sm:px-4 py-2 font-body text-sm font-semibold text-ink transition-colors hover:bg-gold-bright"
+            className="inline-flex items-center gap-1.5 border border-gold px-3 sm:px-4 py-2 font-body text-sm font-semibold text-gold transition-colors hover:bg-gold hover:text-ink"
           >
             <span className="sm:hidden">Cotizar</span>
             <span className="hidden sm:inline">Solicitar cotización</span>
             <ArrowRight className="h-4 w-4" />
-            <span
-              className="pointer-events-none absolute inset-0 w-2/5 -skew-x-[15deg] bg-gradient-to-r from-transparent via-white/55 to-transparent animate-shine motion-reduce:hidden"
-              aria-hidden="true"
-            />
           </Link>
           <button aria-label="Buscar" className="hover:text-gold transition-colors">
             <Search className="h-5 w-5" />
           </button>
           <CartButton quantity={cartQuantity} />
+          <MobileMenu />
         </div>
       </div>
     </header>

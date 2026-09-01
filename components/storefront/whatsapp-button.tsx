@@ -15,7 +15,6 @@ export function WhatsAppButton() {
       >
         {/* Halo pulsante sutil, tono dorado de marca */}
         <span className="absolute inset-0 rounded-full bg-gold/30 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
-        <span className="absolute inset-0 animate-ping rounded-full bg-[#25D366]/40 [animation-duration:2.5s]" />
 
         {/* Etiqueta que se desliza al hacer hover (desktop) */}
         <span className="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-full bg-ink px-4 py-2 font-body text-sm text-bone opacity-0 shadow-lg shadow-black/30 ring-1 ring-gold/30 transition-all duration-300 group-hover:opacity-100 md:block">
@@ -25,10 +24,9 @@ export function WhatsAppButton() {
         {/* Botón */}
         <span
           className="relative flex h-14 w-14 items-center justify-center rounded-full
-                     bg-gradient-to-br from-[#2FE375] via-[#25D366] to-[#128C7E]
+                     bg-[#25D366]
                      shadow-lg shadow-black/40 ring-2 ring-white/15
                      transition-all duration-300 ease-out
-                     group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-[#128C7E]/50
                      group-active:scale-95"
         >
           <svg viewBox="0 0 24 24" className="h-7 w-7 drop-shadow-sm" aria-hidden="true">

@@ -1,7 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCartUI } from "@/components/storefront/cart-ui-context";
+import { addToCartAction } from "@/app/actions/cart";
+import { trackAddToCart } from "@/lib/analytics/track";
 import type { PlacaProducto } from "@/lib/shopify/placas";
 
 /**
@@ -113,13 +117,71 @@ export function PlacasSection({ productos }: { productos: PlacaProducto[] }) {
       ? Math.round((1 - porPlaca / suelta.precio) * 100)
       : 0;
 
+  // Comprar directo desde la seccion: el visitante ya eligio familia, color,
+  // medida y pack; mandarlo a la pagina del producto a elegir todo otra vez
+  // era regalar un paso del embudo. Mismo patron que product-form: evento de
+  // navegador + espejo por CAPI compartiendo eventID para que Meta deduplique.
+  const [enviando, startTransition] = useTransition();
+  const [agregado, setAgregado] = useState(false);
+  const { open } = useCartUI();
+  const router = useRouter();
+
+  function agregarAlCarrito() {
+    if (!variante || !variante.disponible) return;
+    startTransition(async () => {
+      const eventId = crypto.randomUUID();
+      trackAddToCart(
+        { id: variante.id, name: `${familia.titulo} — ${colorSel} ${medidaSel} ${packSel}`, price: variante.precio, quantity: 1, currency: "MXN" },
+        eventId
+      );
+      await addToCartAction(
+        { merchandiseId: variante.id, quantity: 1 },
+        {
+          eventId,
+          contentId: variante.id,
+          contentName: familia.titulo,
+          value: variante.precio,
+          currency: "MXN",
+          sourceUrl: window.location.href,
+        }
+      );
+      setAgregado(true);
+      open();
+      router.refresh();
+      setTimeout(() => setAgregado(false), 2000);
+    });
+  }
+
+  // La barra pegada de movil solo debe existir mientras la seccion esta en
+  // pantalla: pegada a todo el sitio seria un estorbo, y en escritorio el
+  // panel lateral ya hace este trabajo.
+  const seccionRef = useRef<HTMLElement>(null);
+  const [enPantalla, setEnPantalla] = useState(false);
+  useEffect(() => {
+    const el = seccionRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => setEnPantalla(e.isIntersecting),
+      { rootMargin: "-96px 0px -96px 0px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   if (!familia) return null;
 
   const esCristal = familia.ejeColor === "Espesor";
   const cara = caraEnPx(medidaSel ?? "30 x 30 cm");
+  const textoCta = !variante
+    ? "No disponible"
+    : enviando
+      ? "Agregando…"
+      : agregado
+        ? "Agregado al carrito"
+        : "Agregar al carrito";
 
   return (
-    <section id="placas" className="bg-black">
+    <section id="placas" ref={seccionRef} className="bg-black">
       <div className="mx-auto w-full max-w-[1280px] px-6 py-[120px] sm:py-[240px]">
         <header className="max-w-[62ch]">
           <p className="font-body text-[16px] font-normal tracking-[-0.01em] text-[#A0A0A0]">
@@ -302,14 +364,24 @@ export function PlacasSection({ productos }: { productos: PlacaProducto[] }) {
             </div>
 
             <div className="mt-[120px] flex flex-col items-start gap-6">
-              <Link
-                href={`/producto/${familia.handle}`}
-                className="group inline-flex items-center gap-3 font-body text-[16px] font-normal tracking-[-0.01em] text-white"
+              {/* La accion principal sigue la regla del sistema: texto con el
+                  punto de acento, no una pildora rellena. El punto es el unico
+                  uso del acento en toda la seccion. */}
+              <button
+                onClick={agregarAlCarrito}
+                disabled={enviando || !variante?.disponible}
+                className="group inline-flex items-center gap-3 font-body text-[24px] font-normal leading-[1.13] tracking-[-0.01em] text-white transition-opacity duration-300 disabled:opacity-40"
               >
                 <span
                   aria-hidden="true"
                   className="block h-1.5 w-1.5 shrink-0 bg-[#E4002B] transition-transform duration-300 group-hover:translate-x-1"
                 />
+                {textoCta}
+              </button>
+              <Link
+                href={`/producto/${familia.handle}`}
+                className="font-body text-[16px] font-normal tracking-[-0.01em] text-[#A0A0A0] transition-colors duration-300 hover:text-white"
+              >
                 Ver {familia.titulo.replace(/^Placas de Acrílico\s*/i, "").toLowerCase() || "cristal"}
               </Link>
               <Link
@@ -326,6 +398,36 @@ export function PlacasSection({ productos }: { productos: PlacaProducto[] }) {
           Producción en 1 día hábil. Envío por Estafeta a todo México.
         </p>
       </div>
+
+      {/* Barra pegada, solo movil y solo mientras la seccion esta en
+          pantalla. En movil el panel de precio queda a mas de una pantalla de
+          las muestras: eliges un color y no ves nada cambiar. Esta barra trae
+          el numero y la accion a donde esta el pulgar. En escritorio no
+          existe porque el panel lateral ya hace ese trabajo. */}
+      {enPantalla && variante && (
+        <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-4 border-t border-[#484848] bg-black py-4 pl-6 pr-24 lg:hidden">
+          <p className="flex items-baseline gap-2 font-body">
+            <span
+              key={`bar-${colorSel}-${medidaSel}-${packSel}`}
+              className="text-[24px] font-light leading-none tracking-[-0.02em] text-white animate-precio motion-reduce:animate-none"
+            >
+              ${pesos(porPlaca)}
+            </span>
+            <span className="text-[16px] font-normal text-[#A0A0A0]">por placa</span>
+          </p>
+          {/* Sin punto de acento y sin caja: el CTA del panel ya gasta el
+              acento, y el sistema solo admite acciones como texto o como
+              punto+texto. El peso de la accion lo da el contraste blanco
+              contra el precio en gris de al lado. */}
+          <button
+            onClick={agregarAlCarrito}
+            disabled={enviando || !variante.disponible}
+            className="shrink-0 py-2.5 font-body text-[16px] font-normal tracking-[-0.01em] text-white disabled:opacity-40"
+          >
+            {textoCta}
+          </button>
+        </div>
+      )}
     </section>
   );
 }
