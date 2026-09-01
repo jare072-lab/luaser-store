@@ -61,12 +61,12 @@ const Y_BAJADA = 670; // línea base de A TODO MEXICO
 // La frase se partió buscando que cada línea conserve un acento, porque de eso
 // depende que los dos puntos tengan dónde aterrizar: "MÁS" arriba y "CATÁLOGO"
 // abajo. Cambiar el copy sin respetar esa condición deja los puntos huérfanos.
-const titularDe = (pct: number) => `HASTA ${pct}% MAS`;
-const BAJADA = "BARATO EN EL CATALOGO";
+const titularDe = (pct: number) => `HASTA ${pct}% MENOS`;
+const BAJADA = "POR PLACA EN EL PACK";
 /** Índice de la letra que lleva la tilde. Se busca, no se cuenta a mano: el
  *  porcentaje cambia de ancho (58 vs 7 vs 100) y correría la posición. */
-const iAcentoTitular = (texto: string) => texto.lastIndexOf("MAS") + 1; // la A de MAS
-const I_ACENTO_BAJADA = BAJADA.lastIndexOf("CATALOGO") + 3; // la 2a A de CATALOGO
+const iAcentoTitular = (texto: string) => texto.lastIndexOf("MENOS") + 1; // la E de MENOS
+const I_ACENTO_BAJADA = BAJADA.lastIndexOf("PLACA") + 3; // la 2a A de PLACA
 
 // Recorte del wordmark dentro de logo-luaser.jpg (768x768), medido sobre el
 // archivo, no estimado.

@@ -85,6 +85,10 @@ const config: Config = {
           "92%": { opacity: "1" },
           "100%": { transform: "translateX(110%)", opacity: "0" },
         },
+        precio: {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
         "promo-in": {
           "0%": { opacity: "0", transform: "translateY(14px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
@@ -146,6 +150,10 @@ const config: Config = {
         "promo-float": "promo-float 12s ease-in-out infinite",
         "promo-drift": "promo-drift 9s ease-in-out infinite",
         "badge-float": "badge-float 5s ease-in-out infinite",
+        // Seccion de placas: el precio se transforma al cambiar de medida, no
+        // parpadea ni rebota. 320 ms cae dentro de la ventana de 200-500 ms que
+        // pide la vara, y la curva resuelve en una sola direccion.
+        precio: "precio 0.32s cubic-bezier(0.215,0.61,0.355,1)",
       },
     },
   },

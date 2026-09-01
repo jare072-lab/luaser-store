@@ -34,22 +34,29 @@ function descuento(p: ShopifyProduct) {
  * mañana cambia un precio en Shopify, esta sección se corrige sola.
  */
 export function PromoBanner({
-  maxDescuento,
+  ahorroPlacas,
   productos = [],
 }: {
-  maxDescuento: number;
+  /** Cuanto baja la placa de acrilico al comprarla en pack de 10 en vez de
+   *  suelta. No es un descuento: es la escalera de volumen que ya existe. */
+  ahorroPlacas: number;
   productos?: ShopifyProduct[];
 }) {
   const enOferta = productos.map((p) => ({ p, d: descuento(p) })).filter((x) => x.d).slice(0, 5);
+
+  // El bloque de abajo si habla de descuentos de verdad: son las piezas con
+  // precio comparativo. Su porcentaje sale de ESAS piezas, no del acrilico,
+  // porque son dos cosas distintas y mezclarlas seria mentir en una de las dos.
+  const maxOferta = enOferta.reduce((m, x) => Math.max(m, x.d?.pct ?? 0), 0);
 
   return (
     <section className="relative isolate overflow-hidden bg-ink">
       {/* El cuadro del revelado: nada se dibuja encima. */}
       <div className="relative h-[72svh] max-h-[720px] min-h-[460px] w-full">
-        <RevealLuaser className="absolute inset-0 block h-full w-full" maxDescuento={maxDescuento} />
+        <RevealLuaser className="absolute inset-0 block h-full w-full" maxDescuento={ahorroPlacas} />
         <h1 className="sr-only">
-          Luaser — hasta {maxDescuento}% más barato en el catálogo de piezas de acrílico y MDF
-          cortadas a láser
+          Luaser — placas de acrílico cortadas a láser, hasta {ahorroPlacas}% menos por placa
+          comprando el pack
         </h1>
       </div>
 
@@ -84,7 +91,7 @@ export function PromoBanner({
               Y además
             </span>
             <span className="font-display text-[26px] uppercase leading-none tracking-[1px] text-bone sm:text-[32px]">
-              hasta <span className="text-gold">{maxDescuento}%</span> de descuento
+              hasta <span className="text-gold">{maxOferta}%</span> de descuento
             </span>
           </div>
 

@@ -1,5 +1,6 @@
 import { getHomeData } from "@/lib/shopify/home";
-import { maxDescuento } from "@/lib/promociones";
+import { getPlacas, maxAhorroPack } from "@/lib/shopify/placas";
+import { PlacasSection } from "@/components/storefront/placas-section";
 import { MaquilaHeroSection } from "@/components/storefront/maquila-hero-section";
 import { PromoBanner } from "@/components/storefront/promo-banner";
 import { HeroSection } from "@/components/storefront/hero-section";
@@ -18,17 +19,25 @@ import { Reveal } from "@/components/storefront/reveal";
 export const revalidate = 3600;
 
 export default async function HomePage() {
-  const { heroProduct, bestsellers } = await getHomeData();
-  const descuentoMax = maxDescuento(bestsellers?.products ?? []);
+  const [{ heroProduct, bestsellers }, placas] = await Promise.all([
+    getHomeData(),
+    getPlacas(),
+  ]);
+
+  // El numero del hero habla del acrilico, que es lo que se acaba de publicar.
+  // No es un descuento: es cuanto baja la placa al comprar el pack de 10 en vez
+  // de suelta, calculado de los precios reales de la tienda.
+  const ahorroPlacas = maxAhorroPack(placas);
 
   return (
     <>
-      {descuentoMax > 0 && (
-        <PromoBanner maxDescuento={descuentoMax} productos={bestsellers?.products ?? []} />
+      {ahorroPlacas > 0 && (
+        <PromoBanner ahorroPlacas={ahorroPlacas} productos={bestsellers?.products ?? []} />
       )}
       <Reveal>
         <MaquilaHeroSection />
       </Reveal>
+      <PlacasSection productos={placas} />
       <BestsellersSection
         title={bestsellers?.title ?? "Página de inicio"}
         products={bestsellers?.products ?? []}
