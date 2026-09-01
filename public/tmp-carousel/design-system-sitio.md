@@ -53,7 +53,11 @@ Dos pesos, cuatro tamanos.
 Reglas comprobables:
 
 5. Ningun texto de la seccion pasa de peso 400. Un 600 o un 700 es falla.
-6. Solo existen esos cuatro tamanos. Un quinto es falla.
+6. Esos cuatro tamanos son los **unicos permitidos**, no una cuota a llenar.
+   Una seccion que usa tres de los cuatro cumple; una que introduce un quinto
+   tamano falla. La redaccion anterior decia "solo existen esos cuatro
+   tamanos" y un revisor mecanico la leyo como obligacion de usarlos todos,
+   reprobando por no encontrar el de 32px.
 7. El titulo de seccion es 80px en peso 300, no 400 y no mas grueso.
 
 ## Forma y espacio

@@ -268,7 +268,14 @@ export function PlacasSection({ productos }: { productos: PlacaProducto[] }) {
                 anclaba el numero de 80px: se podia leer como el precio del
                 pedido completo. La unidad en blanco y en la misma linea base
                 cierra esa lectura sin meter color ni insignias, que el
-                sistema no permite. */}
+                sistema no permite.
+
+                Nota de precision: el contenedor es items-baseline, pero en la
+                columna de 380px un precio largo como $155.80 no cabe junto a
+                "por placa" y las dos piezas se apilan. Se dejo asi a proposito:
+                apiladas siguen leyendose como una sola unidad porque comparten
+                color y no hay hueco entre ellas, y forzar una linea obligaria a
+                achicar el numero, que es lo unico que no se puede achicar. */}
             <p
               key={`${colorSel}-${medidaSel}-${packSel}`}
               className="flex flex-wrap items-baseline gap-x-4 font-body animate-precio motion-reduce:animate-none"
