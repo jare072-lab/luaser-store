@@ -5,3 +5,30 @@
 body {
   @apply bg-ink text-bone;
 }
+
+/*
+ * Campos de los formularios de Judge.me (resenas y preguntas).
+ *
+ * Judge.me solo le da border-radius a sus inputs: nunca fija `color`. Como el
+ * fondo del sitio es oscuro, esos campos heredaban el `text-bone` del body
+ * mientras el navegador les pintaba el fondo blanco por defecto, asi que quien
+ * escribia una resena no veia lo que tecleaba.
+ *
+ * Se ancla a [class*="jdgm"] y no a `.jdgm-form` a proposito: Judge.me monta el
+ * formulario en varios contenedores segun la version del widget —`jdgm-form`,
+ * `jdgm-form-dynamic`, y los modales que cuelga del body— y `.jdgm-form` no
+ * alcanza a `jdgm-form-dynamic`, que es otra clase distinta. Enganchar al
+ * prefijo cubre todos sin tocar nada fuera del widget.
+ */
+[class*="jdgm"] input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+[class*="jdgm"] textarea,
+[class*="jdgm"] select {
+  @apply bg-white text-ink;
+  caret-color: theme("colors.ink.DEFAULT");
+}
+
+[class*="jdgm"] input::placeholder,
+[class*="jdgm"] textarea::placeholder {
+  @apply text-graystone-500;
+  opacity: 1; /* Firefox le baja la opacidad a los placeholder por default. */
+}
