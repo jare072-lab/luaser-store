@@ -984,3 +984,222 @@ async function materialChart({
 }
 
 module.exports.materialChart = materialChart;
+
+/**
+ * Vertical 9:16 story/reel: full-bleed photo, navy scrim from the bottom, eyebrow + headline,
+ * and a filled CTA pill with a contact line under it. Added for Lúa Eventos social content
+ * where the piece has to close with an action (apartar fecha por WhatsApp), which the
+ * feed templates above deliberately don't carry.
+ */
+async function storyCta({ photoPath, eyebrow, headline, cta, contact, logoPath, brand, width = 1080, height = 1920, outPath }) {
+  const lines = wrapText(headline, 18);
+  const M = 72;
+  const fontSize = 78;
+
+  // El bloque se ancla abajo y se mide antes de dibujar, para que el titular nunca
+  // se encime con la pastilla del CTA por muy largo que venga.
+  const hCta = cta ? 132 : 0;
+  const hContact = contact ? 56 : 0;
+  const hHead = lines.length * Math.round(fontSize * 1.16);
+  const hEyebrow = eyebrow ? 62 : 0;
+  const bloque = hEyebrow + hHead + 40 + hCta + hContact;
+  // Zona segura de stories: Instagram y Facebook tapan los ~250 px de abajo con la barra de
+  // "Enviar mensaje" y los ~150 de arriba con la fila del perfil. Todo el bloque, incluido el
+  // teléfono, tiene que terminar antes de esa franja o el CTA se pierde detrás de la UI.
+  const padBottom = 300;
+  const topBloque = height - padBottom - bloque;
+  const scrimTop = Math.max(0, topBloque - 320);
+
+  let y = topBloque;
+  const p = [];
+  p.push(`<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="${brand.navyDark}" stop-opacity="0"/>
+    <stop offset="45%" stop-color="${brand.navyDark}" stop-opacity="0.82"/>
+    <stop offset="100%" stop-color="${brand.navyDark}" stop-opacity="0.97"/></linearGradient></defs>`);
+  p.push(`<rect x="0" y="${scrimTop}" width="${width}" height="${height - scrimTop}" fill="url(#g)"/>`);
+
+  if (eyebrow) {
+    y += 44;
+    p.push(`<text x="${M}" y="${y}" font-family="Arial, sans-serif" font-weight="700" font-size="30" letter-spacing="5" fill="${brand.accent}">${escapeXml(stripEmoji(eyebrow).toUpperCase())}</text>`);
+    y += 18;
+  }
+  for (const l of lines) {
+    y += Math.round(fontSize * 1.16);
+    p.push(`<text x="${M}" y="${y}" font-family="Arial, sans-serif" font-weight="800" font-size="${fontSize}" fill="#ffffff">${escapeXml(stripEmoji(l))}</text>`);
+  }
+  y += 40;
+
+  if (cta) {
+    const texto = stripEmoji(cta).toUpperCase();
+    const w = Math.min(width - M * 2, Math.round(texto.length * 22 + 110));
+    p.push(`<rect x="${M}" y="${y}" width="${w}" height="96" rx="48" fill="${brand.accent}"/>`);
+    p.push(`<text x="${M + w / 2}" y="${y + 62}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800" font-size="36" letter-spacing="1" fill="${brand.navyDark}">${escapeXml(texto)}</text>`);
+    y += hCta;
+  }
+  if (contact) {
+    y += 40;
+    p.push(`<text x="${M}" y="${y}" font-family="Arial, sans-serif" font-weight="700" font-size="34" fill="#ffffff">${escapeXml(stripEmoji(contact))}</text>`);
+  }
+
+  const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">${p.join("")}</svg>`;
+  const logoSize = 104;
+  const logoBuf = await circleLogo(logoPath, logoSize);
+
+  await sharp(photoPath)
+    .resize(width, height, { fit: "cover" })
+    .composite([
+      { input: Buffer.from(svg), top: 0, left: 0 },
+      // Bajado a 190 px por la misma razón: arriba de eso lo cubre la fila del perfil.
+      { input: logoBuf, top: 190, left: 56 },
+      { input: Buffer.from(ringSvg(logoSize)), top: 186, left: 52 },
+    ])
+    .png()
+    .toFile(outPath);
+  return outPath;
+}
+
+module.exports.storyCta = storyCta;
+
+/**
+ * Portada ancha para la página de Facebook (1640x624 y similares). El texto va en un panel
+ * de degradado a la izquierda y la foto se encuadra a la derecha, porque en el formato de
+ * portada Facebook recorta por los lados en móvil y encima monta la foto de perfil en la
+ * esquina inferior izquierda: por eso el bloque de texto arranca alto y no baja al pie.
+ */
+async function wideCover({ photoPath, eyebrow, headline, contact, logoPath, brand, width = 1640, height = 624, outPath }) {
+  const M = 90;
+  const panelW = Math.round(width * 0.52);
+  const lines = wrapText(headline, 26);
+  const fTit = 62;
+
+  const p = [];
+  p.push(`<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="${brand.navyDark}" stop-opacity="0.97"/>
+    <stop offset="62%" stop-color="${brand.navyDark}" stop-opacity="0.88"/>
+    <stop offset="100%" stop-color="${brand.navyDark}" stop-opacity="0"/></linearGradient></defs>`);
+  p.push(`<rect x="0" y="0" width="${panelW}" height="${height}" fill="url(#g)"/>`);
+
+  // El bloque se sube respecto al centro a propósito: en escritorio Facebook encima la foto
+  // de perfil sobre la esquina inferior izquierda de la portada (unos 220 x 200 px), y ahí
+  // es justo donde caería la línea de contacto si el bloque quedara centrado.
+  const hBloque = (eyebrow ? 52 : 0) + lines.length * Math.round(fTit * 1.18) + (contact ? 62 : 0);
+  let y = Math.max(60, Math.round((height - hBloque) / 2) - 75);
+
+  if (eyebrow) {
+    y += 34;
+    p.push(`<text x="${M}" y="${y}" font-family="Arial, sans-serif" font-weight="700" font-size="26" letter-spacing="5" fill="${brand.accent}">${escapeXml(stripEmoji(eyebrow).toUpperCase())}</text>`);
+    y += 18;
+  }
+  for (const l of lines) {
+    y += Math.round(fTit * 1.18);
+    p.push(`<text x="${M}" y="${y}" font-family="Arial, sans-serif" font-weight="800" font-size="${fTit}" fill="#ffffff">${escapeXml(stripEmoji(l))}</text>`);
+  }
+  if (contact) {
+    y += 62;
+    p.push(`<text x="${M}" y="${y}" font-family="Arial, sans-serif" font-weight="700" font-size="30" fill="${brand.accent}">${escapeXml(stripEmoji(contact))}</text>`);
+  }
+
+  const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">${p.join("")}</svg>`;
+  const logoSize = 84;
+  const logoBuf = await circleLogo(logoPath, logoSize);
+
+  await sharp(photoPath)
+    .resize(width, height, { fit: "cover", position: "attention" })
+    .composite([
+      { input: Buffer.from(svg), top: 0, left: 0 },
+      { input: logoBuf, top: 40, left: width - logoSize - 56 },
+      { input: Buffer.from(ringSvg(logoSize)), top: 36, left: width - logoSize - 60 },
+    ])
+    .png()
+    .toFile(outPath);
+  return outPath;
+}
+
+module.exports.wideCover = wideCover;
+
+/**
+ * Creativo de anuncio: foto de producto arriba, bloque sólido abajo con precio grande y
+ * botón de llamada a la acción. A diferencia de las portadas de catálogo (que dejan respirar
+ * al producto), aquí el trabajo es frenar el scroll: el precio es el elemento más ruidoso y
+ * el CTA se ve como botón, no como texto.
+ *
+ * El bloque se mide antes de dibujarse y la foto ocupa lo que sobra, así que nunca se encima
+ * nada por muy largo que venga el titular.
+ */
+async function adHero({ photoPath, eyebrow, headline, precioLabel, precio, sufijo, nota, cta, logoPath, brand, width = 1080, height = 1080, outPath }) {
+  const M = Math.round(width * 0.075);
+  const anchoUtil = width - M * 2;
+  const fEyebrow = Math.round(width * 0.026);
+  const fTit = Math.round(width * 0.052);
+  const fPrec = Math.round(width * 0.118);
+  const fSuf = Math.round(width * 0.032);
+  const fNota = Math.round(width * 0.025);
+  const hCta = Math.round(width * 0.098);
+  const fCta = Math.round(width * 0.034);
+
+  const lineasTit = wrapText(headline, Math.floor(anchoUtil / (fTit * 0.52)));
+  const hTit = lineasTit.length * Math.round(fTit * 1.18);
+
+  // Alto total del panel oscuro, medido antes de dibujar
+  const padTop = Math.round(width * 0.042);
+  const gap = Math.round(width * 0.024);
+  const hMarca = Math.round(width * 0.030);
+  // El CTA va en la misma fila que el precio (a la derecha), no debajo: apilarlos hacía el
+  // panel tan alto que la foto quedaba en una franja y el producto no se veía.
+  const hFilaPrecio = Math.round(fPrec * 0.24) + Math.round(fPrec * 0.10) + Math.round(fPrec * 0.92);
+  const hPanel = padTop + fEyebrow + gap + hTit + gap + hFilaPrecio
+    + Math.round(width * 0.058) + hMarca + Math.round(width * 0.045);
+  const topPanel = height - hPanel;
+
+  const p = [];
+  p.push(`<rect x="0" y="${topPanel}" width="${width}" height="${hPanel}" fill="${brand.navyDark}"/>`);
+  p.push(`<rect x="0" y="${topPanel}" width="${Math.round(width * 0.16)}" height="6" fill="${brand.accent}"/>`);
+
+  let y = topPanel + padTop;
+
+  y += fEyebrow;
+  if (eyebrow) p.push(`<text x="${M}" y="${y}" font-family="Arial, sans-serif" font-weight="700" font-size="${fEyebrow}" letter-spacing="5" fill="${brand.accent}">${escapeXml(stripEmoji(eyebrow).toUpperCase())}</text>`);
+  y += gap;
+
+  for (const l of lineasTit) {
+    y += Math.round(fTit * 1.18);
+    p.push(`<text x="${M}" y="${y}" font-family="Arial, sans-serif" font-weight="800" font-size="${fTit}" fill="#ffffff">${escapeXml(stripEmoji(l))}</text>`);
+  }
+  y += gap;
+
+  // "DESDE" va en su propia línea, con su propio avance: pegado al número se encimaba.
+  let x = M;
+  if (precioLabel) {
+    y += Math.round(fPrec * 0.24);
+    p.push(`<text x="${x}" y="${y}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(fPrec * 0.20)}" letter-spacing="3" fill="${brand.accent}">${escapeXml(precioLabel.toUpperCase())}</text>`);
+    y += Math.round(fPrec * 0.10);
+  }
+  y += Math.round(fPrec * 0.92);
+  p.push(`<text x="${x}" y="${y}" font-family="Arial, sans-serif" font-weight="800" font-size="${fPrec}" fill="#ffffff">${escapeXml(precio)}</text>`);
+  if (sufijo) {
+    const anchoPrecio = precio.length * fPrec * 0.56;
+    p.push(`<text x="${Math.round(x + anchoPrecio + width * 0.022)}" y="${y - Math.round(fPrec * 0.08)}" font-family="Arial, sans-serif" font-weight="700" font-size="${fSuf}" fill="${brand.accent}">${escapeXml(sufijo)}</text>`);
+  }
+
+  // CTA alineado a la derecha, centrado con el bloque del precio
+  const wCta = Math.round(stripEmoji(cta).length * fCta * 0.60 + width * 0.085);
+  const yCta = y - Math.round(fPrec * 0.62) - Math.round(hCta / 2);
+  p.push(`<rect x="${width - M - wCta}" y="${yCta}" width="${wCta}" height="${hCta}" rx="${Math.round(hCta / 2)}" fill="${brand.accent}"/>`);
+  p.push(`<text x="${width - M - wCta / 2}" y="${yCta + Math.round(hCta * 0.66)}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800" font-size="${fCta}" letter-spacing="1" fill="${brand.navyDark}">${escapeXml(stripEmoji(cta).toUpperCase())}</text>`);
+
+  y += Math.round(width * 0.058) + Math.round(hMarca * 0.8);
+
+  p.push(`<text x="${M}" y="${y}" font-family="Arial, sans-serif" font-weight="700" font-size="${hMarca}" letter-spacing="7" fill="#ffffff">LUASER</text>`);
+  p.push(`<text x="${width - M}" y="${y}" text-anchor="end" font-family="Arial, sans-serif" font-size="${Math.round(hMarca * 0.78)}" fill="#B9B5AE">luaser.mx</text>`);
+
+  const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">${p.join("")}</svg>`;
+  const foto = await sharp(photoPath).resize(width, topPanel + 4, { fit: "cover", position: "centre" }).toBuffer();
+
+  await sharp({ create: { width, height, channels: 4, background: brand.navyDark } })
+    .composite([{ input: foto, top: 0, left: 0 }, { input: Buffer.from(svg), top: 0, left: 0 }])
+    .png()
+    .toFile(outPath);
+  return outPath;
+}
+
+module.exports.adHero = adHero;
