@@ -17,6 +17,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 1,
     },
+    ...["/acrilico-cortado-a-la-medida", "/acrilico-cortado-a-la-medida/monterrey"].map((ruta) => ({
+      url: `${SITE_URL}${ruta}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    })),
     ...collections.map((collection) => ({
       url: `${SITE_URL}/coleccion/${collection.handle}`,
       lastModified: new Date(collection.updatedAt),

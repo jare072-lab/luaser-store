@@ -8,6 +8,8 @@ const columns = [
     links: [
       { label: "Letreros personalizados", href: "/producto/letrero-de-acrilico-personalizado-para-negocio" },
       { label: "Placas de acrílico", href: "/coleccion/placas-de-acrilico" },
+      { label: "Acrílico a la medida", href: "/acrilico-cortado-a-la-medida" },
+      { label: "Acrílico en Monterrey", href: "/acrilico-cortado-a-la-medida/monterrey" },
       { label: "Más vendidos", href: "#bestsellers" },
       { label: "Coleccionables", href: "/coleccion/coleccionables" },
       { label: "Decoración MDF", href: "/coleccion/decoracion-mdf" },
