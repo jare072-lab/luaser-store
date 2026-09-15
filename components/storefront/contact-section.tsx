@@ -1,4 +1,5 @@
-import { Phone, Mail, MapPin } from "lucide-react";
+import Link from "next/link";
+import { Phone, Mail, Truck } from "lucide-react";
 
 const PHONE_DIGITS = "528131092383";
 const PHONE_DISPLAY = "81 3109 2383";
@@ -58,24 +59,27 @@ export function ContactSection() {
           </p>
         </div>
 
+        {/* Luaser vende solo por envio: no hay mostrador ni recoleccion en el
+            taller. Antes este bloque mostraba la calle con enlace a Google
+            Maps, y eso invitaba a la gente a llegar. Ahora dice lo que si
+            pasa: se pide en linea o por WhatsApp y llega por paqueteria. La
+            ciudad se queda porque Google la usa para las busquedas locales. */}
         <div className="rounded-2xl border border-ink-border bg-ink-soft p-6 sm:p-8">
           <p className="flex items-center gap-2 font-body text-sm font-semibold text-bone">
-            <MapPin className="h-4 w-4 text-gold" />
-            Nos encontramos en:
+            <Truck className="h-4 w-4 text-gold" />
+            Solo envíos, a todo México
           </p>
           <p className="mt-3 font-body text-graystone-100">
-            Calle Santa Ana #348, Colonia Santa Fe
-            <br />
-            Apodaca, N.L., CP. 66648
+            Producimos en nuestro taller de Apodaca, N.L. y enviamos por Estafeta a cualquier
+            punto del país. No tenemos mostrador ni entrega en el taller: pides en línea o por
+            WhatsApp y te llega a tu puerta.
           </p>
-          <a
-            href="https://www.google.com/maps/search/?api=1&query=Calle+Santa+Ana+348%2C+Colonia+Santa+Fe%2C+Apodaca%2C+N.L.%2C+66648"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/paginas/envios-y-tiempos"
             className="mt-4 inline-block font-body text-sm text-gold hover:text-gold-bright transition-colors"
           >
-            Ver en Google Maps →
-          </a>
+            Ver tiempos y costos de envío →
+          </Link>
         </div>
       </div>
     </section>

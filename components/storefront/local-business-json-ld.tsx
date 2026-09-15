@@ -5,11 +5,19 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 /**
  * Datos estructurados del negocio, en todas las paginas.
  *
- * Es lo que le dice a Google que Luaser es un taller real en Monterrey y no
- * solo una tienda en linea: sin esto no compite en busquedas locales como
- * "placas de acrilico Monterrey". Solo lleva datos que ya se muestran en el
- * sitio (telefono de WhatsApp, correo, direccion, horario, redes). El horario
- * lo confirmo el cliente: lunes a sabado de 10 a 18.
+ * Es lo que le dice a Google que Luaser es un taller real en el area de
+ * Monterrey y no solo una tienda en linea: sin esto no compite en busquedas
+ * locales como "placas de acrilico Monterrey".
+ *
+ * Luaser es un negocio de AREA DE SERVICIO: vende solo por envio y no recibe
+ * clientes en el taller. Por eso la direccion lleva ciudad y estado pero no
+ * calle, igual que la ficha de Google Business Profile con direccion oculta.
+ * Google compara la ficha con el sitio, y una calle aqui que no aparece alla
+ * (o al reves) resta confianza. La calle no se agrega aunque el cliente la
+ * comparta, salvo que decida mostrar el taller al publico.
+ *
+ * Horario confirmado por el cliente: lunes a sabado de 10 a 18 (atencion por
+ * WhatsApp y produccion, no mostrador).
  */
 export function LocalBusinessJsonLd() {
   const json = {
@@ -25,14 +33,10 @@ export function LocalBusinessJsonLd() {
       "Taller de corte y grabado láser en acrílico: placas de acrílico de color, espejo y cristal, letreros personalizados y piezas a la medida. Envíos a todo México.",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Calle Santa Ana 348, Colonia Santa Fe",
       addressLocality: "Apodaca",
       addressRegion: "Nuevo León",
-      postalCode: "66648",
       addressCountry: "MX",
     },
-    hasMap:
-      "https://www.google.com/maps/search/?api=1&query=Calle+Santa+Ana+348%2C+Colonia+Santa+Fe%2C+Apodaca%2C+N.L.%2C+66648",
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -42,10 +46,16 @@ export function LocalBusinessJsonLd() {
       },
     ],
     areaServed: [
-      { "@type": "City", name: "Apodaca" },
       { "@type": "City", name: "Monterrey" },
+      { "@type": "State", name: "Nuevo León" },
       { "@type": "Country", name: "México" },
     ],
+    // Solo envios: no hay atencion en el taller.
+    potentialAction: {
+      "@type": "OrderAction",
+      target: `${SITE_URL}/placas-de-acrilico`,
+      deliveryMethod: "http://purl.org/goodrelations/v1#DeliveryModeMail",
+    },
     priceRange: "$$",
     sameAs: socialLinks.map((s) => s.href),
   };
