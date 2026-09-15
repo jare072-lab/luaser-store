@@ -16,7 +16,7 @@ import { Menu, X } from "lucide-react";
  * pulgares, no un dropdown de escritorio encogido.
  */
 const ENLACES = [
-  { href: "/coleccion/placas-de-acrilico", etiqueta: "Placas de acrílico" },
+  { href: "/placas-de-acrilico", etiqueta: "Placas de acrílico" },
   { href: "/coleccion/frontpage", etiqueta: "Productos" },
   { href: "/#letreros", etiqueta: "Letreros" },
   { href: "/#historia", etiqueta: "Nuestro proceso" },

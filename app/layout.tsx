@@ -10,6 +10,7 @@ import { MetaPixel } from "@/components/analytics/meta-pixel";
 import { JudgeMeScripts } from "@/components/analytics/judge-me";
 import { getJudgeMeShopAssets } from "@/lib/judgeme";
 import { Attribution } from "@/components/analytics/attribution";
+import { LocalBusinessJsonLd } from "@/components/storefront/local-business-json-ld";
 import { getCurrentCart } from "@/app/actions/cart";
 import "./globals.css";
 
@@ -76,6 +77,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           />
         )}
         <Attribution />
+        <LocalBusinessJsonLd />
         <CartUIProvider>
           <SiteHeader cartQuantity={cart?.totalQuantity ?? 0} />
           <main>{children}</main>

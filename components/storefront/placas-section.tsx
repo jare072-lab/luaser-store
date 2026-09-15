@@ -385,7 +385,7 @@ export function PlacasSection({ productos }: { productos: PlacaProducto[] }) {
                 Ver {familia.titulo.replace(/^Placas de Acrílico\s*/i, "").toLowerCase() || "cristal"}
               </Link>
               <Link
-                href="/coleccion/placas-de-acrilico"
+                href="/placas-de-acrilico"
                 className="font-body text-[16px] font-normal tracking-[-0.01em] text-[#A0A0A0] transition-colors duration-300 hover:text-white"
               >
                 Ver las cinco familias
