@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    a { color: #b8932a; } a:hover { color: #7a5a12; }
+  </style>
+</helmet>
+<div style="position: relative; width: 1200px; height: 900px; overflow: hidden; background-color: #d3cfc8; background-image: url(data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27320%27%20height%3D%27320%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.95%27%20numOctaves%3D%273%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20values%3D%270%200%200%200%200.42%200%200%200%200%200.40%200%200%200%200%200.37%200%200%200%200.22%200%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url%28%23n%29%27%2F%3E%3C%2Fsvg%3E);">
+  <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.10) 100%);"></div>
+  <div style="position: absolute; left: 100px; top: 92px; width: 1000px; height: 715px; ">
+<div style="position: absolute; inset: 0; filter: blur(46px); opacity: {{glowOpacity}}; transform: scale(1.08);"><div style="position: absolute; inset: 0; -webkit-mask-image: url(./panel.png); mask-image: url(./panel.png); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; background: {{ledColor}};"></div></div>
+<div style="position: absolute; inset: 0; filter: blur(12px); opacity: 0.22; transform: translate(12px, 20px);"><div style="position: absolute; inset: 0; -webkit-mask-image: url(./panel.png); mask-image: url(./panel.png); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; background: #1a1409;"></div></div>
+<div style="position: absolute; inset: 0; filter: blur(7px); opacity: 0.38; transform: translate(16px, 26px);"><div style="position: absolute; inset: 0; -webkit-mask-image: url(./letras.png); mask-image: url(./letras.png); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; background: #2a1d08;"></div></div>
+<div style="position: absolute; inset: 0; filter: drop-shadow(0 0 1px rgba(255,255,255,0.85)) drop-shadow(0 1px 1px rgba(80,70,50,0.35));"><div style="position: absolute; inset: 0; -webkit-mask-image: url(./panel.png); mask-image: url(./panel.png); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; background: linear-gradient(148deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 38%, rgba(255,255,255,0.03) 62%, rgba(255,255,255,0.18) 100%);"></div></div>
+<div style="position: absolute; inset: 0; filter: {{ledFilter}};"><div style="position: absolute; inset: 0; -webkit-mask-image: url(./led.png); mask-image: url(./led.png); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; background: {{ledColor}}; opacity: {{ledOpacity}};"></div></div>
+<div style="position: absolute; inset: 0; transform: scale(0.995);"><div style="position: absolute; inset: 0; -webkit-mask-image: url(./led.png); mask-image: url(./led.png); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; background: #ffffff; opacity: {{coreOpacity}};"></div></div>
+<div style="position: absolute; inset: 0; transform: translate(3px, 4px);"><div style="position: absolute; inset: 0; -webkit-mask-image: url(./letras.png); mask-image: url(./letras.png); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; background: #7a5a12;"></div></div>
+<div style="position: absolute; inset: 0; filter: drop-shadow(0 0 0.5px rgba(80,60,10,0.6));"><div style="position: absolute; inset: 0; -webkit-mask-image: url(./letras.png); mask-image: url(./letras.png); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; background: linear-gradient(160deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0) 28%, rgba(0,0,0,0.16) 52%, rgba(255,255,255,0.26) 74%, rgba(255,255,255,0) 100%), linear-gradient(112deg, #6e520f 0%, #b8932a 9%, #f3dc85 18%, #fff5c2 23%, #d9b64a 31%, #9c7a1c 40%, #c9a63a 48%, #f7e6a1 56%, #ead27a 60%, #a8861f 70%, #7c5f10 80%, #cfae44 90%, #f1d986 100%);"></div></div>
+<div style="position: absolute; left: 211px; top: 93px; width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f4f4f2 0%, #c9c9c6 45%, #8f918f 78%, #5d605f 100%); box-shadow: 0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.4);"></div>
+<div style="position: absolute; left: 777px; top: 155px; width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f4f4f2 0%, #c9c9c6 45%, #8f918f 78%, #5d605f 100%); box-shadow: 0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.4);"></div>
+<div style="position: absolute; left: 178px; top: 531px; width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f4f4f2 0%, #c9c9c6 45%, #8f918f 78%, #5d605f 100%); box-shadow: 0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.4);"></div>
+<div style="position: absolute; left: 881px; top: 538px; width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f4f4f2 0%, #c9c9c6 45%, #8f918f 78%, #5d605f 100%); box-shadow: 0 2px 4px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.4);"></div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"ledColor":{"editor":"color","default":"#ffd9a3","options":["#ffd9a3","#f2f6ff","#ffb347"],"section":"LED"},"encendido":{"editor":"boolean","default":true,"section":"LED"},"$preview":{"width":1200,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const c = this.props.ledColor ?? '#ffd9a3';
+    const on = this.props.encendido ?? true;
+    return {
+      ledColor: c,
+      ledOpacity: on ? 1 : 0.35,
+      coreOpacity: on ? 0.75 : 0,
+      glowOpacity: on ? 0.45 : 0,
+      ledFilter: on
+        ? 'drop-shadow(0 0 3px ' + c + ') drop-shadow(0 0 10px ' + c + ') drop-shadow(0 0 22px ' + c + ')'
+        : 'none',
+    };
+  }
+}
+</script>
+</body>
+</html>

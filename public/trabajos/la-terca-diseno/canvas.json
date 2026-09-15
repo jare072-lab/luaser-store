@@ -1,0 +1,32 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "title": "Vista frontal",
+      "x": 0,
+      "y": 0,
+      "w": 1200,
+      "h": 900
+    },
+    {
+      "file": "Angulo.dc.html",
+      "title": "Vista en ángulo",
+      "x": 1300,
+      "y": 0,
+      "w": 1200,
+      "h": 900
+    }
+  ],
+  "annotations": [
+    {
+      "id": "materiales",
+      "x": 0,
+      "y": -170,
+      "w": 520,
+      "text": "La Terca · Mini Quinta — letrero\nLetras y palmera: acrílico espejo dorado 3 mm\nFondo: acrílico cristal (transparente) 3 mm, corte siguiendo el contorno\nLuz: neón LED 12 V blanco cálido por el contorno + 4 separadores de aluminio\nMedida: [POR DEFINIR] cm de ancho"
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}
