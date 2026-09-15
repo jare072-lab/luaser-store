@@ -395,7 +395,7 @@ export function PlacasSection({ productos }: { productos: PlacaProducto[] }) {
         </div>
 
         <p className="mt-[120px] border-t border-[#484848] pt-8 font-body text-[16px] font-normal leading-[1.25] tracking-[-0.01em] text-[#A0A0A0]">
-          Cortamos tu pedido en 2 a 3 días hábiles. Entrega gratis en Monterrey desde $499 y envío
+          Cortamos tu pedido en 2 a 3 días hábiles. Entrega gratis en Monterrey desde $700 y envío
           por Estafeta a todo México. ¿Otra medida?{" "}
           <Link href="/acrilico-cortado-a-la-medida" className="text-white underline">
             Cotiza acrílico a la medida

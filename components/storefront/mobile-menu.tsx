@@ -63,7 +63,7 @@ export function MobileMenu() {
             ))}
           </nav>
           <p className="px-8 pb-10 font-body text-sm text-graystone-500">
-            Envíos a todo México · Gratis en Monterrey desde $499
+            Envíos a todo México · Gratis en Monterrey desde $700
           </p>
         </div>
       )}

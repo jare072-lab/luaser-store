@@ -109,8 +109,8 @@ export async function AcrilicoMedidaLanding({ enMonterrey }: Props) {
     {
       q: enMonterrey ? "¿Entregan en mi municipio?" : "¿Hacen envíos a todo México?",
       a: enMonterrey
-        ? `Sí. Entregamos a domicilio en ${MUNICIPIOS_MTY.join(", ")}. La entrega es gratis en pedidos desde $499; no tienes que pasar a recoger.`
-        : "Sí, enviamos por Estafeta a todo México. El envío es gratis en pedidos desde $1,049, y en el área metropolitana de Monterrey desde $499.",
+        ? `Sí. Entregamos a domicilio en ${MUNICIPIOS_MTY.join(", ")}. La entrega es gratis en pedidos desde $700; no tienes que pasar a recoger.`
+        : "Sí, enviamos por Estafeta a todo México. El envío es gratis en pedidos desde $1,049, y en el área metropolitana de Monterrey desde $700.",
     },
     {
       q: "¿Cuánto tarda mi pedido?",
@@ -183,9 +183,9 @@ export async function AcrilicoMedidaLanding({ enMonterrey }: Props) {
         <ul className="mt-8 grid gap-3 sm:grid-cols-3 font-body text-sm text-graystone-100">
           <li className="rounded-lg border border-ink-border p-4">
             <strong className="block text-bone">
-              {enMonterrey ? "Entrega gratis desde $499" : "Envío gratis desde $1,049"}
+              {enMonterrey ? "Entrega gratis desde $700" : "Envío gratis desde $1,049"}
             </strong>
-            {enMonterrey ? "A domicilio en el área metropolitana." : "Gratis en Monterrey desde $499."}
+            {enMonterrey ? "A domicilio en el área metropolitana." : "Gratis en Monterrey desde $700."}
           </li>
           <li className="rounded-lg border border-ink-border p-4">
             <strong className="block text-bone">Pagas solo lo que usas</strong>
@@ -253,7 +253,7 @@ export async function AcrilicoMedidaLanding({ enMonterrey }: Props) {
           <>
             <h2 className="mt-16 font-display text-2xl sm:text-3xl text-bone">Entregamos en toda el área metropolitana</h2>
             <p className="mt-2 max-w-2xl font-body text-graystone-300">
-              {MUNICIPIOS_MTY.join(" · ")}. Entrega a domicilio gratis en pedidos desde $499; te
+              {MUNICIPIOS_MTY.join(" · ")}. Entrega a domicilio gratis en pedidos desde $700; te
               llevamos el acrílico, no tienes que venir por él.
             </p>
           </>
@@ -282,7 +282,7 @@ export async function AcrilicoMedidaLanding({ enMonterrey }: Props) {
             <>
               ¿Estás en Monterrey?{" "}
               <Link href="/acrilico-cortado-a-la-medida/monterrey" className="text-gold hover:underline">
-                Entrega gratis a domicilio desde $499
+                Entrega gratis a domicilio desde $700
               </Link>
               .
             </>
