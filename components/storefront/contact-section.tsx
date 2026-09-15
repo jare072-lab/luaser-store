@@ -54,7 +54,7 @@ export function ContactSection() {
           </div>
 
           <p className="mt-6 font-body text-xs uppercase tracking-wide text-graystone-500">
-            L-S 9-19H · APODACA, N.L.
+            L-S 10-18H · APODACA, N.L.
           </p>
         </div>
 
