@@ -600,6 +600,14 @@ async function offerSplit({
   etiquetaPrecio = "el set",
   detalle = "", // linea chica en mayusculas espaciadas
   cta = "PIDE EL TUYO",
+  // Bono y urgencia son opcionales: sin ellos la plantilla se ve igual que
+  // siempre. Con ellos, el bono va como etiqueta dorada + texto negro, y la
+  // urgencia como una sola caja en el color de urgencia de la marca. Es el
+  // unico sitio donde entra ese color, para que siga significando "se acaba".
+  bonus = "", // "10 agitadores extra GRATIS en pedidos de 50 o mas"
+  urgencia = "", // "SOLO 5 DIAS" — corto: va dentro de una caja de color
+  urgenciaNota = "", // "hasta el 20 de septiembre" — texto chico a la derecha de la caja
+  urgenciaColor = "#E63980",
   heroPhotoPath,
   outPath,
 }) {
@@ -639,7 +647,14 @@ async function offerSplit({
   const pTam = Math.round(size * 0.072);
   const yEtiq = Math.round(size * 0.618);
   const yDet = Math.round(size * 0.662);
-  const yCta = Math.round(size * 0.695);
+  // Con bono y urgencia el CTA baja para dejarles sitio; sin ellos se queda
+  // donde siempre. Todo sigue colgando de la misma linea izquierda M.
+  const extra = (bonus ? 1 : 0) + (urgencia ? 1 : 0);
+  // El bono puede ocupar dos lineas: la urgencia y el CTA se separan lo
+  // suficiente para que la segunda linea nunca toque la caja de color.
+  const yBonus = Math.round(size * 0.700);
+  const yUrg = Math.round(size * (bonus ? 0.790 : 0.700));
+  const yCta = Math.round(size * (0.695 + extra * 0.083));
   const ctaH = Math.round(size * 0.062);
 
   const titSvg = titular
@@ -709,6 +724,29 @@ async function offerSplit({
 
     <text x="${M}" y="${yDet}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0215)}" letter-spacing="${size * 0.0022}" fill="${gris}">${escapeXml(stripEmoji(detalle))}</text>
 
+    ${bonus ? (() => {
+      const tagTam = Math.round(size * 0.020);
+      const tagH = Math.round(size * 0.040);
+      const tagW = Math.round(tagTam * 0.62 * 5 + size * 0.03);
+      const txtTam = Math.round(size * 0.0245);
+      const lineas = wrapText(bonus, Math.floor((colW - tagW - size * 0.02) / (txtTam * 0.55)));
+      const filas = lineas.map((l, i) => `<text x="${M + tagW + Math.round(size * 0.016)}" y="${yBonus + tagH * 0.72 + i * txtTam * 1.2}" font-family="Arial, sans-serif" font-weight="700" font-size="${txtTam}" fill="${tinta}">${escapeXml(l)}</text>`).join("");
+      return `<rect x="${M}" y="${yBonus}" width="${tagW}" height="${tagH}" fill="url(#oro)"/>
+      <text x="${M + tagW / 2}" y="${yBonus + tagH * 0.72}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="${tagTam}" letter-spacing="${size * 0.002}" fill="${tinta}">BONUS</text>${filas}`;
+    })() : ""}
+    ${urgencia ? (() => {
+      const uTam = Math.round(size * 0.022);
+      const uH = Math.round(size * 0.046);
+      // La caja se mide al texto y nunca pasa de la columna: un texto mas largo
+      // que la columna se salia por los dos lados del cuadro. Lo largo va en la
+      // nota, no en la caja.
+      const uW = Math.min(colW, Math.round(stripEmoji(urgencia).length * (uTam * 0.62 + size * 0.0018) + size * 0.04));
+      const nota = urgenciaNota
+        ? `<text x="${M + uW + Math.round(size * 0.016)}" y="${yUrg + uH * 0.69}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0215)}" fill="${tinta}">${escapeXml(stripEmoji(urgenciaNota))}</text>`
+        : "";
+      return `<rect x="${M}" y="${yUrg}" width="${uW}" height="${uH}" fill="${urgenciaColor}"/>
+      <text x="${M + uW / 2}" y="${yUrg + uH * 0.69}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="${uTam}" letter-spacing="${size * 0.0018}" fill="#ffffff">${escapeXml(stripEmoji(urgencia))}</text>${nota}`;
+    })() : ""}
     <rect x="${M}" y="${yCta}" width="${ctaW}" height="${ctaH}" fill="${tinta}"/>
     <text x="${M + ctaW / 2}" y="${yCta + ctaH * 0.66}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${ctaTam}" letter-spacing="${ctaLS}" fill="${crema}">${escapeXml(stripEmoji(cta))}</text>
   </svg>`;
@@ -833,6 +871,29 @@ async function serviceGrid({
 
     ${bulSvg}
 
+    ${bonus ? (() => {
+      const tagTam = Math.round(size * 0.020);
+      const tagH = Math.round(size * 0.040);
+      const tagW = Math.round(tagTam * 0.62 * 5 + size * 0.03);
+      const txtTam = Math.round(size * 0.0245);
+      const lineas = wrapText(bonus, Math.floor((colW - tagW - size * 0.02) / (txtTam * 0.55)));
+      const filas = lineas.map((l, i) => `<text x="${M + tagW + Math.round(size * 0.016)}" y="${yBonus + tagH * 0.72 + i * txtTam * 1.2}" font-family="Arial, sans-serif" font-weight="700" font-size="${txtTam}" fill="${tinta}">${escapeXml(l)}</text>`).join("");
+      return `<rect x="${M}" y="${yBonus}" width="${tagW}" height="${tagH}" fill="url(#oro)"/>
+      <text x="${M + tagW / 2}" y="${yBonus + tagH * 0.72}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="${tagTam}" letter-spacing="${size * 0.002}" fill="${tinta}">BONUS</text>${filas}`;
+    })() : ""}
+    ${urgencia ? (() => {
+      const uTam = Math.round(size * 0.022);
+      const uH = Math.round(size * 0.046);
+      // La caja se mide al texto y nunca pasa de la columna: un texto mas largo
+      // que la columna se salia por los dos lados del cuadro. Lo largo va en la
+      // nota, no en la caja.
+      const uW = Math.min(colW, Math.round(stripEmoji(urgencia).length * (uTam * 0.62 + size * 0.0018) + size * 0.04));
+      const nota = urgenciaNota
+        ? `<text x="${M + uW + Math.round(size * 0.016)}" y="${yUrg + uH * 0.69}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0215)}" fill="${tinta}">${escapeXml(stripEmoji(urgenciaNota))}</text>`
+        : "";
+      return `<rect x="${M}" y="${yUrg}" width="${uW}" height="${uH}" fill="${urgenciaColor}"/>
+      <text x="${M + uW / 2}" y="${yUrg + uH * 0.69}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="${uTam}" letter-spacing="${size * 0.0018}" fill="#ffffff">${escapeXml(stripEmoji(urgencia))}</text>${nota}`;
+    })() : ""}
     <rect x="${M}" y="${yCta}" width="${ctaW}" height="${ctaH}" fill="${tinta}"/>
     <text x="${M + ctaW / 2}" y="${yCta + ctaH * 0.63}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(size * 0.0245)}" letter-spacing="${size * 0.003}" fill="${crema}">${escapeXml(stripEmoji(cta))}</text>
 
