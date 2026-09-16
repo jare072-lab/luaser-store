@@ -6,6 +6,12 @@
       "runtimeExecutable": "cmd.exe",
       "runtimeArgs": ["/c", "set PATH=C:\\Program Files\\nodejs;%PATH% && npm run dev"],
       "port": 3000
+    },
+    {
+      "name": "luaser-seo",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": ["/c", "set PATH=C:\\Program Files\\nodejs;%PATH% && cd /d C:\\Users\\jorge\\luaser-seo && npx next dev -p 3100"],
+      "port": 3100
     }
   ]
 }
