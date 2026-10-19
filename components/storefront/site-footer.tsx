@@ -6,7 +6,10 @@ const columns = [
   {
     title: "Tienda",
     links: [
-      { label: "Letreros personalizados", href: "/producto/letrero-de-acrilico-personalizado-para-negocio" },
+      { label: "Letreros de acrílico", href: "/letreros-de-acrilico-personalizados" },
+      { label: "Placas conmemorativas", href: "/placas-conmemorativas" },
+      { label: "Llaveros personalizados", href: "/llaveros-de-acrilico-personalizados" },
+      { label: "Corte láser en Monterrey", href: "/corte-laser-monterrey" },
       { label: "Placas de acrílico", href: "/coleccion/placas-de-acrilico" },
       { label: "Acrílico a la medida", href: "/acrilico-cortado-a-la-medida" },
       { label: "Acrílico en Monterrey", href: "/acrilico-cortado-a-la-medida/monterrey" },

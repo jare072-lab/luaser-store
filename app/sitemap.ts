@@ -17,7 +17,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 1,
     },
-    ...["/acrilico-cortado-a-la-medida", "/acrilico-cortado-a-la-medida/monterrey"].map((ruta) => ({
+    ...[
+      "/acrilico-cortado-a-la-medida",
+      "/acrilico-cortado-a-la-medida/monterrey",
+      "/placas-conmemorativas",
+      "/letreros-de-acrilico-personalizados",
+      "/llaveros-de-acrilico-personalizados",
+      "/corte-laser-monterrey",
+      "/cotiza",
+    ].map((ruta) => ({
       url: `${SITE_URL}${ruta}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,

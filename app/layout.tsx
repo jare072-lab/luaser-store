@@ -47,16 +47,47 @@ function resolveSiteUrl(): URL {
 export const metadata: Metadata = {
   metadataBase: resolveSiteUrl(),
   title: {
-    default: "Luaser — Letreros y piezas de acrílico personalizadas en México",
+    default: "Luaser — Corte láser en Monterrey: letreros, placas y piezas de acrílico a la medida",
     template: "%s | Luaser",
   },
   description:
-    "Letreros de acrílico personalizados con tu logo, cortados y grabados a láser. Maquilamos cualquier pieza a la medida y enviamos a todo México.",
+    "Corte y grabado láser en Monterrey. Letreros de acrílico con tu logo, placas conmemorativas, llaveros y acrílico cortado a la medida. Entrega a domicilio en Monterrey y envío a todo México.",
   openGraph: {
     type: "website",
     locale: "es_MX",
     siteName: "Luaser",
   },
+};
+
+/** Datos del negocio para Google: van en todas las páginas. */
+const negocioJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": `${resolveSiteUrl().origin}/#negocio`,
+  name: "Luaser",
+  url: resolveSiteUrl().origin,
+  telephone: "+52 81 3109 2383",
+  email: "contacto@luaser.mx",
+  description:
+    "Taller de corte y grabado láser en acrílico, MDF y madera. Letreros, placas conmemorativas, llaveros y piezas a la medida.",
+  priceRange: "$",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Apodaca",
+    addressRegion: "Nuevo León",
+    postalCode: "66648",
+    addressCountry: "MX",
+  },
+  areaServed: [
+    { "@type": "City", name: "Monterrey" },
+    { "@type": "State", name: "Nuevo León" },
+    { "@type": "Country", name: "México" },
+  ],
+  openingHoursSpecification: [
+    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "09:00", closes: "18:00" },
+    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday"], opens: "09:00", closes: "14:00" },
+  ],
+  sameAs: ["https://www.facebook.com/profile.php?id=61586225530093", "https://www.instagram.com/luasermx/"],
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -66,6 +97,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="es-MX" className={`${display.variable} ${body.variable}`}>
       <body className="font-body">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(negocioJsonLd) }} />
         {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
         {META_PIXEL_ID && <MetaPixel pixelId={META_PIXEL_ID} />}
         {JUDGEME_SHOP_DOMAIN && JUDGEME_PUBLIC_TOKEN && (

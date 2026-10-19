@@ -54,10 +54,10 @@ export function PromoBanner({
       {/* El cuadro del revelado: nada se dibuja encima. */}
       <div className="relative h-[72svh] max-h-[720px] min-h-[460px] w-full">
         <RevealLuaser className="absolute inset-0 block h-full w-full" maxDescuento={ahorroPlacas} />
-        <h1 className="sr-only">
+        <p className="sr-only">
           Luaser — placas de acrílico cortadas a láser, hasta {ahorroPlacas}% menos por placa
           comprando el pack
-        </h1>
+        </p>
       </div>
 
       {/* Salida del cuadro: aparece cuando la animación ya resolvió. */}

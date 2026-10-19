@@ -18,7 +18,9 @@ import { Menu, X } from "lucide-react";
 const ENLACES = [
   { href: "/coleccion/placas-de-acrilico", etiqueta: "Placas de acrílico" },
   { href: "/coleccion/frontpage", etiqueta: "Productos" },
-  { href: "/#letreros", etiqueta: "Letreros" },
+  { href: "/letreros-de-acrilico-personalizados", etiqueta: "Letreros" },
+  { href: "/placas-conmemorativas", etiqueta: "Placas conmemorativas" },
+  { href: "/corte-laser-monterrey", etiqueta: "Corte láser en Monterrey" },
   { href: "/#historia", etiqueta: "Nuestro proceso" },
   { href: "/cotiza", etiqueta: "Solicitar cotización" },
 ];

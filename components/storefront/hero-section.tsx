@@ -33,10 +33,10 @@ export function HeroSection({ product }: { product: ShopifyProduct | null }) {
             <span className="h-1.5 w-1.5 rounded-full bg-pitch-light animate-pulse" />
             Envíos a todo México
           </div>
-          <h1 className="mt-6 font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] text-bone">
+          <h2 className="mt-6 font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] text-bone">
             Letreros y piezas de <span className="text-gold">acrílico a la medida</span> para tu
             negocio
-          </h1>
+          </h2>
           <p className="mt-5 max-w-lg font-body text-graystone-100 text-base sm:text-lg">
             Cortamos y grabamos a láser el logo de tu negocio en acrílico premium. Maquilamos
             cualquier pieza personalizada, no solo lo que ves en el catálogo — mándanos tu diseño

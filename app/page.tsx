@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getHomeData } from "@/lib/shopify/home";
 import { getPlacas, maxAhorroPack } from "@/lib/shopify/placas";
 import { PlacasSection } from "@/components/storefront/placas-section";
@@ -17,6 +18,10 @@ import { ContactSection } from "@/components/storefront/contact-section";
 import { Reveal } from "@/components/storefront/reveal";
 
 export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function HomePage() {
   const [{ heroProduct, bestsellers }, placas] = await Promise.all([
