@@ -1,0 +1,795 @@
+<title>LUASER Motion Reel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Archivo:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ink: #0B0C0E;
+    --ink-soft: #131519;
+    --ink-line: #23262B;
+    --bone: #FAF9F6;
+    --gold: #E8927A;
+    --gold-bright: #F5AF95;
+    --gold-dark: #B8654C;
+    --gray-100: #DFDCD6;
+    --gray-300: #9C9890;
+    --gray-500: #6E6A63;
+    --display: "Bodoni Moda", "Times New Roman", Georgia, serif;
+    --body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--ink); }
+  body {
+    margin: 0; background: var(--ink); color: var(--bone);
+    font-family: var(--body); font-size: 16px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 28px; }
+  .eyebrow {
+    font-family: var(--body); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
+    margin: 0 0 10px;
+  }
+
+  /* ---------- cabecera ---------- */
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; padding: 30px 0 26px; border-bottom: 1px solid var(--ink-line);
+  }
+  header.top .mark { display: block; width: 168px; height: auto; }
+  header.top .mark path { fill: var(--bone); }
+  .top .meta {
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gray-500); text-align: right; line-height: 1.9;
+  }
+
+  .intro { padding: 76px 0 40px; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 56px; align-items: end; }
+  .intro h1 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(38px, 5.6vw, 68px); line-height: 1.06; letter-spacing: -0.015em;
+    margin: 0; text-wrap: balance;
+  }
+  .intro h1 em { font-style: italic; color: var(--gold); }
+  .intro p { margin: 22px 0 0; color: var(--gray-300); max-width: 48ch; font-size: 16px; }
+  .intro .idx { display: grid; gap: 0; font-size: 13px; color: var(--gray-300); }
+  .intro .idx a {
+    text-decoration: none; display: flex; justify-content: space-between; gap: 16px;
+    border-bottom: 1px solid var(--ink-line); padding: 11px 0;
+    transition: color 200ms ease, border-color 200ms ease;
+  }
+  .intro .idx a span:first-child { font-weight: 500; }
+  .intro .idx a span:last-child { color: var(--gray-500); font-variant-numeric: tabular-nums; letter-spacing: 0.1em; text-transform: uppercase; font-size: 11px; align-self: center; }
+  .intro .idx a:hover { color: var(--gold); border-color: var(--gold-dark); }
+
+  /* ---------- piezas ---------- */
+  .piece { padding: 72px 0; border-top: 1px solid var(--ink-line); }
+  .piece-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; margin-bottom: 28px; }
+  .piece-head h2 {
+    font-family: var(--display); font-weight: 400; font-size: 32px;
+    letter-spacing: -0.01em; margin: 0; line-height: 1.15;
+  }
+  .piece-head p { margin: 12px 0 0; color: var(--gray-300); max-width: 60ch; font-size: 15px; }
+  .piece-head .where { font-size: 11px; color: var(--gray-500); text-align: right; letter-spacing: 0.06em; line-height: 1.7; }
+  .piece-head .where b { color: var(--gray-100); font-weight: 500; display: block; letter-spacing: 0.2em; text-transform: uppercase; font-size: 10px; margin-bottom: 4px; }
+  .stage { position: relative; overflow: hidden; border: 1px solid var(--ink-line); background: var(--ink-soft); }
+  .replay {
+    position: absolute; right: 16px; top: 16px; z-index: 5;
+    font: 500 10px/1 var(--body); letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--gray-300); background: rgba(11,12,14,0.72); border: 1px solid var(--ink-line);
+    padding: 10px 14px; cursor: pointer; backdrop-filter: blur(8px);
+    transition: color 200ms ease, border-color 200ms ease;
+  }
+  .replay:hover { border-color: var(--gold-dark); color: var(--gold); }
+  .replay:focus-visible, .cta:focus-visible, .swatch:focus-visible { outline: 1px solid var(--gold); outline-offset: 3px; }
+  .spec { display: flex; flex-wrap: wrap; gap: 10px 32px; margin: 18px 0 0; padding: 0; list-style: none; font-size: 12px; color: var(--gray-500); }
+  .spec li b { color: var(--gray-300); font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; font-size: 10px; margin-right: 8px; }
+
+  /* ---------- 1. corte del logo ---------- */
+  .cut { aspect-ratio: 560 / 300; width: 100%;
+    background: radial-gradient(ellipse at 50% 38%, #171A1F 0%, var(--ink-soft) 58%, var(--ink) 100%); }
+  .cut svg, .cut canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .cut svg { overflow: visible; }
+  .cut .art path { fill: none; stroke: var(--bone); stroke-width: 1.15; stroke-linejoin: round; }
+  .cut .art path.hot { stroke: var(--gold-bright); }
+  .cut .tip { fill: #fff; filter: drop-shadow(0 0 5px #fff) drop-shadow(0 0 13px var(--gold)); opacity: 0; }
+  .cut .halo { fill: var(--gold); opacity: 0; mix-blend-mode: screen; }
+  .cut .art { transition: transform 800ms cubic-bezier(.2,.7,.2,1), filter 800ms ease; }
+  .cut.done .art { transform: translateY(4px); filter: drop-shadow(0 12px 14px rgba(0,0,0,.6)); }
+  .cut #artFill { fill: var(--bone); stroke: none; opacity: 0; transition: opacity 650ms ease 200ms; }
+  .cut.done #artFill { opacity: 1; }
+  .cut.done .art path { transition: stroke-opacity 650ms ease 200ms; stroke-opacity: 0; }
+  .cut.done #artFill { stroke-opacity: 1; }
+  .cut .grid line { stroke: #1A1D22; stroke-width: 1; }
+
+  /* ---------- 2. grabado sobre placa retroiluminada ---------- */
+  .engrave {
+    aspect-ratio: 16 / 7; width: 100%; display: grid; place-items: center;
+    background: radial-gradient(ellipse at 50% 118%, #191D23 0%, var(--ink) 68%);
+  }
+  /* La placa: canto pulido arriba, espesor abajo, y el vidrio apenas insinuado. */
+  .engrave .panel {
+    position: relative; width: 76%; padding: 6.5% 6% 8%;
+    border: 1px solid rgba(255,255,255,.085);
+    border-top-color: rgba(255,255,255,.26);
+    background: linear-gradient(163deg, rgba(255,255,255,.052), rgba(255,255,255,.012) 42%, rgba(255,255,255,.038));
+    box-shadow: 0 34px 64px -34px #000, inset 0 1px 0 rgba(255,255,255,.2);
+    text-align: center;
+  }
+  .engrave .panel::after {            /* espesor del acrílico */
+    content: ""; position: absolute; left: -1px; right: -1px; bottom: -5px; height: 5px;
+    background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.03));
+    border-radius: 0 0 2px 2px;
+  }
+  /* Tira LED del canto inferior: apagada hasta el remate. */
+  .engrave .strip {
+    position: absolute; left: 6%; right: 6%; bottom: -3px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+    opacity: 0; filter: blur(.4px);
+  }
+  .engrave .spill {                   /* la luz que derrama la tira sobre la placa */
+    position: absolute; left: -6%; right: -6%; bottom: -6%; height: 96%;
+    background:
+      radial-gradient(ellipse at 50% 100%, rgba(255,222,208,.4), rgba(232,146,122,0) 62%),
+      linear-gradient(0deg, rgba(232,146,122,.5), rgba(232,146,122,0) 82%);
+    opacity: 0; pointer-events: none;
+  }
+  .engrave .copy { position: relative; z-index: 2; clip-path: inset(0 0 100% 0); }
+  .engrave .kick {
+    margin: 0 0 18px; font-family: var(--body); font-size: 10.5px; font-weight: 500;
+    letter-spacing: .3em; text-transform: uppercase;
+  }
+  .engrave .big {
+    margin: 0; font-family: var(--display); font-weight: 500;
+    font-size: clamp(30px, 6.2vw, 76px); line-height: 1.05; letter-spacing: -.015em;
+  }
+  .engrave .foot {
+    margin: 20px 0 0; font-family: var(--body); font-size: clamp(10px, 1.15vw, 13px);
+    font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
+  }
+  /* Estado grabado-en-frío: mate, con el relieve apenas marcado. */
+  .engrave .kick, .engrave .foot { color: rgba(233,229,220,.5); }
+  .engrave .big { color: #DCD7CD; text-shadow: 0 1px 0 rgba(255,255,255,.16), 0 -1px 1px rgba(0,0,0,.6); }
+  /* Estado encendido. La transición es corta a propósito: durante el titubeo se prende y se
+     apaga varias veces, y con una transición larga no alcanzaría a seguirle el paso. */
+  .engrave.lit .big {
+    color: #FFFAF6;
+    text-shadow:
+      0 0 1px #fff,
+      0 0 9px rgba(255,244,238,.95),
+      0 0 24px rgba(245,175,149,.9),
+      0 0 58px rgba(232,146,122,.7),
+      0 0 110px rgba(232,146,122,.42);
+  }
+  .engrave .big, .engrave .kick, .engrave .foot, .engrave .spill { transition: color 110ms ease, text-shadow 110ms ease, opacity 110ms ease; }
+  .engrave.lit .kick, .engrave.lit .foot { color: var(--gold-bright); text-shadow: 0 0 14px rgba(232,146,122,.6); }
+  .engrave.lit .spill { opacity: 1; }
+  .engrave.lit .strip { box-shadow: 0 0 12px 2px rgba(245,175,149,.9), 0 0 34px 8px rgba(232,146,122,.5); }
+  .engrave canvas.humo { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+  /* Cabezal: punto caliente con su estela horizontal. */
+  .engrave .head { position: absolute; z-index: 4; width: 3px; height: 3px; border-radius: 50%; background: #fff; opacity: 0; box-shadow: 0 0 7px 2px var(--gold-bright), 0 0 20px 6px rgba(232,146,122,.5); }
+  .engrave .head::before { content: ""; position: absolute; top: 50%; left: -46px; width: 46px; height: 1px; transform: translateY(-50%); background: linear-gradient(90deg, transparent, rgba(245,175,149,.75)); }
+  .engrave .head.rtl::before { left: auto; right: -46px; background: linear-gradient(270deg, transparent, rgba(245,175,149,.75)); }
+  .engrave.done .copy { clip-path: inset(0 0 0 0); }
+
+  /* ---------- 3. muestrario ---------- */
+  .swatches { padding: 44px 32px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; perspective: 1100px; }
+  .swatch {
+    position: relative; aspect-ratio: 3 / 4; border: 0; cursor: default; padding: 0;
+    transform-style: preserve-3d; transition: transform 260ms cubic-bezier(.2,.7,.2,1), box-shadow 320ms ease;
+    box-shadow: 0 14px 26px -16px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.22);
+    background: var(--bg); overflow: hidden; color: var(--bone);
+  }
+  .swatch::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(112deg, rgba(255,255,255,0) 34%, rgba(255,255,255,var(--gloss,.34)) 48%, rgba(255,255,255,0) 62%);
+    transform: translateX(calc(var(--mx, 0) * 1px)); transition: transform 140ms linear;
+  }
+  .swatch::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 58%, rgba(0,0,0,.6)); }
+  .swatch .lbl {
+    position: absolute; left: 13px; right: 13px; bottom: 13px; z-index: 2; text-align: left;
+    font-size: 11px; line-height: 1.3; font-weight: 500; letter-spacing: 0.04em;
+    text-shadow: 0 1px 3px rgba(0,0,0,.7);
+  }
+  .swatch .lbl small { display: block; font-weight: 400; color: rgba(250,249,246,.62); font-size: 10px; margin-top: 3px; letter-spacing: 0.14em; text-transform: uppercase; }
+
+  /* ---------- 4. letrero de pared retroiluminado ---------- */
+  .sign { aspect-ratio: 16 / 7; width: 100%; display: grid; place-items: center;
+    background: radial-gradient(ellipse at 50% 46%, #1C2026 0%, #101317 52%, var(--ink) 100%); }
+  /* Pared, no cuadrícula: un muro liso con su vignette y un grano muy tenue. */
+  .sign .wall {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.035), rgba(255,255,255,0) 62%),
+      linear-gradient(180deg, rgba(255,255,255,.012), rgba(0,0,0,.22));
+  }
+  .sign .letrero { position: relative; width: 74%; height: auto; overflow: visible; }
+  /* El halo: dos copias desenfocadas del propio logo por detrás. Así es como se ve un
+     letrero montado con separadores, la luz rebota en la pared con la forma de la pieza. */
+  .sign .luz path { fill: var(--gold); }
+  .sign .luz .l1 { filter: url(#haloCerca); opacity: 0; }
+  .sign .luz .l2 { filter: url(#haloLejos); opacity: 0; }
+  .sign.lit .luz .l1 { opacity: .95; }
+  .sign.lit .luz .l2 { opacity: .8; }
+  .sign .luz path { transition: opacity 110ms ease; }
+  /* Sombra de los separadores: la pieza va despegada de la pared unos 20 mm. El desplazamiento
+     va como atributo del grupo, no en CSS, para no pelearse con la transición de entrada. */
+  .sign .sombra path { fill: #000; opacity: .5; filter: url(#suave); }
+  .sign .sombra { opacity: 0; transition: opacity 900ms ease; }
+  /* La cara: acrílico con su degradado y el canto marcado. */
+  .sign .cara path { fill: url(#faz); stroke: rgba(255,255,255,.32); stroke-width: .4; }
+  .sign .cara {
+    opacity: 0; transform: translateY(-9px);
+    transition: opacity 900ms ease, transform 900ms cubic-bezier(.2,.75,.25,1);
+  }
+  .sign.run .cara { opacity: 1; transform: translateY(0); }
+  .sign.run .sombra { opacity: 1; }
+
+  /* ---------- 5. proceso (sin cambios de mecanica) ---------- */
+  .proc { padding: 52px 36px 44px; }
+  .proc .rail { position: relative; height: 1px; background: var(--ink-line); margin: 0 7%; }
+  .proc .rail .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(90deg, var(--gold-dark), var(--gold-bright)); }
+  .proc .rail .dot { position: absolute; top: 50%; left: 0; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: #fff; box-shadow: 0 0 9px 2px var(--gold-bright), 0 0 24px 6px rgba(232,146,122,.45); opacity: 0; }
+  .proc .steps { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: -1px; }
+  .proc .step { position: relative; padding: 30px 10px 0; text-align: center; }
+  .proc .step::before { content: ""; position: absolute; left: 50%; top: -5px; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 50%; background: var(--ink-soft); border: 1px solid var(--ink-line); transition: border-color 320ms, background 320ms, box-shadow 320ms; }
+  .proc .step.on::before { border-color: var(--gold-bright); background: var(--gold); box-shadow: 0 0 0 4px rgba(232,146,122,.16); }
+  .proc .ico { width: 44px; height: 44px; margin: 8px auto 14px; display: block; }
+  .proc .ico path, .proc .ico circle, .proc .ico rect, .proc .ico line { fill: none; stroke: var(--gray-500); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 200; stroke-dashoffset: 200; transition: stroke 320ms; }
+  .proc .step.on .ico path, .proc .step.on .ico circle, .proc .step.on .ico rect, .proc .step.on .ico line { stroke: var(--bone); animation: draw 900ms ease forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .proc .step h3 { font-family: var(--display); font-size: 20px; font-weight: 400; margin: 0; color: var(--gray-500); transition: color 320ms; }
+  .proc .step.on h3 { color: var(--bone); }
+  .proc .step p { margin: 8px 0 0; font-size: 12.5px; color: var(--gray-500); opacity: 0; transform: translateY(5px); transition: opacity 420ms ease, transform 420ms ease; }
+  .proc .step.on p { opacity: 1; transform: none; }
+  .proc .step .t { display: inline-block; margin-top: 12px; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); opacity: 0; transition: opacity 420ms ease 200ms; }
+  .proc .step.on .t { opacity: 1; }
+
+  /* ---------- 6. contador (sin cambios de mecanica) ---------- */
+  .kpi { padding: 52px 36px; display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 32px; align-items: center; }
+  .kpi .n { font-family: var(--display); font-size: clamp(42px, 6vw, 76px); font-weight: 400; letter-spacing: -.02em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--bone); }
+  .kpi .n span.u { font-family: var(--body); font-size: .26em; font-weight: 500; color: var(--gold); letter-spacing: .16em; text-transform: uppercase; margin-left: .5em; }
+  .kpi .l { font-size: 12.5px; color: var(--gray-300); margin-top: 12px; max-width: 24ch; }
+  .cta { position: relative; display: inline-flex; align-items: center; gap: 12px; padding: 17px 30px; border-radius: 999px; background: var(--ink); color: var(--bone); text-decoration: none; font-weight: 500; font-size: 14px; letter-spacing: .04em; isolation: isolate; transition: transform 220ms ease; }
+  .cta::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; z-index: -2; background: conic-gradient(from var(--a, 0deg), transparent 0 74%, var(--gold-dark) 84%, var(--gold-bright) 89%, transparent 96%); animation: spin 4.5s linear infinite; }
+  .cta::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--ink); z-index: -1; }
+  .cta:hover { transform: translateY(-1px); }
+  .cta:hover::before { animation-duration: 2s; }
+  .cta svg { width: 15px; height: 15px; }
+  @property --a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+  @keyframes spin { to { --a: 360deg; } }
+
+  /* ---------- cierre ---------- */
+  .integ { padding: 72px 0 80px; border-top: 1px solid var(--ink-line); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; }
+  .integ h2 { font-family: var(--display); font-size: 28px; font-weight: 400; margin: 0 0 16px; letter-spacing: -.01em; }
+  .integ p { color: var(--gray-300); margin: 0 0 12px; font-size: 15px; max-width: 50ch; }
+  .integ table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .integ td { padding: 13px 0; border-bottom: 1px solid var(--ink-line); vertical-align: top; }
+  .integ td:first-child { color: var(--bone); font-weight: 500; width: 44%; padding-right: 20px; }
+  .integ td:last-child { color: var(--gray-300); }
+  .integ code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--gold); }
+  footer.bottom { padding: 26px 0 48px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--gray-500); border-top: 1px solid var(--ink-line); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+  @media (max-width: 880px) {
+    .intro, .integ { grid-template-columns: 1fr; gap: 36px; }
+    .piece-head { grid-template-columns: 1fr; }
+    .piece-head .where { text-align: left; }
+    .swatches { grid-template-columns: repeat(3, 1fr); padding: 26px 20px; }
+    .proc .steps { grid-template-columns: repeat(2, 1fr); row-gap: 26px; }
+    .kpi { grid-template-columns: 1fr 1fr; padding: 36px 24px; }
+    .kpi .cta-cell { grid-column: 1 / -1; }
+    header.top { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .top .meta { text-align: left; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cta::before { animation: none !important; }
+    .sign .cara { opacity: 1; transform: none; }
+    .sign .sombra { opacity: 1; }
+    .sign .luz .l1 { opacity: .95; }
+    .sign .luz .l2 { opacity: .8; }
+    .engrave .copy { clip-path: inset(0 0 0 0) !important; }
+    .engrave .head, .engrave canvas.humo { display: none; }
+    .engrave .strip { opacity: 1; }
+  }
+</style>
+
+<header class="top wrap">
+  <svg class="mark" viewBox="0 0 560 300" aria-label="LUASER"><g id="markPaths"></g></svg>
+  <span class="meta">Motion reel · seis piezas<br>luaser.mx · taller en Apodaca, N.L.</span>
+</header>
+
+<section class="intro wrap">
+  <div>
+    <h1>Movimiento que <em>corta, graba y enciende</em>, como el taller.</h1>
+    <p>Seis piezas de motion graphics para la portada y las fichas de producto. Todo es código: SVG, CSS y canvas sobre la paleta y las fuentes del sitio. Sin video, sin librerías, sin assets que cargar.</p>
+  </div>
+  <nav class="idx" aria-label="Índice de piezas">
+    <a href="#p1"><span>Corte del logotipo</span><span>Hero</span></a>
+    <a href="#p2"><span>Grabado sobre acrílico</span><span>Promoción</span></a>
+    <a href="#p3"><span>Muestrario de acabados</span><span>Placas</span></a>
+    <a href="#p4"><span>Letrero retroiluminado</span><span>Letreros</span></a>
+    <a href="#p5"><span>Línea de proceso</span><span>Cómo funciona</span></a>
+    <a href="#p6"><span>Contador y llamada a la acción</span><span>Micro UI</span></a>
+  </nav>
+</section>
+
+<section class="piece wrap" id="p1">
+  <div class="piece-head">
+    <div>
+      <p class="eyebrow">Pieza uno</p>
+      <h2>El logotipo se corta trazo por trazo</h2>
+      <p>El cabezal recorre el contorno real del logotipo de Luaser —el mismo archivo que entra a la máquina— con chispas en la punta y el trazo caliente enfriándose detrás. Al terminar, la pieza se libera del tablero.</p>
+    </div>
+    <div class="where"><b>Dónde va</b>Apertura del hero<br>o pantalla de carga</div>
+  </div>
+  <div class="stage cut" id="cut">
+    <svg viewBox="0 0 560 300" id="cutSvg" aria-label="El logotipo de Luaser cortándose a láser">
+      <g class="grid" id="cutGrid"></g>
+      <g class="art" id="art"></g>
+      <circle class="halo" id="halo" r="15"></circle>
+      <circle class="tip" id="tip" r="2.3"></circle>
+    </svg>
+    <canvas id="sparks" aria-hidden="true"></canvas>
+    <button class="replay" type="button" data-replay="cut">Repetir</button>
+  </div>
+  <ul class="spec">
+    <li><b>Técnica</b>contorno vectorizado del logo + stroke-dashoffset + canvas de partículas</li>
+    <li><b>Duración</b>6.4 s</li>
+    <li><b>Peso</b>0 KB de imágenes</li>
+  </ul>
+</section>
+
+<section class="piece wrap" id="p2">
+  <div class="piece-head">
+    <div>
+      <p class="eyebrow">Pieza dos</p>
+      <h2>La placa se graba y entonces enciende</h2>
+      <p>El cabezal barre la placa de lado a lado mientras baja, como graba de verdad la máquina, y va dejando el texto mate con su hilo de humo. Cuando termina, la tira LED del canto titubea y prende: el grabado se ilumina desde adentro. Es el letrero retroiluminado contado en cinco segundos.</p>
+    </div>
+    <div class="where"><b>Dónde va</b>Banner de promoción<br>sección de letreros</div>
+  </div>
+  <div class="stage engrave" id="engrave">
+    <div class="panel">
+      <div class="spill"></div>
+      <div class="copy">
+        <p class="kick">Letreros retroiluminados</p>
+        <p class="big">Tu logo<br>en acrílico</p>
+        <p class="foot">Desde $580 · Envíos a todo México</p>
+      </div>
+      <canvas class="humo" aria-hidden="true"></canvas>
+      <div class="head"></div>
+      <div class="strip"></div>
+    </div>
+    <button class="replay" type="button" data-replay="engrave">Repetir</button>
+  </div>
+  <ul class="spec">
+    <li><b>Técnica</b>barrido raster con canvas de humo + encendido de la tira LED</li>
+    <li><b>Duración</b>5.4 s hasta encender</li>
+    <li><b>Copy</b>editable sin tocar la animación</li>
+  </ul>
+</section>
+
+<section class="piece wrap" id="p3">
+  <div class="piece-head">
+    <div>
+      <p class="eyebrow">Pieza tres</p>
+      <h2>Acabados que reaccionan a la luz</h2>
+      <p>Cada muestra inclina su reflejo según dónde esté el cursor, como girar la placa bajo una lámpara. Son los seis acabados que hay en existencia, con su color real: nada inventado.</p>
+    </div>
+    <div class="where"><b>Dónde va</b>Selector de color<br>en placas y fichas</div>
+  </div>
+  <div class="stage swatches" id="swatches">
+    <button class="swatch" style="--bg: linear-gradient(158deg,#FFE9A8 0%,#E6B84A 38%,#8F6A16 72%,#F2D27C 100%)"><span class="lbl">Dorado espejo<small>3 mm</small></span></button>
+    <button class="swatch" style="--bg: linear-gradient(158deg,#F4F6F8 0%,#C9CDD3 34%,#7E858E 70%,#E9ECEF 100%)"><span class="lbl">Plata espejo<small>3 mm</small></span></button>
+    <button class="swatch" style="--bg: linear-gradient(158deg,#F8C8B4 0%,#E8927A 38%,#B8654C 72%,#F5AF95 100%)"><span class="lbl">Oro rosa espejo<small>3 mm</small></span></button>
+    <button class="swatch" style="--bg: linear-gradient(158deg,#2C2F35 0%,#0B0C0E 58%,#23262C 100%); --gloss:.2"><span class="lbl">Negro brillante<small>3 mm</small></span></button>
+    <button class="swatch" style="--bg: linear-gradient(158deg,#FFFFFF 0%,#EFEDE7 58%,#FFFFFF 100%); --gloss:.42"><span class="lbl" style="text-shadow:none;color:#0B0C0E">Blanco<small style="color:#4A473F">3 mm</small></span></button>
+    <button class="swatch" style="--bg: linear-gradient(158deg,#E3EDF2 0%,#BCCDD6 40%,#8FA3AE 72%,#DCE8EE 100%); --gloss:.5"><span class="lbl">Cristal<small>2 a 6 mm</small></span></button>
+  </div>
+  <ul class="spec">
+    <li><b>Técnica</b>inclinación 3D por puntero + reflejo desplazado</li>
+    <li><b>Interacción</b>cursor o toque</li>
+    <li><b>Colores</b>los del catálogo</li>
+  </ul>
+</section>
+
+<section class="piece wrap" id="p4">
+  <div class="piece-head">
+    <div>
+      <p class="eyebrow">Pieza cuatro</p>
+      <h2>El letrero monta en la pared y se retroilumina</h2>
+      <p>La pieza asienta sobre el muro con la sombra de sus separadores, y entonces la luz de atrás titubea y prende: el halo sale con la forma exacta del logotipo, que es como se ve un letrero montado a distancia de la pared. Es tu producto de mayor ticket contado sin aspavientos.</p>
+    </div>
+    <div class="where"><b>Dónde va</b>Sección de letreros<br>historias de Instagram</div>
+  </div>
+  <div class="stage sign" id="sign">
+    <div class="wall"></div>
+    <svg class="letrero" viewBox="0 0 560 300" aria-label="Logotipo de Luaser en acrílico retroiluminado">
+      <defs>
+        <filter id="haloCerca" x="-45%" y="-45%" width="190%" height="190%"><feGaussianBlur stdDeviation="7"/></filter>
+        <filter id="haloLejos" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="24"/></filter>
+        <filter id="suave" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="4"/></filter>
+        <linearGradient id="faz" x1="0.08" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stop-color="#FFFEFC"/>
+          <stop offset="40%" stop-color="#EAE5DC"/>
+          <stop offset="72%" stop-color="#D3CDC2"/>
+          <stop offset="100%" stop-color="#BEB8AC"/>
+        </linearGradient>
+      </defs>
+      <g class="luz"><path class="l2" fill-rule="evenodd"/><path class="l1" fill-rule="evenodd"/></g>
+      <g class="sombra" transform="translate(3 9)"><path fill-rule="evenodd"/></g>
+      <g class="cara"><path fill-rule="evenodd"/></g>
+    </svg>
+    <button class="replay" type="button" data-replay="sign">Repetir</button>
+  </div>
+  <ul class="spec">
+    <li><b>Técnica</b>halo con la silueta del logo desenfocada + sombra de separadores</li>
+    <li><b>Duración</b>3.2 s hasta quedar encendido</li>
+    <li><b>Pieza</b>el mismo contorno vectorizado del corte</li>
+  </ul>
+</section>
+
+<section class="piece wrap" id="p5">
+  <div class="piece-head">
+    <div>
+      <p class="eyebrow">Pieza cinco</p>
+      <h2>Del archivo al envío, con el haz recorriendo cada paso</h2>
+      <p>Un punto de luz viaja por el riel y va encendiendo cada etapa; los iconos se dibujan a trazo cuando les toca. Se dispara al entrar en pantalla, no al cargar la página.</p>
+    </div>
+    <div class="where"><b>Dónde va</b>«Cómo funciona»<br>en portada y cotización</div>
+  </div>
+  <div class="stage proc" id="proc">
+    <div class="rail"><div class="fill"></div><div class="dot"></div></div>
+    <div class="steps">
+      <div class="step">
+        <svg class="ico" viewBox="0 0 48 48"><rect x="8" y="10" width="32" height="24" rx="2"/><path d="M14 30 L22 20 L28 26 L34 18"/><line x1="16" y1="40" x2="32" y2="40"/></svg>
+        <h3>Diseño</h3><p>Mándanos tu logo o tus medidas</p><span class="t">Paso 1</span>
+      </div>
+      <div class="step">
+        <svg class="ico" viewBox="0 0 48 48"><path d="M20 6 H28 V11 L25 15 H23 L20 11 Z"/><line x1="24" y1="15" x2="24" y2="28"/><path d="M8 40 H40"/><path d="M14 34 L24 28 L34 34"/></svg>
+        <h3>Corte</h3><p>Láser CO2 sobre acrílico o MDF</p><span class="t">Paso 2</span>
+      </div>
+      <div class="step">
+        <svg class="ico" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="3"/><path d="M16 30 L24 18 L32 30"/><line x1="19" y1="26" x2="29" y2="26"/></svg>
+        <h3>Grabado</h3><p>Detalle fino y texto esmerilado</p><span class="t">Paso 3</span>
+      </div>
+      <div class="step">
+        <svg class="ico" viewBox="0 0 48 48"><path d="M6 16 H30 V34 H6 Z"/><path d="M30 22 H38 L42 28 V34 H30"/><circle cx="13" cy="36" r="3"/><circle cx="35" cy="36" r="3"/></svg>
+        <h3>Envío</h3><p>Empacado y enviado a todo México</p><span class="t">Paso 4</span>
+      </div>
+    </div>
+    <button class="replay" type="button" data-replay="proc">Repetir</button>
+  </div>
+  <ul class="spec">
+    <li><b>Técnica</b>IntersectionObserver + riel que se llena + iconos a trazo</li>
+    <li><b>Duración</b>3.6 s</li>
+    <li><b>Se reutiliza</b>cambiando los cuatro pasos</li>
+  </ul>
+</section>
+
+<section class="piece wrap" id="p6">
+  <div class="piece-head">
+    <div>
+      <p class="eyebrow">Pieza seis</p>
+      <h2>Micro-movimiento para los datos y la llamada a la acción</h2>
+      <p>Los números suben con desaceleración al entrar en pantalla y el botón principal lleva un haz recorriendo su borde: llama la atención sin gritar, y acelera al pasar el cursor.</p>
+    </div>
+    <div class="where"><b>Dónde va</b>Barra de confianza<br>botones «Cotizar»</div>
+  </div>
+  <div class="stage kpi" id="kpi">
+    <div><div class="n"><span data-count="500" data-prefix="+">0</span></div><div class="l">piezas maquiladas para negocios en Nuevo León</div></div>
+    <div><div class="n"><span data-count="4">0</span><span class="u">materiales</span></div><div class="l">acrílico, MDF, madera y metal</div></div>
+    <div><div class="n"><span data-count="32">0</span><span class="u">estados</span></div><div class="l">envíos a todo México</div></div>
+    <div class="cta-cell"><a class="cta" href="#p1">Cotizar mi proyecto <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15"/></svg></a></div>
+  </div>
+  <ul class="spec">
+    <li><b>Técnica</b>count-up con desaceleración + borde cónico animado</li>
+    <li><b>Duración</b>1.6 s el contador; el haz gira en bucle</li>
+  </ul>
+</section>
+
+<section class="integ wrap">
+  <div>
+    <h2>Cómo se integra al sitio</h2>
+    <p>Todo está hecho con lo que ya existe en luaser.mx: los tokens de color de Tailwind y el patrón de <code>Reveal</code> por scroll. Cada pieza respeta <code>prefers-reduced-motion</code> y muestra su estado final sin animar.</p>
+    <p>Ninguna pieza usa video ni librerías: se cargan con la página y pesan lo que pesa su código. El contorno del logotipo va vectorizado dentro del propio componente.</p>
+  </div>
+  <table>
+    <tr><td>Corte del logotipo</td><td><code>&lt;LaserCutLogo /&gt;</code> arriba del hero</td></tr>
+    <tr><td>Grabado</td><td><code>&lt;LaserEngrave&gt;</code> envuelve el titular del banner</td></tr>
+    <tr><td>Muestrario</td><td><code>&lt;AcrylicSwatch&gt;</code> en el selector de PlacasSection</td></tr>
+    <tr><td>Letrero</td><td><code>&lt;Letrero3D texto="…" /&gt;</code> en la sección de letreros</td></tr>
+    <tr><td>Línea de proceso</td><td><code>&lt;ProcesoLaser /&gt;</code> antes de TrustBar</td></tr>
+    <tr><td>Contador y CTA</td><td><code>&lt;CountUp&gt;</code> en TrustBar; clase <code>cta-haz</code> en botones</td></tr>
+  </table>
+</section>
+
+<footer class="bottom wrap">
+  <span>Luaser · Taller propio en Apodaca, N.L.</span>
+  <span>Propuesta de motion · copy y cifras del sitio actual</span>
+</footer>
+
+<script id="logoPaths" type="application/json">{"emblema":["M 266.47 33.25 L 268.05 33.14 L 268.91 33.66 L 269.08 34.11 L 269.14 45.63 L 269.55 46.48 L 270.61 46.76 L 271.26 46.48 L 271.63 45.63 L 271.72 34.53 L 271.99 33.68 L 272.32 33.39 L 273.17 33.11 L 276.16 32.97 L 294.51 33.02 L 295.36 33.27 L 295.74 33.68 L 295.98 34.53 L 295.95 48.61 L 295.71 49.89 L 295.36 50.41 L 294.51 50.70 L 290.67 50.35 L 285.97 50.64 L 267.63 50.77 L 266.35 50.53 L 265.79 49.89 L 265.55 49.04 L 265.48 35.81 L 265.61 34.11 L 265.92 33.58 Z","M 299.39 50.32 L 300.05 49.98 L 301.33 50.23 L 308.16 54.04 L 311.65 56.72 L 312.10 57.57 L 311.94 58.00 L 310.72 59.42 L 310.29 59.69 L 309.44 59.64 L 304.32 56.08 L 299.20 53.56 L 298.57 52.88 L 298.51 52.45 L 298.85 51.17 Z","M 260.33 50.32 L 261.23 50.08 L 262.27 50.75 L 262.90 52.45 L 262.51 53.58 L 256.96 56.69 L 253.97 58.99 L 252.27 60.01 L 251.41 60.02 L 250.48 59.28 L 249.77 58.00 L 249.98 57.15 L 250.40 56.72 L 254.83 53.49 Z","M 267.94 52.88 L 269.76 52.67 L 292.80 52.67 L 293.75 52.88 L 294.15 53.31 L 294.19 53.73 L 288.37 65.68 L 287.25 67.18 L 285.97 67.54 L 275.31 67.62 L 274.45 67.36 L 273.69 66.53 L 269.63 58.85 L 267.54 54.16 L 267.52 53.31 Z","M 238.49 53.73 L 239.47 53.35 L 240.75 54.05 L 252.69 66.09 L 274.13 87.01 L 277.65 90.85 L 277.75 91.71 L 277.44 92.25 L 276.59 92.76 L 276.16 92.76 L 275.31 92.24 L 267.34 84.03 L 262.68 79.76 L 238.61 56.07 L 237.95 55.01 L 237.96 54.59 Z","M 321.39 53.73 L 321.81 53.72 L 322.45 54.16 L 322.83 55.01 L 322.73 55.44 L 319.68 58.85 L 314.10 63.97 L 305.94 72.51 L 286.43 91.71 L 285.12 92.55 L 284.07 92.13 L 283.71 91.28 L 284.07 90.43 L 290.67 83.49 L 295.61 78.91 L 303.89 70.52 L 308.59 66.28 L 318.77 55.87 Z","M 288.37 55.01 L 288.98 55.01 L 288.96 55.44 L 288.53 55.87 L 287.96 55.44 Z","M 264.59 59.28 L 265.49 58.99 L 266.35 59.49 L 266.72 60.56 L 266.18 61.41 L 258.67 66.32 L 257.81 66.40 L 256.96 65.80 L 256.43 64.40 L 256.96 63.60 L 261.23 60.86 Z","M 242.42 65.25 L 243.31 65.26 L 244.28 66.11 L 244.72 66.96 L 244.59 67.81 L 242.45 71.10 L 239.04 77.67 L 237.76 81.36 L 235.83 90.00 L 235.44 90.43 L 234.77 90.67 L 233.07 90.58 L 232.37 90.00 L 232.27 89.57 L 232.40 87.44 L 233.21 83.17 L 234.91 77.63 L 238.37 70.37 L 241.08 66.53 Z","M 269.44 67.81 L 270.19 67.77 L 270.80 68.24 L 271.22 69.52 L 270.84 70.37 L 265.49 73.29 L 264.64 73.31 L 264.09 72.93 L 263.54 71.65 L 264.05 70.80 L 266.35 69.22 Z","M 280.43 69.52 L 282.56 69.74 L 284.41 70.80 L 284.27 71.44 L 283.84 71.65 L 283.68 72.51 L 284.01 76.35 L 282.67 86.59 L 281.94 89.57 L 280.85 90.02 L 279.57 89.57 L 279.05 88.29 L 277.94 78.05 L 276.64 70.80 L 277.01 70.11 Z","M 320.80 69.95 L 321.81 69.54 L 322.24 69.66 L 322.90 70.37 L 326.27 77.20 L 327.89 81.89 L 328.97 86.59 L 329.32 89.57 L 328.64 90.48 L 326.51 90.57 L 326.08 90.40 L 325.44 89.57 L 324.80 85.26 L 323.09 79.30 L 321.39 75.35 L 319.62 72.08 L 319.60 71.23 Z","M 249.04 72.08 L 249.71 71.73 L 250.56 71.99 L 251.11 72.51 L 251.42 73.36 L 251.14 74.21 L 248.85 77.74 L 246.29 83.76 L 245.40 87.44 L 244.45 95.97 L 244.16 96.50 L 243.31 96.85 L 225.39 96.97 L 224.11 96.82 L 223.53 96.40 L 223.30 95.12 L 223.68 94.52 L 224.53 94.16 L 240.32 94.15 L 241.31 93.84 L 241.53 93.41 L 241.78 89.57 L 242.19 87.01 L 243.59 82.32 L 246.05 76.35 L 247.91 73.36 Z","M 313.09 75.07 L 313.71 74.80 L 314.56 75.07 L 316.33 78.05 L 318.54 84.03 L 319.56 89.15 L 319.48 90.00 L 318.83 90.56 L 317.97 90.67 L 317.23 90.43 L 316.88 90.00 L 315.49 83.60 L 314.80 81.89 L 314.13 81.25 L 312.85 81.88 L 308.74 84.88 L 308.56 85.73 L 309.30 87.87 L 310.11 92.56 L 310.24 96.40 L 309.93 99.81 L 309.06 103.65 L 308.00 106.64 L 305.80 110.91 L 304.75 112.20 L 303.89 112.51 L 303.29 112.19 L 302.55 111.33 L 302.38 110.05 L 304.75 106.33 L 305.60 104.34 L 306.54 101.09 L 307.02 96.40 L 306.98 92.99 L 306.47 89.57 L 306.03 87.37 L 305.04 84.88 L 305.06 84.45 L 306.03 83.39 L 312.43 78.89 L 312.87 78.05 L 312.28 76.35 L 312.33 75.92 Z","M 256.89 78.48 L 257.39 78.48 L 258.08 78.91 L 258.83 80.19 L 256.43 84.88 L 255.25 88.24 L 254.68 91.28 L 254.53 95.12 L 254.83 100.55 L 256.42 106.64 L 256.11 107.21 L 249.01 112.19 L 249.00 113.04 L 250.00 115.17 L 249.28 116.36 L 248.43 116.65 L 248.00 116.36 L 246.06 113.47 L 244.46 110.05 L 243.02 106.21 L 242.22 103.23 L 242.00 101.52 L 242.11 101.09 L 242.88 100.61 L 244.16 100.67 L 244.74 101.09 L 246.25 107.07 L 247.13 109.20 L 247.57 109.53 L 248.43 109.20 L 252.84 106.21 L 253.07 105.36 L 251.99 101.52 L 251.28 97.25 L 251.19 94.69 L 251.45 91.28 L 252.53 86.59 L 254.19 82.32 L 255.86 79.33 Z","M 317.45 94.27 L 318.40 94.02 L 335.47 94.03 L 337.60 94.25 Z","M 317.08 94.69 L 316.27 102.16 L 315.41 106.45 L 313.71 110.51 L 312.00 113.66 L 309.90 116.88 L 310.18 118.16 L 311.15 118.97 L 312.00 118.84 L 313.12 117.73 L 315.64 113.89 L 319.03 104.93 L 319.88 100.24 L 320.11 97.24 L 320.96 96.89 L 337.60 96.72 Z","M 284.69 98.53 L 285.55 98.66 L 288.11 100.81 L 290.31 103.23 L 320.96 132.93 L 321.98 134.38 L 321.80 135.23 L 321.42 135.66 L 320.96 135.91 L 320.11 135.78 L 318.40 134.33 L 294.93 111.29 L 290.27 107.07 L 287.68 104.29 L 284.22 101.09 L 283.62 100.24 L 283.57 99.81 L 283.96 98.96 Z","M 275.48 98.96 L 276.59 98.59 L 277.44 99.18 L 277.65 100.24 L 277.05 101.09 L 243.31 134.77 L 242.03 135.79 L 241.14 135.66 L 240.73 135.23 L 240.58 134.38 L 241.55 133.09 L 267.41 107.07 L 269.76 104.38 Z","M 326.18 100.67 L 326.93 100.44 L 328.64 100.54 L 329.07 100.80 L 329.37 101.52 L 328.81 105.36 L 327.65 109.63 L 325.53 115.17 L 322.44 121.15 L 319.25 125.28 L 318.83 125.57 L 317.97 125.54 L 316.52 124.13 L 316.51 122.85 L 319.68 118.14 L 322.24 113.51 L 324.37 106.81 L 325.50 101.52 Z","M 232.83 100.67 L 234.77 100.51 L 235.84 101.09 L 237.76 109.16 L 238.61 111.62 L 241.65 117.73 L 244.28 121.58 L 244.19 122.43 L 242.45 124.15 L 241.60 124.10 L 240.44 122.85 L 238.48 119.87 L 235.96 115.17 L 234.21 110.48 L 232.88 105.79 L 232.23 101.52 Z","M 295.28 117.31 L 296.21 117.04 L 297.07 117.51 L 297.59 118.59 L 297.16 119.44 L 294.93 121.01 L 288.96 123.57 L 284.69 124.30 L 277.44 124.49 L 274.03 123.80 L 268.05 121.65 L 267.20 122.26 L 264.54 126.69 L 264.43 127.55 L 265.07 128.13 L 272.32 130.62 L 277.01 131.33 L 281.28 131.42 L 281.95 131.82 L 282.21 132.67 L 282.05 151.02 L 281.71 152.05 L 281.28 152.32 L 280.43 152.31 L 279.78 151.87 L 279.46 151.02 L 279.52 135.23 L 279.18 134.38 L 273.60 133.77 L 265.49 131.16 L 261.65 129.11 L 261.07 128.40 L 261.20 127.55 L 266.29 118.59 L 267.20 117.75 L 268.05 117.91 L 270.75 119.44 L 274.12 120.72 L 278.29 121.32 L 282.99 121.33 L 288.92 120.29 Z","M 302.95 124.13 L 303.89 124.34 L 304.53 124.99 L 304.74 125.84 L 304.56 126.27 L 302.19 128.12 L 298.35 130.29 L 293.23 132.33 L 288.96 133.56 L 286.83 133.76 L 286.23 133.52 L 285.91 133.09 L 285.86 131.82 L 286.40 131.25 L 291.52 129.88 L 294.37 128.83 L 298.62 126.69 Z","M 308.74 130.53 L 309.87 130.56 L 310.89 131.39 L 311.41 132.24 L 311.26 133.09 L 309.01 134.91 L 302.61 138.84 L 297.92 140.90 L 293.65 142.25 L 287.25 143.47 L 286.55 143.34 L 286.14 142.91 L 285.95 140.78 L 286.40 139.81 L 287.68 139.37 L 293.65 138.22 L 298.23 136.51 L 302.19 134.73 Z","M 255.36 133.09 L 256.11 132.74 L 256.96 132.92 L 262.08 135.90 L 266.77 137.71 L 270.61 138.79 L 274.88 139.58 L 275.65 140.35 L 275.44 142.91 L 274.45 143.45 L 271.47 142.96 L 265.49 141.38 L 262.08 140.09 L 257.81 137.96 L 254.40 135.90 L 254.05 134.80 Z"],"wordmark":["M 61.53 197.93 L 74.72 197.87 L 75.97 198.31 L 76.51 199.18 L 76.64 236.85 L 77.15 241.87 L 77.86 243.35 L 79.74 244.60 L 83.51 245.22 L 107.36 245.36 L 118.03 245.74 L 119.08 246.89 L 119.24 248.15 L 119.19 259.45 L 118.94 260.71 L 118.44 261.33 L 117.41 261.78 L 111.13 261.83 L 84.13 261.78 L 78.48 261.47 L 72.83 260.47 L 69.69 259.28 L 67.18 257.78 L 64.91 255.68 L 62.56 252.54 L 61.13 249.41 L 59.91 244.38 L 59.53 240.62 L 59.45 199.81 L 60.28 198.23 Z","M 63.60 202.32 L 64.67 201.71 L 71.58 201.96 L 72.21 202.22 L 72.50 202.95 L 72.51 238.11 L 73.34 243.13 L 74.47 245.64 L 75.34 246.74 L 77.86 248.42 L 83.51 249.45 L 114.27 249.59 L 114.89 249.84 L 115.29 250.66 L 115.24 256.31 L 114.89 257.49 L 114.27 257.75 L 95.43 257.83 L 81.25 257.57 L 76.47 256.94 L 72.21 255.76 L 69.69 254.43 L 67.81 252.90 L 65.93 250.24 L 64.67 247.04 L 63.68 240.62 L 63.38 232.46 Z","M 125.57 197.93 L 138.75 197.82 L 140.01 198.02 L 140.79 198.56 L 141.23 200.44 L 141.24 235.59 L 141.72 239.36 L 142.65 241.87 L 144.40 243.78 L 146.91 244.69 L 151.93 245.19 L 169.51 244.87 L 172.86 244.38 L 175.16 243.05 L 176.55 240.62 L 177.17 236.85 L 177.37 199.18 L 178.30 198.03 L 179.56 197.77 L 192.11 197.93 L 193.99 198.37 L 194.68 199.81 L 194.93 206.09 L 194.76 239.36 L 193.79 244.38 L 192.37 248.78 L 190.62 252.54 L 188.75 255.06 L 185.21 258.07 L 180.18 260.23 L 172.65 261.53 L 165.74 261.84 L 148.79 261.74 L 143.14 261.15 L 136.87 259.56 L 133.73 258.02 L 131.22 256.13 L 128.52 253.17 L 126.41 249.41 L 124.63 243.76 L 123.89 239.36 L 123.72 200.44 L 124.22 198.56 Z","M 128.15 202.32 L 129.33 201.95 L 135.61 201.84 L 136.24 201.96 L 136.87 202.66 L 137.04 236.85 L 137.82 241.24 L 139.17 244.38 L 141.89 247.05 L 145.66 248.68 L 154.44 249.59 L 161.35 249.66 L 170.14 249.30 L 173.91 248.54 L 177.04 246.98 L 179.82 243.76 L 181.19 239.36 L 181.64 234.97 L 181.68 202.95 L 182.07 202.09 L 182.69 201.82 L 190.23 201.95 L 190.80 202.95 L 190.58 238.11 L 189.97 242.50 L 188.97 246.37 L 187.72 249.24 L 185.91 251.92 L 182.91 254.43 L 178.30 256.31 L 172.02 257.45 L 167.00 257.79 L 154.44 257.82 L 143.77 257.01 L 138.23 255.68 L 133.91 253.17 L 131.84 250.56 L 129.96 247.01 L 128.71 243.08 L 128.08 239.47 L 127.88 210.48 Z","M 233.13 197.93 L 236.68 197.43 L 241.71 197.66 L 245.47 198.90 L 248.81 201.07 L 251.31 204.21 L 256.42 214.25 L 257.14 216.13 L 256.77 217.36 L 256.14 217.89 L 254.89 218.19 L 253.55 217.39 L 247.36 205.69 L 246.10 203.84 L 244.84 202.80 L 241.89 201.69 L 237.94 201.51 L 234.17 201.75 L 231.50 202.95 L 229.15 205.89 L 226.01 211.40 L 218.06 226.81 L 202.16 255.93 L 199.43 261.96 L 200.27 261.99 L 205.92 258.82 L 220.36 249.85 L 222.87 249.29 L 225.38 249.27 L 226.64 249.73 L 226.86 250.66 L 226.01 251.58 L 221.62 254.23 L 193.37 270.52 L 191.48 271.43 L 190.32 271.38 L 190.05 270.75 L 190.72 268.87 L 224.91 204.83 L 226.10 202.95 L 228.36 200.44 L 230.41 198.98 Z","M 236.95 209.23 L 237.94 208.86 L 239.19 208.94 L 240.87 210.48 L 245.88 219.90 L 246.38 221.16 L 246.10 222.35 L 245.47 222.93 L 244.22 223.27 L 242.96 222.48 L 239.19 215.63 L 238.57 214.80 L 237.94 214.88 L 229.44 231.20 L 227.47 234.34 L 224.13 236.48 L 222.87 236.29 L 222.70 234.97 L 226.89 226.81 L 235.18 211.11 Z","M 263.68 229.32 L 264.93 229.45 L 266.39 231.20 L 281.46 259.45 L 281.73 260.71 L 281.26 261.52 L 280.00 261.87 L 264.93 261.82 L 263.50 261.33 L 262.12 259.45 L 251.25 238.11 L 251.07 236.85 L 251.33 236.22 L 253.01 235.16 L 254.26 235.66 L 255.07 236.85 L 265.63 256.94 L 266.42 257.57 L 267.44 257.70 L 274.35 257.64 L 274.98 257.57 L 275.30 256.94 L 271.27 248.78 L 262.12 231.83 L 261.98 230.57 L 262.42 229.91 Z","M 311.18 197.93 L 346.54 197.82 L 348.43 198.07 L 349.54 199.18 L 349.90 204.83 L 349.70 210.48 L 349.47 211.74 L 348.43 212.86 L 344.03 213.26 L 307.62 213.29 L 305.94 213.62 L 304.99 214.25 L 304.48 214.91 L 304.02 216.76 L 304.45 219.90 L 305.11 220.71 L 306.37 221.37 L 308.88 221.66 L 336.50 222.08 L 341.52 223.22 L 344.66 224.41 L 348.43 227.32 L 350.72 230.57 L 352.28 234.97 L 352.90 240.62 L 352.62 245.01 L 351.85 249.41 L 350.06 253.80 L 347.71 256.94 L 344.66 259.21 L 341.52 260.35 L 337.76 261.12 L 330.85 261.81 L 289.42 261.80 L 288.16 261.50 L 287.47 260.71 L 287.15 258.19 L 287.04 247.52 L 287.43 246.27 L 288.16 245.75 L 290.67 245.49 L 330.85 245.50 L 333.38 245.01 L 334.30 244.38 L 335.05 243.13 L 335.34 241.24 L 335.16 238.73 L 334.50 237.48 L 332.73 236.54 L 305.74 235.96 L 297.58 234.64 L 293.18 232.76 L 290.85 230.57 L 289.11 228.06 L 287.87 225.55 L 287.38 223.67 L 286.97 218.64 L 287.21 214.88 L 287.96 211.11 L 288.00 210.48 L 287.53 210.20 L 280.63 213.90 L 271.84 217.63 L 267.44 219.27 L 266.35 219.27 L 267.41 218.02 L 273.09 214.13 L 296.32 200.64 L 299.46 199.47 L 304.48 198.47 Z","M 305.22 202.32 L 312.02 201.86 L 333.99 201.83 L 344.66 201.99 L 345.40 202.32 L 345.88 207.97 L 345.29 208.94 L 306.37 209.20 L 303.86 209.89 L 301.97 211.14 L 300.25 213.62 L 299.59 216.76 L 299.91 219.90 L 300.84 222.41 L 302.60 224.27 L 304.48 225.20 L 310.13 225.83 L 334.83 226.18 L 340.64 227.43 L 343.41 228.51 L 345.29 229.77 L 346.57 231.20 L 347.80 234.03 L 348.48 237.48 L 348.51 241.87 L 347.17 250.09 L 345.92 252.68 L 344.03 254.65 L 342.15 255.72 L 338.38 256.94 L 333.36 257.59 L 294.44 257.86 L 291.93 257.67 L 291.30 256.96 L 291.29 250.66 L 291.93 249.89 L 332.11 249.57 L 334.62 249.05 L 336.50 248.11 L 338.18 246.27 L 339.19 243.76 L 339.51 239.36 L 338.75 236.22 L 337.13 234.21 L 334.62 232.77 L 330.22 232.09 L 309.51 232.10 L 304.66 231.83 L 301.05 231.20 L 297.02 229.94 L 295.07 228.89 L 293.48 227.43 L 291.93 223.93 L 291.16 217.39 L 291.63 213.62 L 292.98 209.86 L 295.07 206.81 L 297.50 204.83 L 300.42 203.58 Z","M 381.70 197.93 L 419.99 197.85 L 421.69 198.56 L 422.20 200.44 L 422.33 209.86 L 422.09 211.74 L 421.25 212.79 L 419.37 213.22 L 384.84 213.30 L 381.07 213.59 L 379.34 214.25 L 378.04 215.51 L 377.31 216.98 L 376.46 220.53 L 376.68 221.56 L 377.31 221.91 L 418.11 221.88 L 420.20 222.41 L 420.91 224.29 L 420.93 233.71 L 420.62 234.97 L 419.37 236.09 L 378.88 236.22 L 377.31 236.29 L 376.68 236.67 L 376.43 237.48 L 376.68 240.76 L 377.31 242.84 L 378.56 244.32 L 380.44 245.04 L 386.72 245.61 L 410.58 245.53 L 421.25 245.88 L 421.88 246.41 L 422.30 247.52 L 422.45 251.92 L 422.28 260.08 L 421.88 261.04 L 421.25 261.56 L 410.58 261.84 L 379.19 261.58 L 373.54 260.43 L 369.77 259.05 L 366.63 256.90 L 363.31 253.17 L 360.68 247.52 L 359.59 243.13 L 359.20 239.99 L 359.22 220.53 L 359.45 217.39 L 360.78 211.11 L 363.28 206.09 L 367.89 201.48 L 370.40 200.20 L 374.79 198.84 Z","M 377.93 202.32 L 384.21 201.85 L 416.23 201.72 L 417.48 201.93 L 417.89 202.32 L 418.04 207.97 L 417.82 208.60 L 416.86 209.11 L 382.96 209.08 L 379.82 209.50 L 377.93 210.16 L 375.42 211.96 L 373.37 214.88 L 372.69 217.39 L 372.42 221.16 L 372.52 224.92 L 373.03 225.55 L 374.17 225.96 L 416.23 226.01 L 416.86 226.67 L 416.95 227.43 L 416.88 231.20 L 416.46 231.83 L 405.56 232.19 L 374.17 231.98 L 372.79 232.46 L 372.05 234.34 L 372.21 239.36 L 373.30 243.76 L 374.79 246.45 L 377.31 248.34 L 379.82 249.16 L 384.84 249.77 L 416.86 249.62 L 417.79 250.03 L 418.07 250.66 L 418.02 256.94 L 417.48 257.68 L 380.44 257.49 L 376.05 256.71 L 372.64 255.68 L 369.25 253.80 L 367.26 251.85 L 364.75 246.77 L 363.49 240.93 L 363.14 223.04 L 363.76 216.13 L 366.01 209.78 L 368.52 206.29 L 370.58 204.83 L 373.22 203.58 Z","M 430.71 197.93 L 431.92 197.71 L 477.75 197.96 L 481.52 198.42 L 485.28 199.42 L 488.42 200.87 L 490.93 202.60 L 493.81 206.09 L 496.08 211.74 L 496.89 218.64 L 496.53 224.29 L 495.68 228.06 L 493.12 233.08 L 490.31 236.04 L 486.54 238.34 L 486.30 239.36 L 499.30 259.45 L 499.59 260.71 L 499.22 261.33 L 497.21 261.77 L 482.77 261.80 L 481.52 261.52 L 479.22 258.82 L 468.96 242.88 L 467.71 241.65 L 448.24 241.41 L 446.99 241.82 L 446.80 242.50 L 446.87 258.82 L 446.36 261.05 L 445.73 261.58 L 444.48 261.80 L 431.92 261.84 L 430.38 261.33 L 429.76 260.08 L 429.52 253.17 L 429.57 200.44 L 429.92 198.56 Z","M 433.82 202.32 L 435.06 201.82 L 477.75 202.05 L 480.26 202.32 L 484.75 203.58 L 486.54 204.36 L 488.42 205.78 L 490.93 209.29 L 492.43 214.88 L 492.57 221.78 L 491.56 227.30 L 490.31 230.06 L 488.31 232.46 L 485.57 234.34 L 480.89 236.11 L 480.36 237.48 L 483.69 243.13 L 487.79 248.86 L 492.82 256.75 L 492.88 257.57 L 492.19 257.83 L 484.66 257.65 L 483.40 257.23 L 479.63 252.06 L 471.84 239.99 L 469.59 237.75 L 455.78 237.28 L 444.48 237.55 L 443.22 238.11 L 442.69 239.99 L 442.59 257.04 L 442.21 257.57 L 441.34 257.83 L 435.06 257.87 L 434.02 257.57 L 433.60 256.31 Z","M 450.13 209.23 L 472.73 209.12 L 476.49 209.52 L 479.63 210.67 L 481.09 211.74 L 482.54 213.62 L 483.64 216.76 L 483.66 222.41 L 483.07 224.92 L 482.22 226.81 L 480.89 228.42 L 479.01 229.61 L 477.12 230.33 L 474.61 230.65 L 465.82 230.87 L 443.85 230.62 L 443.01 229.94 L 442.64 228.69 L 442.79 210.48 L 443.22 209.78 L 444.48 209.27 Z","M 447.10 213.62 L 448.24 213.24 L 472.73 213.33 L 476.49 213.64 L 478.38 214.76 L 479.16 216.13 L 479.48 219.27 L 479.04 223.67 L 478.38 225.02 L 477.12 226.16 L 474.61 226.77 L 447.62 226.72 L 446.99 226.20 L 446.89 225.55 L 446.81 214.88 Z"]}</script>
+<script>
+(function () {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const LOGO = JSON.parse(document.getElementById("logoPaths").textContent);
+  const el = (tag, attrs, parent) => { const n = document.createElementNS(SVGNS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+
+  // El wordmark del encabezado usa el mismo contorno vectorizado, sin animar. Va en UN solo
+  // trazo compuesto con evenodd: si cada contorno fuera su propio <path>, el interior de cada
+  // letra se rellenaría encima del exterior y el logotipo saldría macizo en vez de calado.
+  const markG = document.getElementById("markPaths");
+  el("path", { d: LOGO.wordmark.join(" "), "fill-rule": "evenodd" }, markG);
+  document.querySelector("header .mark").setAttribute("viewBox", "44 176 472 114");
+
+  /* ---------------- 1. corte del logotipo ---------------- */
+  const cut = document.getElementById("cut");
+  const svg = document.getElementById("cutSvg");
+  const grid = document.getElementById("cutGrid");
+  for (let x = 0; x <= 560; x += 40) el("line", { x1: x, y1: 0, x2: x, y2: 300 }, grid);
+  for (let y = 0; y <= 300; y += 40) el("line", { x1: 0, y1: y, x2: 560, y2: y }, grid);
+
+  const art = document.getElementById("art");
+  const order = [...LOGO.emblema, ...LOGO.wordmark].map((d) => el("path", { d }, art));
+  // Relleno final: un solo trazo compuesto con evenodd, encima de los contornos animados.
+  // Rellenar cada contorno por separado taparía los huecos de las letras (saldrían macizas),
+  // así que la pieza "liberada" se pinta con este y no con los que se animan.
+  const artFill = el("path", { id: "artFill", d: [...LOGO.emblema, ...LOGO.wordmark].join(" "), "fill-rule": "evenodd" }, art);
+
+  const tip = document.getElementById("tip");
+  const halo = document.getElementById("halo");
+  const canvas = document.getElementById("sparks");
+  const ctx = canvas.getContext("2d");
+  const lens = order.map((p) => p.getTotalLength());
+  const total = lens.reduce((a, b) => a + b, 0);
+  order.forEach((p, i) => { p.style.strokeDasharray = lens[i]; p.style.strokeDashoffset = lens[i]; });
+
+  let sparks = [], raf = 0, t0 = 0;
+  const DUR = 6400;
+  const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+
+  function sizeCanvas() {
+    const r = cut.getBoundingClientRect();
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = r.width * dpr; canvas.height = r.height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return r;
+  }
+  function toPx(p) {
+    const r = cut.getBoundingClientRect();
+    return { sx: p.x, sy: p.y, px: p.x * (r.width / 560), py: p.y * (r.height / 300) };
+  }
+  function resetCut() {
+    cancelAnimationFrame(raf);
+    cut.classList.remove("done");
+    order.forEach((p, i) => { p.classList.remove("hot"); p.style.strokeDashoffset = lens[i]; });
+    tip.style.opacity = 0; halo.style.opacity = 0; sparks = [];
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  function finishCut() {
+    order.forEach((p) => { p.classList.remove("hot"); p.style.strokeDashoffset = 0; });
+    tip.style.opacity = 0; halo.style.opacity = 0;
+    cut.classList.add("done");
+  }
+  function runCut() {
+    resetCut();
+    if (reduce) { finishCut(); return; }
+    sizeCanvas();
+    t0 = performance.now();
+    const frame = (now) => {
+      const u = Math.min(1, (now - t0) / DUR);
+      const drawn = easeInOut(u) * total;
+      let acc = 0, cur = null, curLen = 0;
+      for (let i = 0; i < order.length; i++) {
+        const p = order[i], len = lens[i];
+        if (drawn >= acc + len) { p.style.strokeDashoffset = 0; p.classList.remove("hot"); }
+        else if (drawn > acc) { curLen = drawn - acc; p.style.strokeDashoffset = len - curLen; p.classList.add("hot"); cur = p; }
+        else { p.style.strokeDashoffset = len; p.classList.remove("hot"); }
+        acc += len;
+      }
+      const r = cut.getBoundingClientRect();
+      ctx.clearRect(0, 0, r.width, r.height);
+      if (cur) {
+        const pt = toPx(cur.getPointAtLength(curLen));
+        tip.setAttribute("cx", pt.sx); tip.setAttribute("cy", pt.sy); tip.style.opacity = 1;
+        halo.setAttribute("cx", pt.sx); halo.setAttribute("cy", pt.sy); halo.style.opacity = 0.14 + Math.random() * 0.1;
+        for (let k = 0; k < 2; k++) {
+          const a = Math.random() * Math.PI * 2, sp = 0.5 + Math.random() * 1.9;
+          sparks.push({ x: pt.px, y: pt.py, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 0.5, life: 1, hot: Math.random() < 0.45 });
+        }
+      }
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.x += s.vx; s.y += s.vy; s.vy += 0.08; s.life -= 0.038;
+        if (s.life <= 0) { sparks.splice(i, 1); continue; }
+        ctx.globalAlpha = s.life * 0.9;
+        ctx.fillStyle = s.hot ? "#FFFFFF" : "#F5AF95";
+        const sz = s.life > 0.6 ? 1.8 : 1.2;
+        ctx.fillRect(s.x, s.y, sz, sz);
+      }
+      ctx.globalAlpha = 1;
+      if (u < 1 || sparks.length) raf = requestAnimationFrame(frame);
+      if (u >= 1 && !cut.classList.contains("done")) finishCut();
+    };
+    raf = requestAnimationFrame(frame);
+  }
+  window.addEventListener("resize", () => { if (!cut.classList.contains("done")) sizeCanvas(); });
+
+  /* ---------------- 2. grabado sobre placa retroiluminada ---------------- */
+  const engrave = document.getElementById("engrave");
+  const panel = engrave.querySelector(".panel");
+  const copy = engrave.querySelector(".copy");
+  const head = engrave.querySelector(".head");
+  const strip = engrave.querySelector(".strip");
+  const humo = engrave.querySelector("canvas.humo");
+  const hx = humo.getContext("2d");
+  const ENG_DUR = 3800, PASADAS = 8;
+  let engRaf = 0, engTimers = [], humoP = [];
+
+  function engReset() {
+    cancelAnimationFrame(engRaf);
+    engTimers.forEach(clearTimeout); engTimers = [];
+    engrave.classList.remove("lit", "done");
+    copy.style.clipPath = "inset(0 0 100% 0)";
+    head.style.opacity = 0; strip.style.opacity = 0;
+    humoP = [];
+    hx.clearRect(0, 0, humo.width, humo.height);
+  }
+  function engFinal() {
+    copy.style.clipPath = "inset(0 0 0 0)";
+    head.style.opacity = 0;
+    engrave.classList.add("done", "lit");
+    strip.style.opacity = 1;
+  }
+  // La tira no prende de golpe: titubea como un tubo real, con arranques que no cuajan, antes
+  // de quedarse fija. El grabado prende y se apaga con ella, porque es la misma luz.
+  const TITUBEO = [
+    [0, 1], [80, 0], [170, 1], [240, 0], [300, 1], [390, 0],
+    [500, 1], [560, 0], [660, 1], [780, 0], [900, 1], [990, 0],
+    [1080, 1], [1210, 0], [1330, 1],
+  ];
+  function encender() {
+    TITUBEO.forEach(([ms, on]) => engTimers.push(setTimeout(() => {
+      engrave.classList.toggle("lit", !!on);
+      strip.style.opacity = on ? 1 : 0.06;
+    }, ms)));
+  }
+  function runEngrave() {
+    engReset();
+    if (reduce) { engFinal(); return; }
+    const pr = panel.getBoundingClientRect();
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    humo.width = pr.width * dpr; humo.height = pr.height * dpr;
+    hx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const x0 = pr.width * 0.07, x1 = pr.width * 0.93;
+    const yTop = copy.offsetTop, yH = copy.offsetHeight;
+    const t0 = performance.now();
+    const frame = (now) => {
+      const u = Math.min(1, (now - t0) / ENG_DUR);
+      // Vaivén: onda triangular sobre el avance vertical, como un barrido raster.
+      const fase = u * PASADAS;
+      const tri = Math.abs((fase % 2) - 1);
+      const x = x0 + tri * (x1 - x0);
+      const y = yTop + u * yH;
+      head.style.left = x + "px";
+      head.style.top = y + "px";
+      head.style.opacity = u < 1 ? 1 : 0;
+      head.classList.toggle("rtl", (Math.floor(fase) % 2) === 1);
+      copy.style.clipPath = `inset(0 0 ${((1 - u) * 100).toFixed(2)}% 0)`;
+
+      if (u < 1 && Math.random() < 0.55) {
+        humoP.push({ x, y, vx: (Math.random() - .5) * .25, vy: -0.35 - Math.random() * 0.4,
+          r: 3 + Math.random() * 5, life: 1 });
+      }
+      hx.clearRect(0, 0, pr.width, pr.height);
+      for (let i = humoP.length - 1; i >= 0; i--) {
+        const s = humoP[i];
+        s.x += s.vx; s.y += s.vy; s.r += 0.35; s.life -= 0.018;
+        if (s.life <= 0) { humoP.splice(i, 1); continue; }
+        const g = hx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r);
+        g.addColorStop(0, `rgba(226,214,205,${(s.life * 0.13).toFixed(3)})`);
+        g.addColorStop(1, "rgba(226,214,205,0)");
+        hx.fillStyle = g;
+        hx.beginPath(); hx.arc(s.x, s.y, s.r, 0, Math.PI * 2); hx.fill();
+      }
+      if (u < 1 || humoP.length) engRaf = requestAnimationFrame(frame);
+      if (u >= 1 && !engrave.classList.contains("done")) {
+        engrave.classList.add("done");
+        engTimers.push(setTimeout(encender, 340));
+      }
+    };
+    engRaf = requestAnimationFrame(frame);
+  }
+
+  /* ---------------- 3. muestrario ---------------- */
+  document.querySelectorAll(".swatch").forEach((s) => {
+    const move = (e) => {
+      const r = s.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      s.style.transform = `rotateY(${x * 12}deg) rotateX(${-y * 9}deg) translateZ(4px)`;
+      s.style.setProperty("--mx", (x * r.width * 0.75).toFixed(1));
+    };
+    const leave = () => { s.style.transform = ""; s.style.setProperty("--mx", 0); };
+    s.addEventListener("pointermove", move);
+    s.addEventListener("pointerleave", leave);
+  });
+
+  /* ---------------- 4. letrero de pared ---------------- */
+  const sign = document.getElementById("sign");
+  const dLogo = [...LOGO.emblema, ...LOGO.wordmark].join(" ");
+  sign.querySelectorAll(".luz path, .sombra path, .cara path").forEach((p) => p.setAttribute("d", dLogo));
+  let signTimers = [];
+  function runSign() {
+    signTimers.forEach(clearTimeout); signTimers = [];
+    sign.classList.remove("run", "lit");
+    void sign.offsetWidth;
+    if (reduce) { sign.classList.add("run", "lit"); return; }
+    sign.classList.add("run");
+    // Mismo titubeo que la placa: es la misma instalación eléctrica.
+    signTimers.push(setTimeout(() => {
+      TITUBEO.forEach(([ms, on]) => signTimers.push(setTimeout(() => sign.classList.toggle("lit", !!on), ms)));
+    }, 1150));
+  }
+
+  /* ---------------- 5. proceso ---------------- */
+  const proc = document.getElementById("proc");
+  const steps = [...proc.querySelectorAll(".step")];
+  const fill = proc.querySelector(".fill"), dot = proc.querySelector(".dot");
+  let procRaf = 0;
+  function runProc() {
+    cancelAnimationFrame(procRaf);
+    steps.forEach((s) => s.classList.remove("on"));
+    fill.style.width = "0"; dot.style.opacity = 0;
+    if (reduce) { steps.forEach((s) => s.classList.add("on")); fill.style.width = "100%"; return; }
+    const D = 3600, start = performance.now();
+    const ease = (t) => 1 - Math.pow(1 - t, 3);
+    const stops = [0, 1 / 3, 2 / 3, 1];
+    const frame = (now) => {
+      const u = Math.min(1, (now - start) / D);
+      const p = ease(u);
+      fill.style.width = (p * 100) + "%";
+      dot.style.left = (p * 100) + "%"; dot.style.opacity = u < 0.98 ? 1 : 0;
+      stops.forEach((s, i) => { if (p >= s - 0.02) steps[i].classList.add("on"); });
+      if (u < 1) procRaf = requestAnimationFrame(frame);
+    };
+    procRaf = requestAnimationFrame(frame);
+  }
+
+  /* ---------------- 6. contador ---------------- */
+  const kpi = document.getElementById("kpi");
+  function runKpi() {
+    kpi.querySelectorAll("[data-count]").forEach((n) => {
+      const target = +n.dataset.count, pre = n.dataset.prefix || "";
+      if (reduce) { n.textContent = pre + target; return; }
+      const start = performance.now(), D = 1600;
+      const step = (now) => {
+        const u = Math.min(1, (now - start) / D);
+        const e = 1 - Math.pow(2, -10 * u);
+        n.textContent = pre + Math.round(target * (u >= 1 ? 1 : e));
+        if (u < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+  }
+
+  /* ---------------- disparo por scroll + repetir ---------------- */
+  const runners = { cut: runCut, engrave: runEngrave, sign: runSign, proc: runProc, kpi: runKpi };
+  const fired = new Set();
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const id = e.target.id;
+      if (fired.has(id)) return;
+      fired.add(id); runners[id] && runners[id]();
+    });
+  }, { threshold: 0.25 });
+  Object.keys(runners).forEach((id) => io.observe(document.getElementById(id)));
+  fired.add("cut"); requestAnimationFrame(() => setTimeout(runCut, 250));
+  document.querySelectorAll("[data-replay]").forEach((b) => b.addEventListener("click", () => runners[b.dataset.replay]()));
+})();
+</script>

@@ -16,6 +16,9 @@ import { TestimonialsSection } from "@/components/storefront/testimonials-sectio
 import { B2BSection } from "@/components/storefront/b2b-section";
 import { ContactSection } from "@/components/storefront/contact-section";
 import { Reveal } from "@/components/storefront/reveal";
+import { LaserCutLogo } from "@/components/storefront/motion/laser-cut-logo";
+import { LetreroPared } from "@/components/storefront/motion/letrero-pared";
+import { ProcesoLaser } from "@/components/storefront/motion/proceso-laser";
 
 export const revalidate = 3600;
 
@@ -42,17 +45,26 @@ export default async function HomePage() {
       <Reveal>
         <MaquilaHeroSection />
       </Reveal>
+      <section className="mx-auto max-w-content px-4 pt-6 sm:px-6">
+        <LaserCutLogo />
+      </section>
       <PlacasSection productos={placas} />
       <BestsellersSection
         title={bestsellers?.title ?? "Página de inicio"}
         products={bestsellers?.products ?? []}
       />
       <HeroSection product={heroProduct} />
+      <ProcesoLaser />
       <Reveal>
         <TrustBar />
       </Reveal>
       <Reveal>
         <TrabajosSection />
+      </Reveal>
+      <Reveal>
+        <section className="mx-auto max-w-content px-4 py-10 sm:px-6">
+          <LetreroPared />
+        </section>
       </Reveal>
       <Reveal>
         <BrandBannerSection />
