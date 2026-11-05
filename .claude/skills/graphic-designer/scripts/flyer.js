@@ -1203,3 +1203,425 @@ async function adHero({ photoPath, eyebrow, headline, precioLabel, precio, sufij
 }
 
 module.exports.adHero = adHero;
+
+
+/**
+ * Promo vertical 4:5 de material (placas de acrilico) para anuncio de Meta.
+ *
+ * Hermana de `offerSplit`: mismo sistema visual aprobado -crema, barra bicolor
+ * oro/negro con el corte sesgado, una sola alineacion izquierda, CTA de
+ * esquinas rectas- pero resuelve un encargo distinto. Alli se vende UN producto
+ * terminado con UN precio; aqui se vende MATERIAL, y el maker que lo compra
+ * decide antes que nada tres cosas: si tienes su color, si tienes su medida y
+ * cuanto le sale la placa comprando volumen.
+ *
+ * Por eso la pieza tiene tres bloques que `offerSplit` no necesita:
+ *
+ *   1. LA BANDA DE PRODUCTO A SANGRE. El abanico de colores ocupa el ancho
+ *      completo y va con bordes rectos, sin difuminar: el fondo de estudio es
+ *      mas oscuro que el crema y un degradado entre los dos lee como error de
+ *      montaje, no como intencion. El corte recto lee como banda editorial.
+ *   2. LA FICHA TECNICA. Familias, medidas y espesores en una sola linea
+ *      espaciada. Es el dato que decide la compra y no cabe en el titular.
+ *   3. EL PRECIO POR PIEZA DENTRO DEL PACK. Un flyer de material que anuncia el
+ *      precio de la pieza suelta atrae al cliente que no deja margen para pagar
+ *      el anuncio: la utilidad de una pieza suelta no cubre ni el clic.
+ *
+ * Como en `offerSplit`, ningun precio se escribe aqui dentro: entran desde
+ * fuera, leidos del catalogo.
+ */
+async function placasPromo({
+  width = 1080,
+  height = 1350,
+  crema = "#F7F1E7",
+  tinta = "#1A1A1A",
+  oro = "#C8A02E",
+  gris = "#9C978E",
+  marca = "LUASER",
+  sitio = "luaser.mx",
+  eyebrow = "",
+  titular = [], // 2 lineas, ya en mayusculas
+  subtitulo = "",
+  heroPhotoPath,
+  heroFoco = 0.5, // 0-1: donde esta el centro de interes en la foto cuadrada
+  heroZoom = 1, // >1 acerca la foto y recorta por los lados; ojo con las puntas
+  barraIzq = "ENVÍO GRATIS", // mitad dorada
+  barraDer = "DESDE $799", // mitad negra
+  segundaLinea = "", // el codigo de descuento
+  precio, // "$58.90"
+  precioNota = "", // "POR PLACA EN PACK DE 10"
+  ficha = "", // linea tecnica espaciada
+  cta = "COMPRA EN LUASER.MX",
+  outPath,
+}) {
+  const M = Math.round(width * 0.070);
+
+  // -- reticula vertical --
+  // Tres bloques con la banda de producto justo en el centro del lienzo:
+  // arriba QUE se vende (titular, familias, medidas), en medio el material, y
+  // abajo QUE gana el que compra (oferta, precio, CTA). La ficha tecnica vive
+  // en el bloque de arriba y no junto al precio: es descripcion de producto,
+  // no condicion de la promocion, y mezclarlas hacia ilegible la oferta.
+  const yMarca = Math.round(height * 0.061);
+  const yEyebrow = Math.round(height * 0.099);
+  const tTam = Math.round(width * 0.085);
+  const yTit = Math.round(height * 0.167);
+  const ySub = Math.round(height * 0.268);
+  const yFicha = Math.round(height * 0.292);
+
+  // El alto de la banda se mide contra el abanico, no al reves: la caja del
+  // producto ocupa ~0.42 del alto de estas fotos de estudio, asi que una banda
+  // mas baja le corta la punta a las placas de arriba y de abajo.
+  const heroTop = Math.round(height * 0.309);
+  const heroH = Math.round(height * 0.385);
+
+  const barH = Math.round(height * 0.080);
+  const yBar = heroTop + heroH + Math.round(height * 0.021);
+  const ySeg = yBar + barH + Math.round(height * 0.037);
+
+  const pTam = Math.round(width * 0.072);
+  const yPrecio = Math.round(height * 0.924);
+  const yNota = yPrecio + Math.round(height * 0.027);
+  const ctaH = Math.round(height * 0.055);
+  const yCta = yPrecio - Math.round(pTam * 0.66) - Math.round(ctaH * 0.42);
+  const barraPie = Math.round(height * 0.010);
+
+  // -- banda de producto: ancho completo, bordes rectos --
+  // La foto es cuadrada y el abanico vive en la franja central; se escala al
+  // ancho del lienzo y se recorta la franja alrededor de `heroFoco`.
+  const meta = await sharp(heroPhotoPath).metadata();
+  const escala = (width * heroZoom) / meta.width;
+  const altoEscalado = Math.round(meta.height * escala);
+  const bandaTop = Math.max(
+    0,
+    Math.min(altoEscalado - heroH, Math.round(altoEscalado * heroFoco - heroH / 2))
+  );
+  const anchoEscalado = Math.round(width * heroZoom);
+  const banda = await sharp(heroPhotoPath)
+    .resize(anchoEscalado, altoEscalado)
+    .extract({
+      left: Math.round((anchoEscalado - width) / 2),
+      top: bandaTop,
+      width,
+      height: heroH,
+    })
+    .toBuffer();
+
+  const titSvg = titular
+    .map(
+      (l, i) =>
+        `<text x="${M}" y="${yTit + i * tTam * 1.06}" font-family="Arial Narrow, Arial, sans-serif" font-weight="700" font-size="${tTam}" letter-spacing="-1" fill="${tinta}">${escapeXml(stripEmoji(l))}</text>`
+    )
+    .join("\n");
+
+  // -- barra bicolor: arranca fuera del cuadro por la izquierda (mecanismo de
+  // `offerSplit`). Los dos bloques se dimensionan al texto que llevan para que
+  // ninguna palabra se derrame sobre el otro color.
+  const bTam = Math.round(barH * 0.40);
+  const anchoIzq = barraIzq.length * bTam * 0.60;
+  const anchoDer = barraDer.length * bTam * 0.60;
+  const sesgo = Math.round(barH * 0.42);
+  const oroW = Math.round(M + anchoIzq + width * 0.045);
+  const barW = Math.round(oroW + sesgo + anchoDer + width * 0.075);
+
+  // Arial black mide ~0.65 em por caracter (medido sobre el render, no
+  // estimado: con 0.60 esta linea se salia 48 px por la derecha). Si el
+  // mensaje no cabe en la columna se reduce el cuerpo en vez de derramarse.
+  const segTam = Math.min(
+    Math.round(width * 0.030),
+    Math.floor((width - M * 2) / (Math.max(1, stripEmoji(segundaLinea).length) * 0.66))
+  );
+
+  const ctaTam = Math.round(width * 0.0265);
+  const ctaLS = width * 0.0035;
+  const ctaW = Math.round(cta.length * (ctaTam * 0.60 + ctaLS) + width * 0.075);
+
+  const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="oroGrad" x1="0" y1="0" x2="1" y2="0.6">
+        <stop offset="0%" stop-color="#8C6A12"/>
+        <stop offset="28%" stop-color="#E8CE7B"/>
+        <stop offset="62%" stop-color="#B8892A"/>
+        <stop offset="100%" stop-color="#F0DC9A"/>
+      </linearGradient>
+    </defs>
+
+    <text x="${M}" y="${yMarca}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.023)}" letter-spacing="${width * 0.0055}" fill="${oro}">${escapeXml(marca)}</text>
+    <text x="${width - M}" y="${yMarca}" text-anchor="end" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.019)}" fill="${gris}">${escapeXml(sitio)}</text>
+
+    ${eyebrow ? `<text x="${M}" y="${yEyebrow}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.0195)}" letter-spacing="${width * 0.0026}" fill="${gris}">${escapeXml(stripEmoji(eyebrow))}</text>` : ""}
+
+    ${titSvg}
+
+    ${subtitulo ? `<text x="${M}" y="${ySub}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.0245)}" fill="${tinta}">${escapeXml(stripEmoji(subtitulo))}</text>` : ""}
+
+    <polygon points="0,${yBar} ${oroW + sesgo},${yBar} ${oroW},${yBar + barH} 0,${yBar + barH}" fill="url(#oroGrad)"/>
+    <polygon points="${oroW + sesgo},${yBar} ${barW},${yBar} ${barW},${yBar + barH} ${oroW},${yBar + barH}" fill="${tinta}"/>
+    <text x="${M}" y="${yBar + barH * 0.68}" font-family="Arial, sans-serif" font-weight="900" font-size="${bTam}" fill="${tinta}">${escapeXml(stripEmoji(barraIzq))}</text>
+    <text x="${oroW + sesgo + Math.round(width * 0.030)}" y="${yBar + barH * 0.68}" font-family="Arial, sans-serif" font-weight="900" font-size="${bTam}" fill="${crema}">${escapeXml(stripEmoji(barraDer))}</text>
+
+    ${segundaLinea ? `<text x="${M}" y="${ySeg}" font-family="Arial, sans-serif" font-weight="900" font-size="${segTam}" fill="${tinta}">${escapeXml(stripEmoji(segundaLinea))}</text>` : ""}
+
+    ${ficha ? `<text x="${M}" y="${yFicha}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.0182)}" letter-spacing="${width * 0.0020}" fill="${gris}">${escapeXml(stripEmoji(ficha))}</text>` : ""}
+
+    <text x="${M}" y="${yPrecio}" font-family="Arial, sans-serif" font-weight="900" font-size="${pTam}" fill="${tinta}">${escapeXml(precio)}</text>
+    ${precioNota ? `<text x="${M}" y="${yNota}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.0186)}" letter-spacing="${width * 0.0018}" fill="${gris}">${escapeXml(stripEmoji(precioNota))}</text>` : ""}
+
+    <rect x="${width - M - ctaW}" y="${yCta}" width="${ctaW}" height="${ctaH}" fill="${tinta}"/>
+    <text x="${width - M - ctaW / 2}" y="${yCta + ctaH * 0.65}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${ctaTam}" letter-spacing="${ctaLS}" fill="${crema}">${escapeXml(stripEmoji(cta))}</text>
+
+    <rect x="0" y="${height - barraPie}" width="${width}" height="${barraPie}" fill="${tinta}"/>
+  </svg>`;
+
+  await sharp({ create: { width, height, channels: 3, background: crema } })
+    .composite([
+      { input: banda, top: heroTop, left: 0 },
+      { input: Buffer.from(svg), top: 0, left: 0 },
+    ])
+    .png()
+    .toFile(outPath);
+  return outPath;
+}
+
+module.exports.placasPromo = placasPromo;
+
+
+/**
+ * Portada (miniatura) para un anuncio de video cuadrado de Lua Eventos.
+ *
+ * Una miniatura no es un flyer: se ve durante un segundo antes de que arranque
+ * el video, o quieta en Messenger / columna derecha / datos ahorrados. Tiene que
+ * decir la oferta de un vistazo y nada mas. Por eso aqui solo hay CUATRO cosas:
+ * el gancho en dos lineas enormes, una linea que lo aclara, el producto real y la
+ * marca. Sin precio, sin CTA (el boton lo pone Meta debajo), sin badges.
+ *
+ * La foto de producto de sitio-web/img viene sobre un azul plano (#1F4866); el
+ * lienzo usa ese mismo color y se remata con una viñeta sobre TODO (foto y fondo
+ * por igual) para que el borde de la foto desaparezca sin recortar el vaso.
+ */
+async function videoCover({
+  width = 1080, height = 1080,
+  brand, accentColor,
+  bgColor = "#1F4866",
+  photoPath, photoScale = 0.66, photoTop = 0.375,
+  logoPath,
+  pill = "",             // etiqueta arriba a la derecha, p. ej. TODO SEPTIEMBRE
+  line1 = "", line2 = "", // titular en dos lineas; la 2 va en acento y mas grande
+  subhead = "",
+  footer = "",
+  outPath,
+}) {
+  const accent = accentColor || brand.accent;
+  const M = Math.round(width * 0.041);
+
+  // -- producto --
+  const pw = Math.round(width * photoScale);
+  // Borde desvanecido (rect redondeado + blur como alfa): aunque el fondo de la foto y el
+  // del lienzo sean el mismo azul, una diferencia de un punto se nota como cuadro.
+  const inset = Math.round(pw * 0.05);
+  const mascaraFoto = await sharp(Buffer.from(`<svg width="${pw}" height="${pw}"><rect x="${inset}" y="${inset}" width="${pw - inset * 2}" height="${pw - inset * 2}" rx="${inset * 2}" fill="#fff"/></svg>`))
+    .blur(inset * 0.6).png().toBuffer();
+  const foto = await sharp(photoPath).resize(pw, pw, { fit: "cover" })
+    .composite([{ input: mascaraFoto, blend: "dest-in" }]).png().toBuffer();
+  const fotoLeft = Math.round((width - pw) / 2);
+  const fotoTop = Math.round(height * photoTop);
+
+  // -- logo --
+  const logoSize = Math.round(width * 0.089);
+  const logo = logoPath ? await circleLogo(logoPath, logoSize) : null;
+
+  // -- tipografia --
+  const f1 = Math.round(width * 0.122);
+  const f2 = Math.round(width * 0.156);
+  const fSub = Math.round(width * 0.039);
+  const fPill = Math.round(width * 0.0215);
+  const fFoot = Math.round(width * 0.024);
+  const cx = width / 2;
+  const y1 = Math.round(height * 0.255);
+  const y2 = y1 + Math.round(f2 * 0.92);
+  const ySub = y2 + Math.round(fSub * 1.45);
+
+  const pillTxt = stripEmoji(pill).toUpperCase();
+  const pillW = Math.round(pillTxt.length * fPill * 0.66 + width * 0.05);
+  const pillH = Math.round(fPill * 2.6);
+  const pillX = width - M - pillW;
+  const pillY = M + Math.round((logoSize - pillH) / 2);
+
+  const vineta = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="vg" cx="50%" cy="58%" r="70%">
+      <stop offset="0.55" stop-color="${brand.navyDark}" stop-opacity="0"/>
+      <stop offset="1" stop-color="${brand.navyDark}" stop-opacity="0.62"/>
+    </radialGradient></defs>
+    <rect width="${width}" height="${height}" fill="url(#vg)"/></svg>`;
+
+  const texto = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    ${pill ? `<rect x="${pillX}" y="${pillY}" width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="${accent}"/>
+    <text x="${pillX + pillW / 2}" y="${pillY + pillH * 0.67}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800" font-size="${fPill}" letter-spacing="3" fill="${brand.navyDark}">${escapeXml(pillTxt)}</text>` : ""}
+    <text x="${cx}" y="${y1}" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="${f1}" letter-spacing="-2" fill="#ffffff">${escapeXml(stripEmoji(line1))}</text>
+    <text x="${cx}" y="${y2}" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="${f2}" letter-spacing="2" fill="${accent}">${escapeXml(stripEmoji(line2))}</text>
+    ${subhead ? `<text x="${cx}" y="${ySub}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${fSub}" fill="#ffffff">${escapeXml(stripEmoji(subhead))}</text>` : ""}
+    ${footer ? `<text x="${cx}" y="${height - Math.round(height * 0.023)}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${fFoot}" letter-spacing="3" fill="#ffffff" opacity="0.85">${escapeXml(stripEmoji(footer).toUpperCase())}</text>` : ""}
+  </svg>`;
+
+  const capas = [
+    { input: foto, left: fotoLeft, top: fotoTop },
+    { input: Buffer.from(vineta), left: 0, top: 0 },
+  ];
+  if (logo) {
+    capas.push({ input: logo, left: M, top: M });
+    capas.push({ input: Buffer.from(ringSvg(logoSize)), left: M - 4, top: M - 4 });
+  }
+  capas.push({ input: Buffer.from(texto), left: 0, top: 0 });
+
+  await sharp({ create: { width, height, channels: 3, background: bgColor } })
+    .composite(capas).png().toFile(outPath);
+  return outPath;
+}
+
+module.exports.videoCover = videoCover;
+
+
+/**
+ * Promo vertical 4:5 de un CATALOGO corto de piezas terminadas (centros de mesa
+ * de bautizo) con una sola oferta por tiempo limitado.
+ *
+ * Hermana de `placasPromo`: mismo sistema (crema, barra bicolor oro/negro con
+ * corte sesgado, una sola alineacion izquierda, CTA de esquinas rectas), pero la
+ * banda de producto no es UNA foto sino una fila de N fotos de estudio, una por
+ * diseno, con un rotulo debajo de cada una. El cliente de bautizo elige diseno
+ * antes que nada; ensenar los cuatro de golpe es lo que convierte el anuncio en
+ * catalogo.
+ *
+ * La oferta se escribe en dos tiempos: la barra dice CUANTO y HASTA CUANDO, la
+ * linea de urgencia dice QUE PASA DESPUES, y el bloque de precio ensena el
+ * precio viejo tachado junto al nuevo. Ningun precio vive aqui dentro: entran
+ * desde fuera.
+ */
+async function catalogoPromo({
+  width = 1080,
+  height = 1350,
+  crema = "#F7F1E7",
+  tinta = "#1A1A1A",
+  oro = "#C8A02E",
+  gris = "#9C978E",
+  urgencia = "#B8322A",
+  marca = "LUASER",
+  sitio = "luaser.mx",
+  eyebrow = "",
+  titular = [],
+  ficha = "",
+  fotos = [], // [{ path, rotulo, foco = 0.5 }] fotos 4:5 de estudio, mismo fondo
+  barraIzq = "",
+  barraDer = "",
+  urgenciaLinea = "",
+  precioAntes = "", // "$70"
+  precio, // "$60"
+  precioNota = "",
+  cta = "ESCRÍBENOS HOY",
+  outPath,
+}) {
+  const M = Math.round(width * 0.070);
+
+  const yMarca = Math.round(height * 0.061);
+  const yEyebrow = Math.round(height * 0.099);
+  const tTam = Math.round(width * 0.085);
+  const yTit = Math.round(height * 0.167);
+  const yFicha = Math.round(height * 0.292);
+
+  // -- banda: N tiles a sangre con canal crema entre ellos --
+  const bandaTop = Math.round(height * 0.311);
+  const bandaH = Math.round(height * 0.300);
+  const canal = Math.round(width * 0.006);
+  const n = fotos.length;
+  const tileW = Math.floor((width - canal * (n - 1)) / n);
+  const tiles = [];
+  for (let i = 0; i < n; i++) {
+    const f = fotos[i];
+    const meta = await sharp(f.path).metadata();
+    // escalar por alto y recortar a lo ancho alrededor del centro
+    const escala = bandaH / meta.height;
+    const wEsc = Math.round(meta.width * escala);
+    const foco = f.foco === undefined ? 0.5 : f.foco;
+    const left = Math.max(0, Math.min(wEsc - tileW, Math.round(wEsc * foco - tileW / 2)));
+    const buf = await sharp(f.path).resize(wEsc, bandaH).extract({ left, top: 0, width: tileW, height: bandaH }).toBuffer();
+    tiles.push({ input: buf, top: bandaTop, left: i * (tileW + canal) });
+  }
+  const yRotulo = bandaTop + bandaH + Math.round(height * 0.024);
+
+  const barH = Math.round(height * 0.080);
+  const yBar = yRotulo + Math.round(height * 0.020);
+  const yUrg = yBar + barH + Math.round(height * 0.040);
+
+  const pTam = Math.round(width * 0.080);
+  const yPrecio = Math.round(height * 0.924);
+  const yNota = yPrecio + Math.round(height * 0.027);
+  const ctaH = Math.round(height * 0.055);
+  const yCta = yPrecio - Math.round(pTam * 0.66) - Math.round(ctaH * 0.42);
+  const barraPie = Math.round(height * 0.010);
+
+  const titSvg = titular
+    .map((l, i) => `<text x="${M}" y="${yTit + i * tTam * 1.06}" font-family="Arial Narrow, Arial, sans-serif" font-weight="700" font-size="${tTam}" letter-spacing="-1" fill="${tinta}">${escapeXml(stripEmoji(l))}</text>`)
+    .join("\n");
+
+  const rotSvg = fotos
+    .map((f, i) => f.rotulo ? `<text x="${i * (tileW + canal) + tileW / 2}" y="${yRotulo}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.0175)}" letter-spacing="${width * 0.0018}" fill="${gris}">${escapeXml(stripEmoji(f.rotulo))}</text>` : "")
+    .join("\n");
+
+  const bTam = Math.round(barH * 0.40);
+  const anchoIzq = barraIzq.length * bTam * 0.66;
+  const anchoDer = barraDer.length * bTam * 0.66;
+  const sesgo = Math.round(barH * 0.42);
+  const oroW = Math.round(M + anchoIzq + width * 0.040);
+  const barW = Math.min(width, Math.round(oroW + sesgo + anchoDer + width * 0.070));
+
+  const urgTam = Math.min(Math.round(width * 0.030), Math.floor((width - M * 2) / (Math.max(1, stripEmoji(urgenciaLinea).length) * 0.66)));
+
+  const ctaTam = Math.round(width * 0.0265);
+  const ctaLS = width * 0.0035;
+  const ctaW = Math.round(cta.length * (ctaTam * 0.60 + ctaLS) + width * 0.075);
+
+  // precio anterior tachado, a la izquierda del precio nuevo
+  const aTam = Math.round(pTam * 0.52);
+  const aW = Math.round(precioAntes.length * aTam * 0.60);
+  const xPrecio = precioAntes ? M + aW + Math.round(width * 0.022) : M;
+  const antesSvg = precioAntes
+    ? `<text x="${M}" y="${yPrecio}" font-family="Arial, sans-serif" font-weight="700" font-size="${aTam}" fill="${gris}">${escapeXml(precioAntes)}</text>
+       <line x1="${M - 4}" y1="${yPrecio - aTam * 0.30}" x2="${M + aW + 4}" y2="${yPrecio - aTam * 0.30}" stroke="${urgencia}" stroke-width="${Math.max(3, Math.round(aTam * 0.09))}"/>`
+    : "";
+
+  const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="oroGrad" x1="0" y1="0" x2="1" y2="0.6">
+        <stop offset="0%" stop-color="#8C6A12"/>
+        <stop offset="28%" stop-color="#E8CE7B"/>
+        <stop offset="62%" stop-color="#B8892A"/>
+        <stop offset="100%" stop-color="#F0DC9A"/>
+      </linearGradient>
+    </defs>
+    <text x="${M}" y="${yMarca}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.023)}" letter-spacing="${width * 0.0055}" fill="${oro}">${escapeXml(marca)}</text>
+    <text x="${width - M}" y="${yMarca}" text-anchor="end" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.019)}" fill="${gris}">${escapeXml(sitio)}</text>
+    ${eyebrow ? `<text x="${M}" y="${yEyebrow}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.0195)}" letter-spacing="${width * 0.0026}" fill="${gris}">${escapeXml(stripEmoji(eyebrow))}</text>` : ""}
+    ${titSvg}
+    ${ficha ? `<text x="${M}" y="${yFicha}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.0182)}" letter-spacing="${width * 0.0020}" fill="${gris}">${escapeXml(stripEmoji(ficha))}</text>` : ""}
+    ${rotSvg}
+    <polygon points="0,${yBar} ${oroW + sesgo},${yBar} ${oroW},${yBar + barH} 0,${yBar + barH}" fill="url(#oroGrad)"/>
+    <polygon points="${oroW + sesgo},${yBar} ${barW},${yBar} ${barW},${yBar + barH} ${oroW},${yBar + barH}" fill="${tinta}"/>
+    <text x="${M}" y="${yBar + barH * 0.68}" font-family="Arial, sans-serif" font-weight="900" font-size="${bTam}" fill="${tinta}">${escapeXml(stripEmoji(barraIzq))}</text>
+    <text x="${oroW + sesgo + Math.round(width * 0.030)}" y="${yBar + barH * 0.68}" font-family="Arial, sans-serif" font-weight="900" font-size="${bTam}" fill="${crema}">${escapeXml(stripEmoji(barraDer))}</text>
+    ${urgenciaLinea ? `<text x="${M}" y="${yUrg}" font-family="Arial, sans-serif" font-weight="900" font-size="${urgTam}" fill="${urgencia}">${escapeXml(stripEmoji(urgenciaLinea))}</text>` : ""}
+    ${antesSvg}
+    <text x="${xPrecio}" y="${yPrecio}" font-family="Arial, sans-serif" font-weight="900" font-size="${pTam}" fill="${tinta}">${escapeXml(precio)}</text>
+    ${precioNota ? `<text x="${M}" y="${yNota}" font-family="Arial, sans-serif" font-weight="700" font-size="${Math.round(width * 0.0186)}" letter-spacing="${width * 0.0018}" fill="${gris}">${escapeXml(stripEmoji(precioNota))}</text>` : ""}
+    <rect x="${width - M - ctaW}" y="${yCta}" width="${ctaW}" height="${ctaH}" fill="${tinta}"/>
+    <text x="${width - M - ctaW / 2}" y="${yCta + ctaH * 0.65}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${ctaTam}" letter-spacing="${ctaLS}" fill="${crema}">${escapeXml(stripEmoji(cta))}</text>
+    <rect x="0" y="${height - barraPie}" width="${width}" height="${barraPie}" fill="${tinta}"/>
+  </svg>`;
+
+  await sharp({ create: { width, height, channels: 3, background: crema } })
+    .composite([...tiles, { input: Buffer.from(svg), top: 0, left: 0 }])
+    .png()
+    .toFile(outPath);
+  return outPath;
+}
+
+module.exports.catalogoPromo = catalogoPromo;
