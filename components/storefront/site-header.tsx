@@ -24,7 +24,10 @@ export function SiteHeader({ cartQuantity = 0 }: { cartQuantity?: number }) {
           criticos de craft la senalaron por separado como el choque mas
           visible. Mismo negro del sitio, texto en gris, y el punto dorado
           queda como unico color. */}
-      <div className="relative overflow-hidden border-b border-ink-border bg-ink text-graystone-100 text-xs sm:text-sm font-body py-2.5">
+      <div
+        data-franja-ofertas
+        className="relative overflow-hidden border-b border-ink-border bg-ink text-graystone-100 text-xs sm:text-sm font-body py-2.5"
+      >
         <div className="flex w-max animate-marquee motion-reduce:animate-none">
           {[0, 1].map((rep) => (
             <div key={rep} className="flex shrink-0 items-center gap-8 pr-8" aria-hidden={rep === 1}>
