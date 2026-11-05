@@ -25,6 +25,8 @@ export default async function RecuerdoPage({ params }: Props) {
   if (!r) notFound();
 
   const video = youtubeEmbed(r.video);
+  // Video subido a Archivos de Shopify (mp4): se reproduce directo, sin YouTube.
+  const mp4 = !video && r.video && /\.mp4(\?|$)/i.test(r.video) ? r.video : null;
   const url = `https://luaser.mx/recuerdo/${r.handle}`;
   const compartir = `https://wa.me/?text=${encodeURIComponent(`En memoria de ${r.nombre}: ${url}`)}`;
 
@@ -54,6 +56,19 @@ export default async function RecuerdoPage({ params }: Props) {
         )}
         {r.frase && <p className="mt-6 font-body text-xl italic text-ink/80 whitespace-pre-line">“{r.frase}”</p>}
       </header>
+
+      {mp4 && (
+        <section className="mx-auto max-w-md px-4 sm:px-6 pb-12">
+          <video
+            src={mp4}
+            poster={r.retrato?.url}
+            controls
+            playsInline
+            preload="metadata"
+            className="w-full rounded-lg bg-ink shadow-lg"
+          />
+        </section>
+      )}
 
       {r.historia && (
         <section className="mx-auto max-w-2xl px-4 sm:px-6 pb-12">
