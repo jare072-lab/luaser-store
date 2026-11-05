@@ -32,6 +32,8 @@ export default async function RecuerdoPage({ params }: Props) {
 
   return (
     <article className="bg-bone">
+      {/* La franja de ofertas del encabezado no va en una página de recuerdo. */}
+      <style>{`[data-franja-ofertas]{display:none}`}</style>
       <header className="mx-auto max-w-3xl px-4 sm:px-6 pt-14 pb-10 text-center">
         <p className="font-body text-xs tracking-[0.3em] uppercase text-graystone-700">En memoria de</p>
         {r.retrato && (
@@ -47,11 +49,13 @@ export default async function RecuerdoPage({ params }: Props) {
           </div>
         )}
         <h1 className="mt-6 font-display text-3xl sm:text-5xl text-ink">{r.nombre}</h1>
+        {/* Cada fecha en un solo renglón: en el celular se parten entre sí, nunca a la mitad. */}
         {(r.nace || r.fallece) && (
-          <p className="mt-3 font-body text-lg text-graystone-700">
-            {r.nace && <span>★ {r.nace}</span>}
-            {r.nace && r.fallece && <span className="mx-3">·</span>}
-            {r.fallece && <span>✝ {r.fallece}</span>}
+          <p className="mt-3 flex flex-wrap justify-center gap-x-3 font-body text-lg text-graystone-700">
+            {r.nace && <span className="whitespace-nowrap">★ {r.nace}</span>}
+            {r.nace && r.fallece && <span className="hidden sm:inline">·</span>}
+            {/* ︎ pide la cruz como letra: sin él, iPhone y Windows la pintan como emoji morado. */}
+            {r.fallece && <span className="whitespace-nowrap">{"✝︎"} {r.fallece}</span>}
           </p>
         )}
         {r.frase && <p className="mt-6 font-body text-xl italic text-ink/80 whitespace-pre-line">“{r.frase}”</p>}
