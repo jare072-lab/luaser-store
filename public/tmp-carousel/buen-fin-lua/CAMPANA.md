@@ -4,7 +4,7 @@
 
 **20% de descuento en cualquier barra** (frappés, smoothies, crepas, waffles, elotes, tostitos, candy bar).
 
-- Se aparta del **viernes 13 al martes 17 de noviembre de 2026**, con el anticipo normal del 20%.
+- Se aparta **desde hoy lunes 9 hasta el miércoles 18 de noviembre de 2026**, con el anticipo normal del 20%.
 - Vale para eventos con fecha **hasta el 30 de junio de 2027**.
 - Zona Metropolitana de Monterrey (fuera de la zona aplica el cargo por traslado de siempre).
 - No se acumula con otras promociones (los 10 frappés gratis o el logo en los vasos).
@@ -22,10 +22,10 @@ Ejemplos con tus precios de lista (los de la cotización de septiembre):
 
 ## Campaña en Meta
 
-- **Nombre:** `Lúa Eventos — Buen Fin 20% (13–17 nov) — WhatsApp MTY`
+- **Nombre:** `Lúa Eventos — Buen Fin 20% (9–18 nov) — WhatsApp MTY`
 - **Objetivo:** Interacción → mensajes por WhatsApp (81 3109 2383).
-- **Fechas:** del viernes 13 nov a las 00:00 al martes 17 nov a las 23:59.
-- **Presupuesto sugerido:** $250 al día × 5 días = **$1,250**. En los últimos 60 días las conversaciones de Lúa costaron entre $17 y $46, así que esperaría unas 30 a 70 conversaciones.
+- **Fechas:** desde el lunes 9 nov (hoy) hasta el miércoles 18 nov a las 23:59.
+- **Presupuesto:** $100 al día × 10 días = **$1,000**. Con lo que costaron las conversaciones de Lúa en los últimos 60 días ($17 a $46), esperaría unas 20 a 55 conversaciones.
 - **Público:** Monterrey + 25 km, de 21 a 55 años, con Advantage+ en público y ubicaciones.
 - **Un solo conjunto de anuncios con los 5 anuncios** de abajo, para que Meta reparta el gasto hacia el que mejor funcione.
 - **Mientras dure el Buen Fin, pausar** `Lúa Eventos — Competir Nov–Dic` y `Lúa Eventos · 4 ocasiones · Promo con regalo`, para no tener dos ofertas compitiendo. Se reactivan el miércoles 18.
@@ -50,23 +50,23 @@ La primera versión, hecha sin IA, quedó en `out/` como respaldo.
 ### F — Crepas · `6_crepas`
 - **Texto principal:**
   Crepas recién hechas frente a tus invitados: Nutella, fresa, plátano, mazapán, Philadelphia y más toppings.
-  Este Buen Fin tienes 20% de descuento en tu barra de crepas. Aparta del 13 al 17 de noviembre para eventos hasta junio de 2027.
+  Este Buen Fin tienes 20% de descuento en tu barra de crepas. Aparta del 9 al 18 de noviembre para eventos hasta junio de 2027.
 - **Título:** Barra de crepas con 20%
-- **Descripción:** Solo del 13 al 17 de nov
+- **Descripción:** Solo del 9 al 18 de nov
 
 ### G — Elotes · `7_elotes`
 - **Texto principal:**
   Elotes preparados como te gustan: mayonesa, queso, chilito y limón, servidos al momento en tu evento.
-  Este Buen Fin tienes 20% de descuento en tu barra de elotes. Aparta del 13 al 17 de noviembre para eventos hasta junio de 2027.
+  Este Buen Fin tienes 20% de descuento en tu barra de elotes. Aparta del 9 al 18 de noviembre para eventos hasta junio de 2027.
 - **Título:** Barra de elotes con 20%
 - **Descripción:** Aparta por WhatsApp
 
 ### H — Tostitos preparados · `8_tostitos`
 - **Texto principal:**
   Tostitos preparados con cueritos, pepino, jícama, cacahuates, chamoy y salsa: el antojo que nadie rechaza.
-  Este Buen Fin tienes 20% de descuento en tu barra de Tostitos y elotes. Aparta del 13 al 17 de noviembre para eventos hasta junio de 2027.
+  Este Buen Fin tienes 20% de descuento en tu barra de Tostitos y elotes. Aparta del 9 al 18 de noviembre para eventos hasta junio de 2027.
 - **Título:** Tostitos preparados con 20%
-- **Descripción:** Solo del 13 al 17 de nov
+- **Descripción:** Solo del 9 al 18 de nov
 
 ---
 
@@ -75,17 +75,17 @@ Textos de los anuncios A a E (la primera versión los nombraba así):
 ### A — General · `A_general`
 - **Texto principal:**
   Buen Fin en Lúa Eventos: 20% de descuento en tu barra de frappés, crepas, elotes o waffles.
-  Aparta del 13 al 17 de noviembre y úsalo en tu evento cuando quieras, hasta junio de 2027.
+  Aparta del 9 al 18 de noviembre y úsalo en tu evento cuando quieras, hasta junio de 2027.
   Montamos la barra, llevamos al personal uniformado y tus invitados solo se dedican a disfrutar.
   Escríbenos por WhatsApp y te cotizamos ya con el descuento.
 - **Título:** 20% en tu barra para eventos
-- **Descripción:** Solo del 13 al 17 de noviembre
+- **Descripción:** Solo del 9 al 18 de noviembre
 
 ### B — XV, bodas y bautizos · `B_xv_bodas`
 - **Texto principal:**
   ¿XV años, boda o bautizo en 2027? Aparta tu fecha en este Buen Fin con 20% de descuento.
   Barra de frappés, crepas, elotes, waffles o candy bar, con montaje y personal incluidos.
-  El descuento vale para eventos hasta junio de 2027, pero solo se aparta del 13 al 17 de noviembre.
+  El descuento vale para eventos hasta junio de 2027, pero solo se aparta del 9 al 18 de noviembre.
 - **Título:** Aparta tu fecha con 20%
 - **Descripción:** Eventos hasta junio 2027
 
@@ -93,15 +93,15 @@ Textos de los anuncios A a E (la primera versión los nombraba así):
 - **Texto principal:**
   Crepas y waffles recién hechos frente a tus invitados, con Nutella, fresa, plátano y más toppings.
   En este Buen Fin tienes 20% de descuento en cualquier barra de Lúa Eventos.
-  Aparta del 13 al 17 de noviembre y usa tu descuento hasta junio de 2027.
+  Aparta del 9 al 18 de noviembre y usa tu descuento hasta junio de 2027.
 - **Título:** Barra de crepas con 20%
-- **Descripción:** Aparta del 13 al 17 de nov
+- **Descripción:** Aparta del 9 al 18 de nov
 
 ### D — Posadas · `D_posadas`
 - **Texto principal:**
   Diciembre se llena rápido. Aparta tu posada de empresa o de familia en este Buen Fin con 20% de descuento en cualquier barra de Lúa Eventos.
   Frappés, crepas, elotes, waffles y candy bar en un mismo lugar, con montaje y personal incluidos.
-  Solo del 13 al 17 de noviembre.
+  Solo del 9 al 18 de noviembre.
 - **Título:** Tu posada con 20% de descuento
 - **Descripción:** Fechas de diciembre limitadas
 
@@ -109,7 +109,7 @@ Textos de los anuncios A a E (la primera versión los nombraba así):
 - **Texto principal:**
   Los niños no se olvidan de los frappés con paleta.
   En este Buen Fin, la barra de Lúa Eventos para su cumpleaños tiene 20% de descuento.
-  Aparta del 13 al 17 de noviembre para cualquier fecha hasta junio de 2027.
+  Aparta del 9 al 18 de noviembre para cualquier fecha hasta junio de 2027.
 - **Título:** El cumple con 20% de descuento
 - **Descripción:** Aparta por WhatsApp
 
@@ -118,12 +118,12 @@ Textos de los anuncios A a E (la primera versión los nombraba así):
 ## Respuestas para WhatsApp
 
 **Mensaje de bienvenida (automático):**
-¡Hola! Gracias por escribir a Lúa Eventos 🎉 Este Buen Fin tienes 20% de descuento en cualquier barra si apartas del 13 al 17 de noviembre, para eventos hasta junio de 2027. Para cotizarte dime: 1) fecha del evento, 2) número de invitados, 3) qué barra te interesa (frappés, crepas, waffles, elotes o candy bar).
+¡Hola! Gracias por escribir a Lúa Eventos 🎉 Este Buen Fin tienes 20% de descuento en cualquier barra si apartas del 9 al 18 de noviembre, para eventos hasta junio de 2027. Para cotizarte dime: 1) fecha del evento, 2) número de invitados, 3) qué barra te interesa (frappés, crepas, waffles, elotes o candy bar).
 
 **Respuesta rápida "/buenfin":**
-Te paso un ejemplo: 100 frappés de 10 oz cuestan $6,600 y con el 20% del Buen Fin quedan en $5,280. Apartas con el 20% del total y el resto se paga el día del evento. La promo se aparta solo hasta el martes 17 de noviembre.
+Te paso un ejemplo: 100 frappés de 10 oz cuestan $6,600 y con el 20% del Buen Fin quedan en $5,280. Apartas con el 20% del total y el resto se paga el día del evento. La promo se aparta solo hasta el miércoles 18 de noviembre.
 
-**Respuesta rápida "/ultimodia"** (para el martes 17):
+**Respuesta rápida "/ultimodia"** (para el miércoles 18):
 Hoy es el último día para apartar con 20% de descuento. Si ya tienes la fecha, con tu anticipo la dejamos bloqueada a precio de Buen Fin.
 
 ## Publicaciones orgánicas (Facebook e Instagram de Lúa)

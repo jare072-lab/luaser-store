@@ -67,12 +67,12 @@ async function build({ ad, kind }) {
   s += `<rect x="0" y="${fadeTop}" width="${W}" height="${H - fadeTop}" fill="url(#f)"/>`;
   // fechas arriba a la derecha, alineadas al centro del logo
   const dy = logoTop + (kind === "feed" ? 58 : 66);
-  if (kind === "feed") s += `<text x="${W - m}" y="${dy}" text-anchor="end" font-family="Montserrat" font-weight="700" font-size="26" letter-spacing="3" fill="${WHITE}">13 AL 17 DE NOVIEMBRE</text>`;
+  if (kind === "feed") s += `<text x="${W - m}" y="${dy}" text-anchor="end" font-family="Montserrat" font-weight="700" font-size="26" letter-spacing="3" fill="${WHITE}">9 AL 18 DE NOVIEMBRE</text>`;
   // bloque inferior
   const y1 = bandBottom - 120;
   s += `<text x="${m}" y="${y1}" font-family="Montserrat" font-weight="700" font-size="36" fill="${WHITE}" filter="url(#sh)">${esc(ad.sub)}</text>`;
   s += pill(m, y1 + 30, 74, "APARTA AL 81 3109 2383", 28);
-  s += `<text x="${W - m}" y="${y1 + 60}" text-anchor="end" font-family="Montserrat" font-weight="500" font-size="23" fill="${WHITE}" opacity="0.85">${kind === "feed" ? "Por WhatsApp" : "Del 13 al 17 de noviembre"}</text>`;
+  s += `<text x="${W - m}" y="${y1 + 60}" text-anchor="end" font-family="Montserrat" font-weight="500" font-size="23" fill="${WHITE}" opacity="0.85">${kind === "feed" ? "Por WhatsApp" : "Del 9 al 18 de noviembre"}</text>`;
   s += `<text x="${W - m}" y="${y1 + 92}" text-anchor="end" font-family="Montserrat" font-weight="500" font-size="23" fill="${WHITE}" opacity="0.85">Eventos hasta junio 2027</text>`;
   const out = path.join(OUT, `${ad.id}_${kind === "feed" ? "feed_4x5" : "historia_9x16"}.jpg`);
   await sharp(base).composite([
