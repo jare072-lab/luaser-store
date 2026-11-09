@@ -136,3 +136,11 @@ Hoy es el último día para apartar con 20% de descuento. Si ya tienes la fecha,
 | Dom 15 | C, crepas y waffles | E en historia |
 | Lun 16 | D, posadas | D en historia + cuenta regresiva al 17 |
 | Mar 17 | A con "ÚLTIMO DÍA" en el texto | Cuenta regresiva + "/ultimodia" |
+
+## Lo que quedó publicado en Meta (9 nov 2026)
+
+- **Campaña:** `Lúa Eventos — Buen Fin 20% (9–18 nov) — WhatsApp MTY — $100 diarios` · id 52713690544034 · Interacción, $100 MXN diarios a nivel campaña.
+- **Conjunto:** `Buen Fin · Fiestas, XV, bodas, posadas · WhatsApp · MTY 35 km · 22–65` · id 52713690565634 · copia del público "Fiestas" de la campaña "Competir", con destino WhatsApp. Termina el 18 nov a las 23:59.
+- **Anuncios BF1 a BF8** (formato feed 4:5), uno por cada imagen de `final/`: 52713690595434, 52713690692034, 52713690721234, 52713690725834, 52713690796034, 52713690807234, 52713690901234, 52713690907634.
+- Las campañas "Competir Nov–Dic" y "4 ocasiones · Promo con regalo" ya estaban pausadas.
+- Las versiones de historia (`_historia_9x16.jpg`) son para publicar orgánico en historias de la página.
