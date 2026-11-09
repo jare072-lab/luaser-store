@@ -30,9 +30,47 @@ Ejemplos con tus precios de lista (los de la cotización de septiembre):
 - **Un solo conjunto de anuncios con los 5 anuncios** de abajo, para que Meta reparta el gasto hacia el que mejor funcione.
 - **Mientras dure el Buen Fin, pausar** `Lúa Eventos — Competir Nov–Dic` y `Lúa Eventos · 4 ocasiones · Promo con regalo`, para no tener dos ofertas compitiendo. Se reactivan el miércoles 18.
 
-## Anuncios (archivos en `out/`)
+## Anuncios finales (archivos en `final/`)
 
-Cada anuncio lleva la versión feed `_feed_4x5.png` y la de historia/reel `_story_9x16.png`.
+Versión profesional hecha con Higgsfield sobre tus fotos reales. El logo, las fechas y el WhatsApp se pusieron encima por separado para que salgan exactos. Cada anuncio tiene `_feed_4x5.jpg` y `_historia_9x16.jpg`:
+
+| Archivo | Ángulo | Textos de abajo |
+|---|---|---|
+| `1_frappes` | General | A |
+| `2_xv_bodas` | XV, bodas, bautizos | B |
+| `3_crepas_waffles` | Waffles | C |
+| `4_ninos` | Cumpleaños de niños | E |
+| `5_posadas` | Posadas | D |
+| `6_crepas` | Crepas | F |
+| `7_elotes` | Elotes | G |
+| `8_tostitos` | Tostitos preparados | H |
+
+La primera versión, hecha sin IA, quedó en `out/` como respaldo.
+
+### F — Crepas · `6_crepas`
+- **Texto principal:**
+  Crepas recién hechas frente a tus invitados: Nutella, fresa, plátano, mazapán, Philadelphia y más toppings.
+  Este Buen Fin tienes 20% de descuento en tu barra de crepas. Aparta del 13 al 17 de noviembre para eventos hasta junio de 2027.
+- **Título:** Barra de crepas con 20%
+- **Descripción:** Solo del 13 al 17 de nov
+
+### G — Elotes · `7_elotes`
+- **Texto principal:**
+  Elotes preparados como te gustan: mayonesa, queso, chilito y limón, servidos al momento en tu evento.
+  Este Buen Fin tienes 20% de descuento en tu barra de elotes. Aparta del 13 al 17 de noviembre para eventos hasta junio de 2027.
+- **Título:** Barra de elotes con 20%
+- **Descripción:** Aparta por WhatsApp
+
+### H — Tostitos preparados · `8_tostitos`
+- **Texto principal:**
+  Tostitos preparados con cueritos, pepino, jícama, cacahuates, chamoy y salsa: el antojo que nadie rechaza.
+  Este Buen Fin tienes 20% de descuento en tu barra de Tostitos y elotes. Aparta del 13 al 17 de noviembre para eventos hasta junio de 2027.
+- **Título:** Tostitos preparados con 20%
+- **Descripción:** Solo del 13 al 17 de nov
+
+---
+
+Textos de los anuncios A a E (la primera versión los nombraba así):
 
 ### A — General · `A_general`
 - **Texto principal:**
